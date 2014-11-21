@@ -1,0 +1,67 @@
+html{
+    font-size: 100%;    
+}
+
+body{
+    /* The default font size will be 10 pixels with the default web browser font size setting*/
+    font: 0.625em/1em Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.map {
+  position: absolute;
+  width: 80%;
+  height: 95%;
+  top: 3px;
+}
+
+.sideBar{
+	position: fixed;
+    left: 81%;
+    top: 3px;
+    width: 20%;
+    height: 95%;
+    background-color: #ccc;
+}
+
+.tab{
+    font: bold 13px;
+    font-decoration: none;
+    background-color: #EEEEEE;
+    color: #333;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+}
+
+.ping{
+    fill: none;
+    stroke: red;
+    stroke-width: 1.5px;
+    stroke-opacity: 1;
+}
+
+input, label {
+   display:block;
+}
+    
+#slider {
+  margin-left:10px;
+}
+    
+#zoomChosen, #panChosen {
+  border-radius:10px;
+  width:45px;
+  padding-top:10px; padding-bottom:10px;
+  text-align:center;
+  color:#000000;
+  font-weight:bold;
+  font-size: 1em;
+  margin-left:40px;
+}
+
+.checkbox {
+  float: left;
+  vertical-align: top;
+}
