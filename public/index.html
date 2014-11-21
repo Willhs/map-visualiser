@@ -136,8 +136,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
     // Set color for land mass
     g.selectAll(".kaz_subunit")
-      .attr("fill","#ddc")
-      .attr("stroke", "#000");
+      .attr("fill","#D0FA58")
+      .attr("stroke", "#FF0040");
 
     });
 
@@ -202,7 +202,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
       var b = path.centroid(d);
       var x = b[0],
           y = b[1],
-          scale = 15;
+          scale = 200; // the scale at which a country is zoomed to
 
       end[0] = x;
       end[1] = y;
