@@ -1,4 +1,4 @@
- <!-- Copyright (c) 2014, Sivan Fesherman
+  <!-- Copyright (c) 2014, Sivan Fesherman
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   //How far we should scale into a selection
   var SCALE_FACTOR = 1200;
   //How fast we should zoom. Lower numbers zoom faster.
-  var ANIMATION_DELAY = 2.4;
+  var ANIMATION_DELAY = 0.8;
   //How large the ping effect should be, in proportion to the height of the screen.
   var PING_SIZE = 0.2;
   //The ease function used for transitioning
@@ -97,7 +97,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   //The array of easing functions and zoom speeds to use
   var FROM_TEXT_FILE = [];
   //The constants for the animation delay function to be used in the set easing function
-  var FAST = 0.8;
+  var FAST = 0.4;
   var SLOW = 2.4;
   //The path to the easing function text file
   var PATH_TO_FILE = "data/functions/easingFunctions20.txt"
@@ -114,7 +114,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
   var zoom = d3.behavior.zoom()
         .on("zoom",function() {
-        g.attr("transform","translate("+d3.event.translate.join(",")+")scale("+d3.event.scale+")")
+        g.attr("transform","translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
   });
 
   var svg = d3.select("body").append("svg")
@@ -129,29 +129,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   d3.json("data/kaz.json", function(error, json) {
     var subunits = topojson.feature(json, json.objects.kaz_subunits);
 
+    // make outline of land mass
     g.append("path")
       .datum(subunits)
       .attr("d", path)
-      .attr("class", "kaz_subunit");
-
-    // Set color for land mass
-    g.selectAll(".kaz_subunit")
+      .attr("class", "kaz_subunit")
+      // set colour
       .attr("fill","#D0FA58")
       .attr("stroke", "#FF0040");
 
-    });
+  });
 
   // Add cities
   d3.json("data/kaz_places.json", function(error, json){
     cities = json.features;
 
-    g.insert("g", "g").attr("order", 1).selectAll("path")
+    g.selectAll("place")
       .data(cities)
       .enter().append("path")
       .attr("d", path)
       .attr("class", "place")
       .attr("id", function(d, i) {
           return "topo" + i;
+      })
+      // random color for each place
+      .attr("fill", function (d, i){
+        return "#"+i+0000;
       })
       .on("click", cityClicked);
 
@@ -182,7 +185,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   //read easing functions and animation delay values
   //from the randomized text file.
   readTextFile(PATH_TO_FILE);
-  calculateScale();
+  calculateRuler();
 
   // The movement function
   var start = [width / 2, height / 2, height], end = [width / 2, height / 2, height];
@@ -285,54 +288,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
     // execute all paths in sequence.
     //could be implemented better!
-    executePath(paths[0], 0, function(){
-      executePath(paths[1], 1, function(){
-        executePath(paths[2], 2, function(){
-          executePath(paths[3], 3, function(){
-            executePath(paths[4], 4, function(){
-              executePath(paths[5], 5, function(){
-                executePath(paths[6], 6, function(){
-                  executePath(paths[7], 7, function(){
-                    executePath(paths[8], 8, function(){
-                      executePath(paths[9], 9, function(){
-                        executePath(paths[10], 10, function(){
-                          executePath(paths[11], 11, function(){
-                            executePath(paths[12], 12, function(){
-                              executePath(paths[13], 13, function(){
-                                executePath(paths[14], 14, function(){
-                                  executePath(paths[15], 15, function(){
-                                    executePath(paths[16], 16, function(){
-                                      executePath(paths[17], 17, function(){
-            
-                                      });
-                                    });
-                                  });
-                                });
-                              });
-                            });
-                          });
-                        });
-                      });
-                    });
-                  });
-                });
-              });
-            });
-          });
-        });
+    for (var i = 0; i < 18; i++){
+      executePath(i, function(){
+        for (var remaining = i+1; remaining < 18; remaining++){
+          executePath(remaining, function(){});
+        }
       });
-    });
+    }
   }
 
   // A function that controls the navigation of a single path
   // for the user evaluation
-  function executePath(path, index, callback){
+  function executePath(index, callback){
+
+    var path = paths[index];
+
     var first = getCityIndex(path[0]);
     var second = getCityIndex(path[1]);
     var third;
-
     setEaseFunction(index);
-
     if(path.length == 3){
       third = getCityIndex(path[2]);
       move(cities[first], function(){
@@ -380,7 +354,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
   // A function to control the user data collection
   function askUser(index){
-    calculateScale();
+    calculateRuler();
     // get user's indication of distance between start and end points.
     var userDist = prompt("How far did you travel from the start point in Km?");
     if(userDist == null || userDist.length < 1 || isNaN(userDist)){
@@ -577,10 +551,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   }
 
   // A function to set the value of the scale line.
-  function calculateScale(){
+  function calculateRuler(){
     var worldDistance = getRealBounds()[1][0] * 1;
-    var screenDistance = $('svg.svg_map').width() / 2;
-
+    var screenDistance = $('svg.svg_map').width() / 2
+;
     var scale = Math.round((worldDistance / screenDistance) * 200);
 
     document.getElementById("scale-label").innerHTML = " "+scale+" Km";
