@@ -1,4 +1,6 @@
 
+
+
   var width = $(window).width() * 0.8,
       height = $(window).height(),
       centered;
@@ -315,7 +317,7 @@
     // send user input to server
     $.ajax({
         type: 'POST',
-        url: "/postdata",//url of receiver file on server
+        url: "/postevaluation",//url of receiver file on server
         data: {"userDist":userDist, "actualDist":distances[index], "userDir": userDir, "actualDir":direction[index], "ease_function":EASE_FUNCTION, "speed":ANIMATION_DELAY, "path_taken":paths[index]},
         success: function(response){ console.log(response) }, //callback when ajax request finishes
         dataType: "json" //text/json...
@@ -342,24 +344,6 @@
     }
     rawFile.send(null);
     return fileText;
-  }
-
-  function openPath(){
-    var rawFile = new XMLHttpRequest();
-      var fileText = []; // string from the file being read
-      rawFile.open("GET", filepath, false);
-      rawFile.onreadystatechange = function (){
-        if(rawFile.readyState === 4){
-            if(rawFile.status === 200 || rawFile.status == 0){
-                var allText = rawFile.responseText;
-                // alert(allText);
-                allText = allText.split(/[\s\n]+/);
-                while(allText[0]){
-                  fileText.push(allText.splice(0,3));
-                }
-            }
-        }
-      } 
   }
 // ==============================================================================================================================
 
