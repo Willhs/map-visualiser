@@ -416,30 +416,17 @@
 
   function savePath(){
 
-	  console.log(transitionList);
+		  //var map = transitionList.map(function(i){return JSON.stringify(i)});
+		 // console.log(map);
 	  $.ajax({
 	        type: 'POST',
 	        url: "/postpath",//url of receiver file on server
-	        data: {"path_taken":transitionList},
+	        data: {"path_taken":JSON.stringify(transitionList, null, 4)},
 	        success: function(response){ console.log(response) }, //callback when ajax request finishes
 	        dataType: "json" //text/json...
+
 	    });
 
-
-
-
-
-
-
-
-	  var file = new File("saveFile.json");
-	  print(file);
-	  // If file exists, we need to remove it first in order to overwrite its content.
-	  if (file.exists())
-	      file.remove();
-	  file.open();
-	  file.write(Json.encode(transitionList));
-	  file.close();
   }
 
   function loadPath(){

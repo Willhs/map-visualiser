@@ -76,9 +76,9 @@ app.post('/postpath', function(req, res){
 
 	var Timestamp = Math.round(new Date().getTime() / 1000);
 	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
-	var path =req.body.path_taken;
-	function(i){return i.NAME;};
-	fs.writeFile("path/" + Timestamp + "-savePath.txt", path+"\n", function(err){
+	var path = req.body.path_taken;
+
+	fs.writeFile("path/" + Timestamp + "-savePath.json", path+"\n", function(err){
 		if(err){
 			console.log(err);
 		} else{
