@@ -24,8 +24,7 @@ body{
 }
 
 .tab{
-    font: bold 13px;
-    font-decoration: none;
+    font-size:13px;
     background-color: #EEEEEE;
     color: #333;
     padding: 2px 6px 2px 6px;
