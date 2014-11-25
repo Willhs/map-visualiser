@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
           <div class="items">
               <div id="item1" class="tab"><table>
                       <tr><td>Select a city:</td>
-                      <td><input id="upload-file" type='file' name='userFile'><br></td></tr>
+                      <td><input id="upload-path" type='file' name='userFile'><br></td></tr>
                       <tr><td><select id="cityList"></td></tr>
 
                       <td><input id="go-to-city" type="Submit" value="Go to City"></input></td>
@@ -302,8 +302,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                   executePath(paths[7], 7, function(){
                     executePath(paths[8], 8, function(){
                       executePath(paths[9], 9, function(){
-                        executePath(paths[10], 10, function(){
-                          executePath(paths[11], 11, function(){
+                        executePath(paths[10], 10, function(){ 
+                         executePath(paths[11], 11, function(){
                             executePath(paths[12], 12, function(){
                               executePath(paths[13], 13, function(){
                                 executePath(paths[14], 14, function(){
@@ -620,8 +620,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   document.getElementById("follow-path").onclick = function () { followPath(0); }
   document.getElementById("startEval").onclick = function () { startTest(); }
 
+  //document.getElementById("upload-path").onclick = function () { }
+
   function loadPath(filepath){
-    
+        
   }
 
   </script>
