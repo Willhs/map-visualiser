@@ -85,20 +85,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   d3.json("data/kaz_places.json", function(error, json){
     cities = json.features;
 
-    g.selectAll("place")
+    var places = g.selectAll("place")
       .data(cities)
-      .enter().append("path")
+      .enter()
+      .append("g")
+      .on("click", cityClicked);
+
+    places.append("path")
       .attr("d", path)
       .attr("class", "place")
       .attr("id", function(d, i) {
           return "topo" + i;
-      })
-      .on("click", cityClicked);
+      });
 
     // Assign labels to cities
-    g.selectAll(".kaz_place-label")
-        .data(cities)
-      .enter().append("text")
+    places.append("text")
         .attr("class", "place-label")
         .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
         .attr("dy", ".35em")
@@ -537,9 +538,3 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
   document.getElementById("follow-path").onclick = function () { followPath(0); }
   document.getElementById("startEval").onclick = function () { startTest(); }
-
-  //document.getElementById("upload-path").onclick = function () { }
-
-  function loadPath(filepath){
-        
-  }
