@@ -21,7 +21,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
- 
+
  <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -37,8 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
           <div class="items">
               <div id="item1" class="tab"><table>
-                      <tr><td>Select a city:</td>
-                      <td><input id="upload-path" type='file' name='userFile'><br></td></tr>
+                      <tr><td>Select a city:</td></tr>
                       <tr><td><select id="cityList"></td></tr>
 
                       <td><input id="go-to-city" type="Submit" value="Go to City"></input></td>
@@ -49,7 +48,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                       </tr>
                       <tr><td><input id="follow-path" type="Submit" value="Follow Path"></input></td></tr>
                       <tr><td><input id="save-path" type="Submit" value="Save Path"></input></td>
-                      <td><input id="Load-path" type="Submit" value="Load Path"></input></td></tr>
+                      <td><p>Load path</p><input id="upload-path" type='file' name='userFile'><br></td>
+
 
                   </table>
               </div>
@@ -68,9 +68,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                     <fieldset>
                       <legend>Options selection panel</legend>
                         <label class="checkbox" for="ping">Ping</label>
-                        <input type="checkbox" name="ping" id="ping" class="checkbox">    
+                        <input type="checkbox" name="ping" id="ping" class="checkbox">
                         <label class="checkbox" for="other">Other</label>
-                        <input type="checkbox" name="other" id="other" class="checkbox">                     
+                        <input type="checkbox" name="other" id="other" class="checkbox">
                     </fieldset>
                   </form>
               </div>

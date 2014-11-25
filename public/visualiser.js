@@ -44,12 +44,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   var PATH_TO_FILE = "data/functions/easingFunctions20.txt"
 
   var cities, distances, direction, paths;
-  
+
   var projection = d3.geo.mercator()
         .center([68.0, 48.0])
         .scale(2000)
         .translate([width/2,height/2]);
-  
+
   var path = d3.geo.path().projection(projection)
         .pointRadius(2.5);
 
@@ -139,7 +139,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
       if (centered === d){
         return reset();
       }
-          
+
       var b = path.centroid(d);
       var x = b[0],
           y = b[1],
@@ -162,16 +162,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
             return function(t) { return transform(i(t)); };
         })
         .each("end", callback);
-      
+
       start = [x, y, scale];
       centered = d;
 
       function transform(p) {
           //k is the width of the selection we want to end with.
-          var k = height / p[2];          
+          var k = height / p[2];
           return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
 
-          
+
       }
   }
 
@@ -187,11 +187,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
       .duration(900 * ANIMATION_DELAY)
       .ease(EASE_FUNCTION)
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");  
+      .style("stroke-width", 1.5 / k + "px");
 
   }
 
-  // A function to set the easing function and animation speed 
+  // A function to set the easing function and animation speed
   // from the information in the text file.
   function setEaseFunction(index){
     var zoomIn = FROM_TEXT_FILE[index][0];
@@ -216,10 +216,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   // A function to start the evaluation process
   function startTest(){
     //create the ste of 15 paths to be followed.
-    paths = [ ["Shar", "Ayakoz", "Urzhar"], ["Arys", "Turkistan", "Taraz"], ["Oral", "Bayghanin", "Algha"], 
+    paths = [ ["Shar", "Ayakoz", "Urzhar"], ["Arys", "Turkistan", "Taraz"], ["Oral", "Bayghanin", "Algha"],
               ["Komsomolets", "Pavlodar"], ["Zaysan", "Temirtau", "Qarqaraly"], ["Embi", "Bayghanin", "Khromtau"],
-              ["Astana", "Qulsary", "Makhambet"], ["Zhanibek", "Oostanay", "Algha"], ["Qazaly", "Shonzhy"], 
-              ["Zhangaozen", "Oral", "Atasu"], ["Pavlodar", "Shieli", "Almaty"], ["Esil", "Beyneu", "Ertis"], 
+              ["Astana", "Qulsary", "Makhambet"], ["Zhanibek", "Oostanay", "Algha"], ["Qazaly", "Shonzhy"],
+              ["Zhangaozen", "Oral", "Atasu"], ["Pavlodar", "Shieli", "Almaty"], ["Esil", "Beyneu", "Ertis"],
               ["Kishkenekol", "Zaysan", "Otar"], ["Aqtau", "Derzhavinsk", "Qyzylorda"], ["Ushtobe", "Zhanibek", "Astana"],
               ["Ayakoz", "Temirtau", "Fort Shevchenko"], ["Zhanibek", "Rudny", "Embi"], ["Shieli", "Shu", "Zhezqazghan"] ];
     // the actual straight-line distance between start and end points.
@@ -239,7 +239,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
                   executePath(paths[7], 7, function(){
                     executePath(paths[8], 8, function(){
                       executePath(paths[9], 9, function(){
-                        executePath(paths[10], 10, function(){ 
+                        executePath(paths[10], 10, function(){
                          executePath(paths[11], 11, function(){
                             executePath(paths[12], 12, function(){
                               executePath(paths[13], 13, function(){
@@ -247,7 +247,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
                                   executePath(paths[15], 15, function(){
                                     executePath(paths[16], 16, function(){
                                       executePath(paths[17], 17, function(){
-            
+
                                       });
                                     });
                                   });
@@ -327,7 +327,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
     var userDist = prompt("How far did you travel from the start point in Km?");
     if(userDist == null || userDist.length < 1 || isNaN(userDist)){
       //TODO: do something with their answer!
-      userDist = "?"; 
+      userDist = "?";
     }
     // get user's indication of direction from start to end point.
     var userDir = prompt("What direction are you from the start point (N, S, E, W, NE, NW, SE, SW, NNE, NEE, NNW, NWW, SEE, SSE, SWW, SSW)?");
@@ -367,9 +367,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
     rawFile.send(null);
     return fileText;
   }
-// ==============================================================================================================================
 
-  
   function cityClicked(d){
     move(d);
   }
@@ -380,7 +378,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   }
 
   var transitionList = [];
-      
+
   // Remove all cities from the path
   function clearPath() {
     transitionList = [];
@@ -419,6 +417,43 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
         });
     }
   }
+
+  function savePath(){
+
+	  console.log(transitionList);
+	  $.ajax({
+	        type: 'POST',
+	        url: "/postpath",//url of receiver file on server
+	        data: {"path_taken":transitionList},
+	        success: function(response){ console.log(response) }, //callback when ajax request finishes
+	        dataType: "json" //text/json...
+	    });
+
+
+
+
+
+
+
+
+	  var file = new File("saveFile.json");
+	  print(file);
+	  // If file exists, we need to remove it first in order to overwrite its content.
+	  if (file.exists())
+	      file.remove();
+	  file.open();
+	  file.write(Json.encode(transitionList));
+	  file.close();
+  }
+
+  function loadPath(){
+	  var file = new File(script.file.parent, 'saveFile.json');
+	  file.open();
+	  var data = Json.decode(file.readAll());
+	  file.close();
+	  transitionList = function(i){return data[i]};
+  }
+
 
   // A function that returns the selected city
   function getSelected(elem) {
@@ -499,7 +534,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
 
   }
 
-  //Convert 
+  //Convert
   function getAbsoluteBounds() {
     var transforms = d3.transform(g.attr("transform"));
 
@@ -530,7 +565,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
     document.getElementById("scale-label").innerHTML = " "+scale+" Km";
   }
 
-  // --- Will's added code:
+  // --- Will and Jacky's added code:
 
   // events for html elements.
   document.getElementById("go-to-city").onclick = function () { goToLoc(document.getElementById('cityList').value); }
@@ -538,3 +573,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
   document.getElementById("follow-path").onclick = function () { followPath(0); }
   document.getElementById("startEval").onclick = function () { startTest(); }
+  document.getElementById("save-path").onclick = function () { savePath(); }
