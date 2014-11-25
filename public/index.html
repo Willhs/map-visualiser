@@ -155,10 +155,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
       .attr("id", function(d, i) {
           return "topo" + i;
       })
-      // random color for each place
-      .attr("fill", function (d, i){
-        return "#"+i+0000;
-      })
       .on("click", cityClicked);
 
     // Assign labels to cities
@@ -236,7 +232,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
           var k = height / p[2];
           return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
 
-          
+
       }
   }
 
@@ -304,7 +300,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                   executePath(paths[7], 7, function(){
                     executePath(paths[8], 8, function(){
                       executePath(paths[9], 9, function(){
-                        executePath(paths[10], 10, function(){ 
+                        executePath(paths[10], 10, function(){
                          executePath(paths[11], 11, function(){
                             executePath(paths[12], 12, function(){
                               executePath(paths[13], 13, function(){
@@ -312,7 +308,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                                   executePath(paths[15], 15, function(){
                                     executePath(paths[16], 16, function(){
                                       executePath(paths[17], 17, function(){
-            
+
                                       });
                                     });
                                   });
@@ -362,9 +358,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
       move(cities[first], function(){
         move(cities[second], function(){
           ping(first);
-          setTimeout(function(){
-            reset();
-          }, 1000);
+          setTimeout(function(){reset();}, 1000);
           setTimeout(function(){
             askUser(index);
             if(callback && typeof(callback) === 'function'){
@@ -449,6 +443,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
           }
       }
   }
+  }
 // ==============================================================================================================================
 
 
@@ -503,7 +498,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   }
   //A function that save user's path
   function savePath(){
-	  var file = new File(script.file.parent, 'saveFile.json');
+	  var file = new File("saveFile.json");
 	  print(file);
 	  // If file exists, we need to remove it first in order to overwrite its content.
 	  if (file.exists())
@@ -520,7 +515,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 	  file.close();
 	  transitionList = function(i){return data[i]};
   }
-
 
   // A function that returns the selected city
   function getSelected(elem) {
@@ -626,8 +620,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
   // A function to set the value of the scale line.
   function calculateRuler(){
     var worldDistance = getRealBounds()[1][0] * 1;
-    var screenDistance = $('svg.svg_map').width() / 2
-;
+    var screenDistance = $('svg.svg_map').width() / 2;
     var scale = Math.round((worldDistance / screenDistance) * 200);
 
     document.getElementById("scale-label").innerHTML = " "+scale+" Km";
@@ -646,9 +639,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
   //document.getElementById("upload-path").onclick = function () { }
 
-  function loadPath(filepath){
-        
-  }
+  //function loadPath(filepath){
+
+
 
   </script>
   </body>
