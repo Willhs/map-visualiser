@@ -37,7 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
           <div class="items">
               <div id="item1" class="tab"><table>
-                      <tr><td>Select a city:</td></tr>
+                      <tr><td>Select a city:</td>
+                      <td><input id="upload-file" type='file' name='userFile'><br></td></tr>
                       <tr><td><select id="cityList"></td></tr>
 
                       <td><input id="go-to-city" type="Submit" value="Go to City"></input></td>
@@ -184,7 +185,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
   //read easing functions and animation delay values
   //from the randomized text file.
-  readTextFile(PATH_TO_FILE);
+  FROM_TEXT_FILE = readEaseFunctions(PATH_TO_FILE);
   calculateRuler();
 
   // The movement function
@@ -408,9 +409,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
     });
   }
 
-  function readTextFile(file){
+  // reads ease functions from a local text file
+  // http://stackoverflow.com/a/14446538/1696114
+  function readEaseFunctions(filepath){
     var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
+    var fileText = []; // string from the file being read
+    rawFile.open("GET", filepath, false);
     rawFile.onreadystatechange = function (){
         if(rawFile.readyState === 4){
             if(rawFile.status === 200 || rawFile.status == 0){
@@ -418,13 +422,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                 // alert(allText);
                 allText = allText.split(/[\s\n]+/);
                 while(allText[0]){
-                  FROM_TEXT_FILE.push(allText.splice(0,3));
+                  fileText.push(allText.splice(0,3));
                 }
             }
         }
     }
     rawFile.send(null);
-}
+    return fileText;
+  }
+
+  function openPath(){
+    var rawFile = new XMLHttpRequest();
+      var fileText = []; // string from the file being read
+      rawFile.open("GET", filepath, false);
+      rawFile.onreadystatechange = function (){
+      if(rawFile.readyState === 4){
+          if(rawFile.status === 200 || rawFile.status == 0){
+              var allText = rawFile.responseText;
+              // alert(allText);
+              allText = allText.split(/[\s\n]+/);
+              while(allText[0]){
+                fileText.push(allText.splice(0,3));
+              }
+          }
+      }
+  }
 // ==============================================================================================================================
 
   
@@ -589,12 +611,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
     document.getElementById("scale-label").innerHTML = " "+scale+" Km";
   }
 
+  // --- Will's added code:
+
   // events for html elements.
   document.getElementById("go-to-city").onclick = function () { goToLoc(document.getElementById('cityList').value); }
   document.getElementById("add-to-path").onclick = function () { addToPath(document.getElementById('cityList').value); }
   document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
   document.getElementById("follow-path").onclick = function () { followPath(0); }
   document.getElementById("startEval").onclick = function () { startTest(); }
+
+  function loadPath(filepath){
+    
+  }
 
   </script>
   </body>
