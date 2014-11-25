@@ -227,16 +227,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
       
       start = [x, y, scale];
       centered = d;
-      
+
       function transform(p) {
           //k is the width of the selection we want to end with.
           var k = height / p[2];          
           return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
+
+          
       }
   }
 
   // A function to reset the map view.
   function reset(){
+    //console.log("resetting");
     x = width / 2;
     y = height / 2;
     k = 1;
@@ -288,21 +291,48 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
     // execute all paths in sequence.
     //could be implemented better!
-    for (var i = 0; i < 18; i++){
-      executePath(i, function(){
-        for (var remaining = i+1; remaining < 18; remaining++){
-          executePath(remaining, function(){});
-        }
+    executePath(paths[0], 0, function(){
+      executePath(paths[1], 1, function(){
+        executePath(paths[2], 2, function(){
+          executePath(paths[3], 3, function(){
+            executePath(paths[4], 4, function(){
+              executePath(paths[5], 5, function(){
+                executePath(paths[6], 6, function(){
+                  executePath(paths[7], 7, function(){
+                    executePath(paths[8], 8, function(){
+                      executePath(paths[9], 9, function(){
+                        executePath(paths[10], 10, function(){
+                          executePath(paths[11], 11, function(){
+                            executePath(paths[12], 12, function(){
+                              executePath(paths[13], 13, function(){
+                                executePath(paths[14], 14, function(){
+                                  executePath(paths[15], 15, function(){
+                                    executePath(paths[16], 16, function(){
+                                      executePath(paths[17], 17, function(){
+            
+                                      });
+                                    });
+                                  });
+                                });
+                              });
+                            });
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
       });
-    }
+    });
   }
 
   // A function that controls the navigation of a single path
   // for the user evaluation
-  function executePath(index, callback){
-
-    var path = paths[index];
-
+  function executePath(path, index, callback){
     var first = getCityIndex(path[0]);
     var second = getCityIndex(path[1]);
     var third;
@@ -390,7 +420,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                 while(allText[0]){
                   FROM_TEXT_FILE.push(allText.splice(0,3));
                 }
-                // console.log(FROM_TEXT_FILE);
             }
         }
     }
