@@ -438,13 +438,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   }
 
   // A function that takes the user through the path
-  function followPath(index) {
+  var pathTimer = [];
+   function followPath(index) {
     if (transitionList.length > index) {
         move(transitionList[index], function() {
-            followPath(index + 1);
+            pathTimer = followPath(index + 1);
+            console.log(pathTimmer);
         });
+        return new Date().getTime();
     }
   }
+
+//A function that takes the user through the path
+
 
   function savePath(){
 
@@ -601,6 +607,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   }
 
   // --- Will and Jacky's added code:
+  function recordAction(){
+
+  }
 
   // events for html elements.
   document.getElementById("go-to-city").addEventListener("click", function () { goToLoc(document.getElementById('cityList').value); });
