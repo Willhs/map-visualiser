@@ -88,4 +88,22 @@ app.post('/postpath', function(req, res){
 
 	});
 });
+app.post('/postExploration', function(req, res){
+	console.log(req.body);
+	res.send(req.body);
+
+	var Timestamp = Math.round(new Date().getTime() / 1000);
+	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
+	var path = req.body.path_taken;
+
+	fs.writeFile("Exploration/" + Timestamp + "-saveExploration.json", path+"\n", function(err){
+
+		if(err){
+			console.log(err);
+		} else{
+			console.log("Dond!");
+		}
+
+	});
+});
 

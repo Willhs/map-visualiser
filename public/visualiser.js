@@ -72,7 +72,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
       .call(zoom);
 
   var g = svg.append("g")
-    .attr("transform", "translate(0,0)scale(1)"); // have to initialise scale for zoom 
+    .attr("transform", "translate(0,0)scale(1)"); // have to initialise scale for zoom
 
   // Read country outline from file
   d3.json("data/kaz.json", function(error, json) {
@@ -170,7 +170,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
             return function(t) { return transform(i(t)); };
         })
         .each("end", callback)
-        .each("end", function(){ 
+        .each("end", function(){
           updateScaleAndTrans(); // updates global scale and transition variables
         });
 
@@ -181,7 +181,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
       function transform(p) {
           //k is the width of the selection we want to end with.
           var k = height / p[2];
-          return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";          
+          return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
       }
   }
 
@@ -466,6 +466,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
 	    });
 
   }
+  function saveExploration(){
+
+  $.ajax({
+        type: 'POST',
+        url: "/postExploration",//url of receiver file on server
+        data: {"path_taken":JSON.stringify(events, null, 4)},
+        success: function(response){ console.log(response) }, //callback when ajax request finishes
+        dataType: "json" //text/json...
+
+    });
+
+}
 
   function handlePathUpload(file){
     //console.log(file);
@@ -491,7 +503,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
       }
 
       console.log(transitionList.length + " transitions");
-    }   
+    }
 	  //transitionList = function(i){return data[i]};
   }
 
@@ -607,7 +619,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   }
 
   // --- Will and Jacky's added code:
-  function recordAction(){
+  var events = [];
+  function event(time, info){
+	  this.time = time;
+	  this. info= info;
+  }
+  function recordCityTravel(){
+	  events.push(new event(new Date().getTime(), "City Index Number: " +  document.getElementById('cityList').value));
+
+  }
+  function recordMovement(){
+	  events.push(new event(new Date().getTime(), "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"));
+	  console.log("translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 
   }
 
@@ -618,16 +641,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   document.getElementById("follow-path").onclick = function () { followPath(0); }
   document.getElementById("startEval").onclick = function () { startTest(); }
   document.getElementById("save-path").onclick = function () { savePath(); }
-  document.getElementById("upload-path").addEventListener('change', function () { 
-    handlePathUpload(document.getElementById("upload-path").files[0]); 
+  document.getElementById("upload-path").addEventListener('change', function () {
+    handlePathUpload(document.getElementById("upload-path").files[0]);
   }, false);
 
-  document.getElementById("record").addEventListener('click', function () {
-    document.getElementById("go-to-city").addEventListener("click", function () { events.add(city, time)});
-    zoom.on("zoom.record", function {events.add(zoom, time) })
-  } 
+  document.getElementById("record").addEventListener("click", function () {
+    document.getElementById("go-to-city").addEventListener("click", recordCityTravel);
+    zoom.on("zoom.record", recordMovement);
+  });
+
 
   document.getElementById("stop").addEventListener('click', function () {
-    document.getElementById("go-to-city").removeEventListener();
-    zoom.on("zoom.record", function {events.add(zoom, time) })
-  }
+    document.getElementById("go-to-city").removeEventListener("click", recordCityTravel);
+
+    zoom.on("zoom.record", null);//remove recording zoom listener
+    console.log("Stopped: " + events);
+    console.log(events[0].time);
+  });
