@@ -2,3 +2,4 @@
 1416884537	exp-in-out	0.4	?	217	?	NEE	Arys,Turkistan,Taraz
 1416945677	sin-inexp-out	0.4	?	281	?	S	Shar,Ayakoz,Urzhar
 1416945684	exp-in-out	0.4	?	217	?	NEE	Arys,Turkistan,Taraz
+1417035781	sin-inexp-out	0.4	?	281	?	S	Shar,Ayakoz,Urzhar

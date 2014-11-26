@@ -406,13 +406,19 @@
   }
 
   // A function that takes the user through the path
-  function followPath(index) {
+  var pathTimer = [];
+   function followPath(index) {
     if (transitionList.length > index) {
         move(transitionList[index], function() {
-            followPath(index + 1);
+            pathTimer = followPath(index + 1);
+            console.log(pathTimmer);
         });
+        return new Date().getTime();
     }
   }
+
+//A function that takes the user through the path
+
 
   function savePath(){
 
@@ -546,6 +552,10 @@
     var scale = Math.round((worldDistance / screenDistance) * 200);
 
     document.getElementById("scale-label").innerHTML = " "+scale+" Km";
+  }
+
+  function recordAction(){
+
   }
 
   // --- Will's added code:
