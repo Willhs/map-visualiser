@@ -415,23 +415,6 @@
   }
 
   function savePath(){
-
-	  console.log(transitionList);
-	  $.ajax({
-	        type: 'POST',
-	        url: "/postpath",//url of receiver file on server
-	        data: {"path_taken":transitionList},
-	        success: function(response){ console.log(response) }, //callback when ajax request finishes
-	        dataType: "json" //text/json...
-	    });
-
-
-
-
-
-
-
-
 	  var file = new File("saveFile.json");
 	  print(file);
 	  // If file exists, we need to remove it first in order to overwrite its content.
@@ -568,8 +551,6 @@
   document.getElementById("add-to-path").onclick = function () { addToPath(document.getElementById('cityList').value); }
   document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
   document.getElementById("follow-path").onclick = function () { followPath(0); }
-  document.getElementById("save-path").onclick = function () { savePath(); }
-
   document.getElementById("startEval").onclick = function () { startTest(); }
 
   //document.getElementById("upload-path").onclick = function () { }
