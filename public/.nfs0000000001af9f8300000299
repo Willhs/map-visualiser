@@ -53,9 +53,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   var path = d3.geo.path().projection(projection)
         .pointRadius(2.5);
 
+  // the last scale value determined by the mouse wheel
+  var lastMouseScale = 1;
+
   // mousewheel zooming
+  // TODO obtain current zoom level better
   var zoom = d3.behavior.zoom()
-        .on("zoom.normal",function() {
+        .on("zoom",function() {
         /*  var moveDist = d3.event.scale - lastMouseScale;
           var scale = getCurrentScale() + moveDist;
           console.log("Mousewheel dist: " + moveDist);
@@ -63,7 +67,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
           lastMouseScale = d3.event.scale;*/
           g.attr("transform","translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
        //   console.log(d3.event.scale);
-        })
+  });
 
   var svg = d3.select("body").append("svg")
       .attr("width", width)
@@ -170,34 +174,34 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
             return function(t) { return transform(i(t)); };
         })
         .each("end", callback)
-        .each("end", function(){ 
-          updateScaleAndTrans(); // updates global scale and transition variables
-        });
 
       start = [x, y, scale];
       centered = d;
 
       //http://bl.ocks.org/mbostock/3828981
       function transform(p) {
+          // update the scale and translation
+          updateScaleAndTrans();
           //k is the width of the selection we want to end with.
           var k = height / p[2];
-          return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";          
+          return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
+          
       }
   }
 
   // updates the zoom.scale and zoom.translation properties to the map's current state
   function updateScaleAndTrans(){
     zoom.scale(getCurrentScale());
-    zoom.translate(getCurrentTranslate());
+    //zoom.translate(getCurrentTranslate());
   }
 
   // gets the current map scale
   function getCurrentScale(){
     var transformStr = g.attr("transform");
-    // console.log(transformStr);
+   // console.log(transformStr);
     var length = transformStr.length;
     var scale = transformStr.slice(transformStr.indexOf("scale")+6, length-1);
-    // console.log(scale);
+    //console.log(scale);
     return parseInt(scale);
   }
 
@@ -207,7 +211,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
     var length = transformStr.length;
     var translationX = transformStr.slice(transformStr.indexOf("translate")+10, transformStr.indexOf(","));
     var translationY = transformStr.slice(transformStr.indexOf(",")+1, transformStr.indexOf(")"));
-    //console.log("translation: " + [translationX, translationY]);
+    console.log("translation: " + [translationX, translationY]);
     return [parseInt(translationX), parseInt(translationY)];
   }
 
@@ -603,7 +607,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   // --- Will and Jacky's added code:
 
   // events for html elements.
-  document.getElementById("go-to-city").addEventListener("click", function () { goToLoc(document.getElementById('cityList').value); });
+  document.getElementById("go-to-city").onclick = function () { goToLoc(document.getElementById('cityList').value); }
   document.getElementById("add-to-path").onclick = function () { addToPath(document.getElementById('cityList').value); }
   document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
   document.getElementById("follow-path").onclick = function () { followPath(0); }
@@ -612,13 +616,3 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   document.getElementById("upload-path").addEventListener('change', function () { 
     handlePathUpload(document.getElementById("upload-path").files[0]); 
   }, false);
-
-  document.getElementById("record").addEventListener('click', function () {
-    document.getElementById("go-to-city").addEventListener("click", function () { events.add(city, time)});
-    zoom.on("zoom.record", function {events.add(zoom, time) })
-  } 
-
-  document.getElementById("stop").addEventListener('click', function () {
-    document.getElementById("go-to-city").removeEventListener();
-    zoom.on("zoom.record", function {events.add(zoom, time) })
-  }
