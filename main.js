@@ -52,29 +52,14 @@ app.post('/posttest', function(req, res){
 	});
 });
 
-//The post function that reads users' input from the web-application
-//and writes it into a text file on the server side.
-app.post('/postdata', function(req, res){
-	console.log(req.body);
-	res.send(req.body);
+// post path on the map
 
-	var Timestamp = Math.round(new Date().getTime() / 1000);
-	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
-	var text = Timestamp+"\t"+req.body.ease_function+"\t"+req.body.speed+"\t"+req.body.userDist+"\t"+req.body.actualDist+"\t"+req.body.userDir+"\t"+req.body.actualDir+"\t"+req.body.path_taken;
-	fs.appendFile("test.txt", text+"\n", function(err){
-		if(err){
-			console.log(err);
-		} else{
-			console.log("Dond!");
-		}
-
-	});
-});
 app.post('/postpath', function(req, res){
 	console.log(req.body);
 	res.send(req.body);
 
-	var Timestamp = Math.round(new Date().getTime() / 1000);
+	var Timestamp = new Date();
+
 	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
 	var path = req.body.path_taken;
 
@@ -88,15 +73,17 @@ app.post('/postpath', function(req, res){
 
 	});
 });
+
+//post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 	console.log(req.body);
 	res.send(req.body);
 
-	var Timestamp = Math.round(new Date().getTime() / 1000);
+	var Timestamp = new Date();
 	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
-	var path = req.body.path_taken;
+	var exploration = req.body.exploration;
 
-	fs.writeFile("Exploration/" + Timestamp + "-saveExploration.json", path+"\n", function(err){
+	fs.writeFile("Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
 
 		if(err){
 			console.log(err);
