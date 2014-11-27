@@ -62,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
           g.attr("transform","translate(" + d3.event.translate + ")scale(" + scale + ")");
           lastMouseScale = d3.event.scale;*/
           g.attr("transform","translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-       //   console.log(d3.event.scale);
+          console.log(d3.event.scale);
         })
 
   var svg = d3.select("body").append("svg")
@@ -607,9 +607,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   }
 
   // --- Will and Jacky's added code:
-  function recordAction(){
-
-  }
 
   // events for html elements.
   document.getElementById("go-to-city").addEventListener("click", function () { goToLoc(document.getElementById('cityList').value); });
@@ -621,13 +618,3 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
   document.getElementById("upload-path").addEventListener('change', function () { 
     handlePathUpload(document.getElementById("upload-path").files[0]); 
   }, false);
-
-  document.getElementById("record").addEventListener('click', function () {
-    document.getElementById("go-to-city").addEventListener("click", function () { events.add(city, time)});
-    zoom.on("zoom.record", function {events.add(zoom, time) })
-  } 
-
-  document.getElementById("stop").addEventListener('click', function () {
-    document.getElementById("go-to-city").removeEventListener();
-    zoom.on("zoom.record", function {events.add(zoom, time) })
-  }
