@@ -37,52 +37,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
           <div class="items">
               <div id="item1" class="tab"><table>
-                      <tr><td>Select a city:</td>
-                      <td><input id="upload-path" type='file' name='userFile'><br></td></tr>
+                      <tr><td>Select a city:</td></tr>
                       <tr><td><select id="cityList"></td></tr>
 
-                      <td><input id="go-to-city" type="Submit" value="Go to City"></input></td>
-                      <tr><td><select id="pathList" size="10"></td></tr>
+                     <tr> <td><input id="go-to-city" type="Submit" value="Go to City"></input>
+
+                      </td></tr>
+
+                      <tr><td><select id="pathList" size="5"></td></tr>
                       <tr>
                           <td><input id="add-to-path" type="Submit" value="Add to Path"></input></td>
                           <td><input id="remove-from-path" type="Submit" value="Remove from Path"></input></td>
                       </tr>
                       <tr><td><input id="follow-path" type="Submit" value="Follow Path"></input></td></tr>
                       <tr><td><input id="save-path" type="Submit" value="Save Path"></input></td>
-                      <td><input id="load-path" type="Submit" value="Load Path"></input></td></tr>
-
+                      <td><p>Load path</p><input id="upload-path" type='file' name='userFile'><br></td>
                   </table>
               </div>
               <section>
-                  <div id="sliders">
-                      <div style="float:left; margin-right:20px; margin-left:10px; margin-bottom:10px; margin-top:10px;">
-                        <label for="startEval">Start Evaluation</label>
-                        <input id="startEval" type="Submit" value="Click to start"></input>
-                      </div>
-                       <br style="clear:both;" />
-                  </div>
-              </section>
-              <section>
-                <div id="selection_panel">
-                  <form method="post">
-                    <fieldset>
-                      <legend>Options selection panel</legend>
-                        <label class="checkbox" for="ping">Ping</label>
-                        <input type="checkbox" name="ping" id="ping" class="checkbox">
-                        <label class="checkbox" for="other">Other</label>
-                        <input type="checkbox" name="other" id="other" class="checkbox">
-                    </fieldset>
-                  </form>
-              </div>
-              <div id="scaleLine" style="padding-top: 20px">
-                <div style="width: 200px; height: 3px; background: black; display: inline-block" />
-                <p id="scale-label"></p>
-              </div>
+               <div class="items">
+             		 <button id="record">Record</button>
+                     <button id="stop">Stop</button><br>
+                     <button id="save-exploration">Save Exploration</button>
+                     <p><b>Load Exploration</b></p><input id="upload-exploration" type='file' name='userFile'><br>
+                     <button id="play-exploration">Play</button>
+				</div>
               </section>
           </div>
       </div>
-  <script src="visualiser.js"></script>
 
+  <script src="visualiser.js"></script>
 
   </body>
 </html>
