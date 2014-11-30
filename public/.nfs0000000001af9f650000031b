@@ -184,12 +184,8 @@ function move(city, cb) {
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
-	var scale = getScale(g.attr("transform"));
-	var translate = getTranslate(g.attr("transform"));
-	console.log(scale);
-	console.log(translate);
-	zoom.scale(scale);
-	zoom.translate(translate);
+	zoom.scale(getScale(g.attr("transform")));
+	zoom.translate(getTranslate(g.attr("transform")));
 }
 
 // gets the current map scale
@@ -481,9 +477,8 @@ function event(type, time, info){
 }
 
 
-// beings recording of certain user navigation actions 
+// adds event listeners which record user navigation actions
 function startRecording() {
-	// adds event listeners which record user navigation actions
 	zoom.on("zoom.record", recordMovement);
 	saveExplButton.disabled = true; // have to stop recording before saving
 
@@ -503,14 +498,13 @@ function startRecording() {
 	var cityEntries = document.getElementsByClassName("city-entry");
 	console.log(cityEntries.length);
 	for (var i = 0; i < cityEntries.length; i++){
-		var entry = cityEntries.item(i);
+		var entry = mapCities.item(i);
 		entry.addEventListener("dblclick", recordTravel(entry.value));
 	}
 }
 
-// ends recording of user navigation
+// removes event listeners which are recording user navigation.
 function stopRecording() {
-	// removes event listeners which are recording user navigation.
 	goToCity.removeEventListener("click", recordTravel);
 	zoom.on("zoom.record", null);//remove recording zoom listener
 	saveExplButton.disabled = false; // can now save recording.
@@ -525,8 +519,8 @@ function stopRecording() {
 	// entries in the side bar drop-down menu
 	var cityEntries = document.getElementsByClassName("city-entry");
 	for (var i = 0; i < cityEntries.length; i++){
-		var entry = cityEntries.item(i);
-		entry.removeEventListener("dblclick", recordTravel(entry.value));
+		var entry = mapCities.item(i);
+		entry.removeEventListener("ondblclick", recordTravel(entry.value));
 	}
 
 	console.log("Recorded " + events.length + " events");

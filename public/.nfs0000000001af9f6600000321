@@ -1,0 +1,72 @@
+  <!-- Copyright (c) 2014, Sivan Fesherman
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
+
+ <!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<title>Path and Zoom V2</title>
+    <meta charset="utf-8" name="viewport">
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
+    <script src="data/d3.v3.min.js"></script>
+    <script src="data/topojson.v1.min.js"></script>
+    <script src="data/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="sideBar">
+
+          <div class="items">
+              <div id="item1" class="tab"><table>
+                      <tr><td>Select a city:</td></tr>
+                      <tr><td><select id="cityList"></td></tr>
+
+                     <tr> <td><input id="go-to-city" type="Submit" value="Go to City"></input>
+
+                      </td></tr>
+
+                      <tr><td><select id="pathList" size="5"></td></tr>
+                      <tr>
+                          <td><input id="add-to-path" type="Submit" value="Add to Path"></input></td>
+                          <td><input id="remove-from-path" type="Submit" value="Remove from Path"></input></td>
+                      </tr>
+                      <tr><td><input id="follow-path" type="Submit" value="Follow Path"></input></td></tr>
+                      <tr><td><input id="save-path" type="Submit" value="Save Path"></input></td>
+                      <td><p>Load path</p><input id="upload-path" type='file' name='userFile'><br></td>
+                  </table>
+              </div>
+              <section>
+               <div class="items">
+             		 <button id="record">Record</button>
+                     <button id="stop">Stop</button><br>
+                     <button id="save-exploration">Save Exploration</button>
+                     <p><b>Load Exploration</b></p><input id="upload-exploration" type='file' name='userFile'><br>
+                     <button id="play-exploration">Play</button>
+				</div>
+              </section>
+          </div>
+      </div>
+
+  <script src="visualiser.js"></script>
+
+  </body>
+</html>
