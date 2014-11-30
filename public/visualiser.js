@@ -448,15 +448,8 @@ function handlePathUpload(file){
 		for (var i = 0; i < inputCities.length; i++){
 			var inputCity = inputCities[i];
 
-			for (var j = 0; j < cities.length; j++){
-				var city = cities[j];
-				if (inputCity.properties.NAME === city.properties.NAME){
-					//console.log(inputCity.properties.NAME + " " + city.properties.NAME);
-					addToPath(j);
-				}
-			}
+			addToPath(getCityIndex(inputCity))
 		}
-
 		console.log(transitionList.length + " transitions");
 	}
 	//transitionList = function(i){return data[i]};
@@ -514,6 +507,35 @@ function startRecording() {
 		var entry = cityEntries.item(i);
 		entry.addEventListener("dblclick", recordTravel(entry.value));
 	}
+
+	addRecordingGraphics();
+}
+
+// adds graphics to the map to show that recording is in progress.
+function addRecordingGraphics(){
+	//var points = [0, 0, width, height];
+	var borderWidth = 20;
+	var circleRadius = 30;
+	var padding = 10;
+	var circleCX = borderWidth + circleRadius;
+	var circleCY = borderWidth + circleRadius;
+
+	svg.append("rect")
+		.attr("id", "record-border")
+		.attr("x", 0)
+		.attr("y", 0)
+		.attr("width", width)
+		.attr("height", height - borderWidth/2)
+		.style("stroke", "red")
+		.style("fill", "none")
+		.style("stroke-width", borderWidth);
+
+	svg.append('circle')
+		.attr("id", "record-circle")
+	    .attr('cx', circleCX)
+	    .attr('cy', circleCY)
+	    .attr('r', circleRadius)
+	    .style('fill', 'red');
 }
 
 // ends recording of user navigation
@@ -536,6 +558,9 @@ function stopRecording() {
 		var entry = cityEntries.item(i);
 		entry.removeEventListener("dblclick", recordTravel(entry.value));
 	}
+	// remove recording graphics
+	d3.select("#record-border").remove();
+	d3.select("#record-circle").remove();
 
 	console.log("Recorded " + events.length + " events");
 }
