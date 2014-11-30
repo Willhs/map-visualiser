@@ -79,7 +79,7 @@ d3.json("data/kaz.json", function(error, json) {
 	var subunits = topojson.feature(json, json.objects.kaz_subunits);
 
 	// make outline of land mass
-	g.append("path")
+	g.insert("path",":before")
 	.datum(subunits)
 	.attr("d", path)
 	.attr("class", "kaz_subunit")
@@ -288,7 +288,10 @@ function removeFromPath(index) {
 var pathTimer = [];
 function followPath(index) {
 	if (transitionList.length > index) {
+		console.log("1");
 		move(transitionList[index], function() {
+
+
 			pathTimer = followPath(index + 1);
 			console.log(pathTimmer);
 		});
@@ -485,11 +488,11 @@ function recordMovement(){
 
 
 function playRecording(){
-	if (events.length == 0) return; // if no events, do nothing.
+	if (events.length == 0) {
+		return; // if no events, do nothing.
+	}
 
 	var firstTime = events[0].time;
-
-	reset();
 
 	for (var i=0; i < events.length; i++){
 		var event = events[i];
@@ -501,9 +504,14 @@ function playRecording(){
 				goToLoc(parseInt(event.info));
 			break;
 			case ("movement"):
-				zoom.translate(getTranslate(event.info));
-				zoom.scale(getScale(event.info));
-				zoom.event(svg);
+//				zoom.translate(getTranslate(event.info));
+//				zoom.scale(getScale(event.info));
+//				zoom.event(svg);
+//				i+=5;
+				g.attr("transform", event.info);
+				break;
+			default:
+				break;
 			}
 		}, delay, event);
 	}
@@ -516,29 +524,35 @@ document.getElementById("add-to-path").onclick = function () { addToPath(documen
 document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
 document.getElementById("follow-path").onclick = function () { followPath(0); }
 document.getElementById("save-path").onclick = function () { savePath(); }
-var saveExplButton = document.getElementById("save-exploration");
-saveExplButton.onclick = function () { saveExploration(); }
+var saveExplButton = document.getElementById("saveExplorationButton");
+saveExplButton.addEventListener('click', function () {
+	console.log("save button clicked");
+	saveExploration();
+	});
 
 document.getElementById("upload-path").addEventListener('change', function () {
 	handlePathUpload(document.getElementById("upload-path").files[0]);
 }, false);
-document.getElementById("upload-exploration").addEventListener('change', function () {
-	handleExplorationUpload(document.getElementById("upload-exploration").files[0]);
+document.getElementById("loadExplorationButton").addEventListener('change', function () {
+	console.log("load button clicked");
+	handleExplorationUpload(document.getElementById("loadExplorationButton").files[0]);
 }, false);
-document.getElementById("record").addEventListener("click", function () {
+document.getElementById("recordButton").addEventListener("click", function () {
+	console.log("record button clicked");
 	document.getElementById("go-to-city").addEventListener("click", recordTravel);
 	zoom.on("zoom.record", recordMovement);
 	saveExplButton.disabled = true; // have to stop recording before saving
 });
 
-document.getElementById("stop").addEventListener('click', function () {
+document.getElementById("stopButton").addEventListener('click', function () {
 	document.getElementById("go-to-city").removeEventListener("click", recordTravel);
-
+	console.log("stop button clicked");
 	zoom.on("zoom.record", null);//remove recording zoom listener
 	saveExplButton.disabled = false; // can now save recording.
 	console.log("Recorded " + events.length + " events");
 });
 
-document.getElementById("play-exploration").addEventListener('click', function () {
+document.getElementById("playButton").addEventListener('click', function () {
+	console.log("play button clicked");
 	playRecording();
 });
