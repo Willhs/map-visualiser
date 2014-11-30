@@ -79,6 +79,7 @@ d3.json("data/kaz.json", function(error, json) {
 	var subunits = topojson.feature(json, json.objects.kaz_subunits);
 
 	// make outline of land mass
+
 	g.insert("path",":first-child")
 	.datum(subunits)
 	.attr("d", path)
@@ -93,7 +94,10 @@ d3.json("data/kaz.json", function(error, json) {
 d3.json("data/kaz_places.json", function(error, json){
 	cities = json.features;
 
+
 	// group to contain all elemets of a place
+
+
 	var places = g.selectAll("place")
 	.data(cities)
 	.enter()
@@ -135,7 +139,7 @@ var start = [width / 2, height / 2, height],
 
 function move(city, cb) {
 
-	callback = function() {
+	var callback = function() {
 		if (cb) {
 			cb();
 		}
@@ -166,8 +170,8 @@ function move(city, cb) {
 	.attrTween("transform", function() {
 		return function(t) { return transform(i(t)); };
 	})
-	.each("end", callback)
-	.each("end", function(){
+	.each("end.cb", callback)
+	.each("end.update", function(){
 		updateScaleAndTrans(); // updates global scale and transition variables
 	});
 
@@ -184,10 +188,11 @@ function move(city, cb) {
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
+
 	var scale = getScale(g.attr("transform"));
 	var translate = getTranslate(g.attr("transform"));
-	console.log(scale);
-	console.log(translate);
+	//console.log(scale);
+	//console.log(translate);
 	zoom.scale(scale);
 	zoom.translate(translate);
 }
@@ -267,7 +272,7 @@ function clearPath() {
 
 // A function to add a city to the path
 function addToPath(index) {
-	city = cities[index];
+	var city = cities[index];
 	transitionList.push(city);
 	var entry = document.createElement("option");
 	entry.value = index;
@@ -297,7 +302,6 @@ function followPath(index) {
 	if (transitionList.length > index) {
 		move(transitionList[index], function() {
 			pathTimer = followPath(index + 1);
-			console.log(pathTimmer);
 		});
 		return new Date().getTime();
 	}
@@ -454,6 +458,7 @@ function handlePathUpload(file){
 	}
 	//transitionList = function(i){return data[i]};
 }
+
 // handles the upload of an file containing exploration data
 function handleExplorationUpload(file){
 	//console.log(file);
@@ -534,12 +539,12 @@ function stopRecording() {
 
 // records an instance of a user action to travel to a place on the map
 function recordTravel(cityIndex){
-	//console.log("recording travel: " + cityIndex);
 	return function (){
 		events.push(new event("travel", new Date().getTime(), cityIndex));	
 		console.log("recording travel: "+ cityIndex);
 	}
 }
+
 // records a user pan or zoom
 function recordMovement(){
 	events.push(new event("movement", new Date().getTime(), "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"));
@@ -563,6 +568,9 @@ function playRecording(){
 			break;
 			case ("movement"):
 				g.attr("transform", event.info);
+				zoom.translate(getTranslate(event.info));
+				zoom.scale(getScale(event.info));
+				zoom.event(svg);
 			}
 		}, delay, event);
 	}
@@ -577,10 +585,13 @@ goToCity.addEventListener("click", function () { goToLoc(document.getElementById
 var saveExplButton = document.getElementById("save-exploration");
 saveExplButton.onclick = function () { saveExploration(); }
 
+// events for html elements.
 document.getElementById("add-to-path").onclick = function () { addToPath(document.getElementById('cityList').value); }
 document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
 document.getElementById("follow-path").onclick = function () { followPath(0); }
 document.getElementById("save-path").onclick = function () { savePath(); }
+
+saveExplButton.onclick = function () { saveExploration(); }
 
 document.getElementById("upload-path").addEventListener('change', function () {
 	handlePathUpload(document.getElementById("upload-path").files[0]);
@@ -593,6 +604,4 @@ document.getElementById("upload-exploration").addEventListener('change', functio
 document.getElementById("record").addEventListener("click", startRecording);
 document.getElementById("stop").addEventListener('click', stopRecording);
 
-document.getElementById("play-exploration").addEventListener('click', function () {
-	playRecording();
-});
+document.getElementById("play-exploration").addEventListener('click', function () {	playRecording(); });
