@@ -491,6 +491,8 @@ function startRecording() {
 	buttonImageConvert("save-exploration-button", "save_blue.jpeg");
 	buttonImageConvert("play-exploration-button","play_green.jpg");
 	stopExplButton.disabled = false;
+	saveExplButton.disabled = false;
+	playExplButton.disabled = false;
 	//playExplButton.disabled = true;
 
 	// adds event listeners which record user navigation actions
@@ -543,15 +545,14 @@ function addRecordingGraphics(){
 		.attr("id", "record-circle")
 	    .attr('cx', circleCX)
 	    .attr('cy', circleCY)
-	    .attr('r', circleRadius)
+	    .attr('r', circleRadius/1.5)
 	    .style('fill', 'red');
 }
 
 // ends recording of user navigation
 function stopRecording() {
-
 	buttonImageConvert("record-button", "record_gray.jpeg");
-
+	saveExplButton.disabled = false;
 	if(events.length>0){
 		console.log("events size: "+events.length);
 		buttonImageConvert("save-exploration-button", "save_blue.jpeg");
@@ -634,7 +635,34 @@ function buttonImageConvert(myImgId, imageName)
 	var getId = document.getElementById(myImgId);
 	getId.src = loc + imageName;
 }
+function resetExplButtonFunction () {
+	events = [];
+	stopExplButton.disabled = true;
+	saveExplButton.disabled = true;
+	playExplButton.disabled = true;
+	buttonImageConvert('save-exploration-button', "save_gray.jpeg");
+	buttonImageConvert("stop-button", "stop_gray.jpeg");
+	buttonImageConvert("play-exploration-button", "play_gray.jpeg");
+	d3.select("#record-border").remove();
+	d3.select("#record-circle").remove();
 
+}
+
+function saveExplButtonFunction () {
+	buttonImageConvert("stop-button", "stop_gray.jpeg");
+	buttonImageConvert("save-exploration-button", "save_gray.jpeg");
+	if(events.length>0)	saveExploration();
+	else alert("record list are empty!");
+}
+function loadExplButtonFunction () {
+	buttonImageConvert("play-exploration-button", "play_green.jpg");
+	handleExplorationUpload(document.getElementById("load-exploration-button").files[0]);
+	stopExplButton.disabled = true;
+	saveExplButton.disabled = true;
+	resetExplButton.disabled = true;
+	recordExplButton.disabled = true;
+	playExplButton.disabled = false;
+}
 // -------------- event handling for DOM elements ----------------
 
 var goToCity = document.getElementById("go-to-city");
@@ -647,27 +675,13 @@ document.getElementById("follow-path").onclick = function () { followPath(0); }
 document.getElementById('save-path').onclick = function () { savePath(); }
 
 var resetExplButton = document.getElementById("reset-button");
-resetExplButton.onclick = function () {
-	events = [];
-	stopExplButton.disabled = true;
-	buttonImageConvert('save-exploration-button', "save_gray.jpeg");
-	buttonImageConvert("stop-button", "stop_gray.jpeg");
-	buttonImageConvert("play-exploration-button", "play_gray.jpeg");
-}
+resetExplButton.onclick = resetExplButtonFunction;
 
 document.getElementById("upload-path").addEventListener('change', function () {
 
-	handlePathUpload(document.getElementById("upload-path").files[0]);
-}, false);
+	handlePathUpload(document.getElementById("upload-path").files[0]);}, false);
 
-document.getElementById("load-exploration-button").addEventListener('change', function () {
-	buttonImageConvert("play-exploration-button", "play_green.jpg");
-	handleExplorationUpload(document.getElementById("load-exploration-button").files[0]);
-	stopExplButton.disabled = true;
-	saveExplButton.attr('disabled', true);
-	resetExplButton.disabled = true;
-	recordExplButton.disabled = true;
-}, false);
+document.getElementById("load-exploration-button").addEventListener('change', loadExplButtonFunction, false);
 
 var recordExplButton = document.getElementById("record-button");
 recordExplButton.addEventListener("click", startRecording);
@@ -678,13 +692,11 @@ stopExplButton.addEventListener('click', stopRecording);
 var playExplButton = document.getElementById("play-exploration-button");
 playExplButton.addEventListener('click', function () {
 	if(events.length==0) alert("Record before repaly!")
+	d3.select("#record-border").remove();
+	d3.select("#record-circle").remove();
 	playRecording();
 });
 
 var saveExplButton = document.getElementById('save-exploration-button');
-saveExplButton.onclick = function () {
-	buttonImageConvert("stop-button", "stop_gray.jpeg");
-	buttonImageConvert("save-exploration-button", "save_gray.jpeg");
-	if(events.length>0)	saveExploration();
-	else alert("record list are empty!");}
+saveExplButton.onclick = saveExplButtonFunction;
 
