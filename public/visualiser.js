@@ -469,6 +469,15 @@ var record = {
 
 	numEvents : function(){
 		return this.events.length;
+	},
+
+	isEmpty : function(){
+		return this.events.length == 0;
+	},
+
+	reset : function(){
+		this.events = [];
+		this.firstEventTime = null;
 	}
 }
 
@@ -539,7 +548,6 @@ function startRecording() {
 
 	// entries in the side bar drop-down menu
 	var cityEntries = document.getElementsByClassName("city-entry");
-	console.log(cityEntries.length);
 	for (var i = 0; i < cityEntries.length; i++){
 		var entry = cityEntries.item(i);
 		entry.addEventListener("dblclick", recordTravel(entry.value));
@@ -579,8 +587,8 @@ function addRecordingGraphics(){
 function stopRecording() {
 	buttonImageConvert("record-button", "record_gray.jpeg");
 	saveExplButton.disabled = false;
-	if(events.length>0){
-		console.log("events size: "+events.length);
+	if(record.isEmpty()){
+		console.log("events size: "+record.numEvents());
 		buttonImageConvert("save-exploration-button", "save_blue.jpeg");
 		buttonImageConvert("play-exploration-button", "play_green.jpg");
 		buttonImageConvert("reset-button", "reset_red.jpeg");
@@ -635,7 +643,6 @@ function playRecording(){
 	// plays all events recursively from index i to events.length-1
 	function launchEvent(i){
 		var currentEvent = record.getEvent(i);  
-		console.log("launching event " + currentEvent.type);
 		switch (currentEvent.type){
 			case ("travel"):
 				goToLoc(parseInt(currentEvent.body));
@@ -650,8 +657,6 @@ function playRecording(){
 		var nextEvent = record.getEvent(i+1);
 		var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
 
-		console.log("delay: "  +delay);
-
 		setTimeout(launchEvent, delay, i + 1);
 	}
 
@@ -665,7 +670,7 @@ function buttonImageConvert(myImgId, imageName)
 	getId.src = loc + imageName;
 }
 function resetExplButtonFunction () {
-	events = [];
+	record.reset();
 	stopExplButton.disabled = true;
 	saveExplButton.disabled = true;
 	playExplButton.disabled = true;
@@ -680,7 +685,7 @@ function resetExplButtonFunction () {
 function saveExplButtonFunction () {
 	buttonImageConvert("stop-button", "stop_gray.jpeg");
 	buttonImageConvert("save-exploration-button", "save_gray.jpeg");
-	if(events.length>0)	saveExploration();
+	if(!record.isEmpty())	saveExploration();
 	else alert("record list are empty!");
 }
 function loadExplButtonFunction () {
@@ -720,7 +725,7 @@ stopExplButton.addEventListener('click', stopRecording);
 
 var playExplButton = document.getElementById("play-exploration-button");
 playExplButton.addEventListener('click', function () {
-	if(events.length==0) alert("Record before repaly!")
+	if(record.isEmpty()) alert("Record before repaly!")
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();
 	playRecording();
