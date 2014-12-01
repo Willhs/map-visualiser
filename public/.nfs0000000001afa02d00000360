@@ -326,7 +326,7 @@ function saveExploration(){
 		type: 'POST',
 		url: "/postExploration",//url of receiver file on server
 		data: {"exploration":JSON.stringify(record, null, 4)},
-		success: function(response){ console.log("save successful") }, //callback when ajax request finishes
+		success: function(response){ console.log(response) }, //callback when ajax request finishes
 		dataType: "json" //text/json...
 
 	});
@@ -426,52 +426,7 @@ function getAbsoluteBounds() {
 	return [[xcenter, ycenter], [(width / 2) / transforms.scale[1], (height / 2) / transforms.scale[1]]];
 }
 
-// constructor for Event objects
-function Event(type, body, time){
-	this.type = type;
-	this.body = body;
-	this.time = time; // time that event occured at
-}
-
-// a record of an exploration of the visualisation
-var record = {
-
-	events : [], // events that took place over the course of the exploration
-	firstEventTime : null,
-
-	addEvent : function (type, body){
-		var currentTime = new Date().getTime();
-		if (this.firstEventTime == null){
-			this.firstEventTime = currentTime;
-		}
-		var timeFromFirstEvent = currentTime - this.firstEventTime;
-		var event = new Event(type, body, timeFromFirstEvent);
-		this.events.push(event);
-	},
-
-	getEvent : function (i){
-		return this.events[i];
-	},
-
-	hasNextEvent : function (event){
-		if (this.events.indexOf(event) >= this.events.length-1){
-			return false;
-		}
-		return true;
-	},
-
-	nextEvent : function (event){
-		if (!isNextEvent(event)){
-			throw "there's no next events in record";
-		}
-		return this.events[this.events.indexOf(event) + 1];
-	},
-
-	numEvents : function(){
-		return this.events.length;
-	}
-}
-
+// --- Will and Jacky's added code:
 function handlePathUpload(file){
 	//console.log(file);
 	fr = new FileReader();
@@ -500,12 +455,53 @@ function handleExplorationUpload(file){
 	fr.onload = receivedText;
 	fr.readAsText(file);
 	function receivedText() {
-		var fileRecord = JSON.parse(fr.result);
-		// replaces properties of local record.
-		record.events = fileRecord.events;
-		record.firstEventTime = fileRecord.firstEventTime;
+		record = JSON.parse(fr.result);
 
 		console.log(record.numEvents() + " events add from exploration file");
+	}
+}
+
+// constructor for Event objects
+function Event(type, body, time){
+	this.type = type;
+	this.body = body;
+	this.time = time; // time that event occured at
+}
+
+var record = {
+	events : [],
+	firstEventTime : null,
+	addEvent : function (type, body){
+		var currentTime = new Date().getTime();
+		if (firstEventTime === null){
+			firstEventTime = currentTime;
+		}
+		var timeFromFirstEvent = currentTime - firstEventTime;
+		var event = new Event(type, body, timeFromFirstEvent);
+		events.push(event);
+		numEvents++;
+	}
+
+	getEvent : function (i){
+		return events[i];
+	}
+
+	isNextEvent : function (event){
+		if (events.indexOf(event) >= events.length-1){
+			return false;
+		}
+		return true;
+	}
+
+	nextEvent : function (event){
+		if (!isNextEvent(event)){
+			throw "there's no next events in record";
+		}
+		return events[events.indexOf(event) + 1];
+	}
+
+	numEvents : function(){
+		return events.length;
 	}
 }
 
@@ -521,6 +517,7 @@ function startRecording() {
 
 	// cities on the map
 	var mapCities = document.getElementsByClassName("place");
+	console.log(mapCities.length);
 	for (var i = 0; i < mapCities.length; i++){
 		var city = mapCities.item(i);
 		city.addEventListener("click", recordTravel(city.id));
@@ -621,14 +618,12 @@ function playRecording(){
 				break;
 		}
 
-		if (!record.hasNextEvent(currentEvent)){ return; } // if reached end of array, stop.
+		if (!record.hasNextEvent(event)){ return; } // if reached end of array, stop.
 
-		var nextEvent = record.getEvent(i+1);
+		var nextEvent  = record.getEvent(i+1);
 		var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
 
-		console.log("delay: "  +delay);
-
-		setTimeout(launchEvent, delay, i + 1);
+		setTimeout(launchEvent(i+1), delay, event);
 	}
 
 	launchEvent(0); // launch the first event.
