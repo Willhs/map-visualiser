@@ -580,20 +580,22 @@ function addRecordingGraphics(){
 	    .attr('cx', circleCX)
 	    .attr('cy', circleCY)
 	    .attr('r', circleRadius/1.5)
-	    .style('fill', 'red');
+	    .style('fill', 'red')
+	    .transition().duration();
 }
 
 // ends recording of user navigation
 function stopRecording() {
 	buttonImageConvert("record-button", "record_gray.jpeg");
 	saveExplButton.disabled = false;
-	if(record.isEmpty()){
+	if(!record.isEmpty()){
 		console.log("events size: "+record.numEvents());
 		buttonImageConvert("save-exploration-button", "save_blue.jpeg");
 		buttonImageConvert("play-exploration-button", "play_green.jpg");
 		buttonImageConvert("reset-button", "reset_red.jpeg");
 
 	}else{
+
 		buttonImageConvert("play-exploration-button", "play_gray.jpeg");
 		buttonImageConvert("save-exploration-button", "save_gray.jpeg");
 		buttonImageConvert("reset-button", "reset_gray.jpeg");
@@ -674,6 +676,7 @@ function resetExplButtonFunction () {
 	stopExplButton.disabled = true;
 	saveExplButton.disabled = true;
 	playExplButton.disabled = true;
+	buttonImageConvert("record-button", "record_gray.jpeg");
 	buttonImageConvert('save-exploration-button', "save_gray.jpeg");
 	buttonImageConvert("stop-button", "stop_gray.jpeg");
 	buttonImageConvert("play-exploration-button", "play_gray.jpeg");
