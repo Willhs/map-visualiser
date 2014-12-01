@@ -626,7 +626,7 @@ function playRecording(){
 			}
 		}, delay, event);
 	}
-
+	stopRecording();
 }
 
 function buttonImageConvert(myImgId, imageName)
