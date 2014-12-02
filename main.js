@@ -90,3 +90,23 @@ app.post('/postExploration', function(req, res){
 	});
 });
 
+//post user info, exporation and path on the map for loading
+app.post('/postUser', function(req, res){
+	res.send(req.body);
+
+	var Timestamp = new Date();
+	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
+	var user = req.body.user;
+
+	// makes 'directory' for files if none exist.
+	if (!fs.existsSync("User-"+user1)){
+		fs.mkdirSync("User-"+user1);
+	}
+
+	console.log("user-"+user1);
+	fs.writeFile("User-"+user1+ "/saveUser " + Timestamp + ".json", user+"\n", function(err){
+		if(err){
+			console.log(err);
+		}
+	});
+});
