@@ -34,3 +34,6 @@ playExplButton.addEventListener('click', function () {
 
 var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExplButtonFunction;
+
+var user1Button = document.getElementById('user1');
+user1Button.onclick = createNewUser("user1");
