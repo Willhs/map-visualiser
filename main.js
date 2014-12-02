@@ -55,7 +55,6 @@ app.post('/postpath', function(req, res){
 
 	var Timestamp = new Date();
 
-	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
 	var path = req.body.path_taken;
 
 	// create 'path' dir if it doesn't already exist
@@ -74,7 +73,6 @@ app.post('/postExploration', function(req, res){
 	res.send(req.body);
 
 	var Timestamp = new Date();
-	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
 	var exploration = req.body.exploration;
 
 	// makes 'directory' for files if none exist.
@@ -95,16 +93,14 @@ app.post('/postUser', function(req, res){
 	res.send(req.body);
 
 	var Timestamp = new Date();
-	//file formate: Timestamp \t Ease_Function \t Animation_Delay \t User_Distance \t Actual_Distance \t User_Direction \t Actual_Direction	\t path taken
 	var user = req.body.user;
-
 	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("User-"+user1)){
-		fs.mkdirSync("User-"+user1);
+	if (!fs.existsSync("User-"+userInfo.user)){
+		fs.mkdirSync("User-"+userInfo.user);
 	}
 
-	console.log("user-"+user1);
-	fs.writeFile("User-"+user1+ "/saveUser " + Timestamp + ".json", user+"\n", function(err){
+	console.log("User-"+userInfo.user);
+	fs.writeFile("User-" + userInfo.user + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
 		if(err){
 			console.log(err);
 		}

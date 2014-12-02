@@ -79,6 +79,7 @@ function startRecording() {
 	stopExplButton.disabled = false;
 	saveExplButton.disabled = false;
 	playExplButton.disabled = false;
+	recordExplButton.disabled = false;
 	//playExplButton.disabled = true;
 
 	// adds event listeners which record user navigation actions
@@ -221,6 +222,7 @@ function buttonImageConvert(myImgId, imageName){
 }
 function resetExplButtonFunction () {
 	record.reset();
+	reset();
 	stopExplButton.disabled = true;
 	saveExplButton.disabled = true;
 	playExplButton.disabled = true;
@@ -236,7 +238,11 @@ function resetExplButtonFunction () {
 function saveExplButtonFunction () {
 	buttonImageConvert("stop-button", "stop_gray.jpeg");
 	buttonImageConvert("save-exploration-button", "save_gray.jpeg");
-	if(!record.isEmpty())	saveExploration();
+	if(!record.isEmpty()){
+		//saveExploration();
+		userInfo.setRecord(record);
+		saveUser();
+	}
 	else alert("record list are empty!");
 }
 

@@ -184,7 +184,7 @@ function updateScaleAndTrans(){
 	zoom.translate(getTranslate(g.attr("transform")));
 }
 
-// gets the scale from a html transform string 
+// gets the scale from a html transform string
 function getScale(transformStr){
 	var length = transformStr.length;
 	var scale = transformStr.slice(transformStr.indexOf("scale")+6, length-1);
