@@ -34,6 +34,14 @@ body{
     border-left: 1px solid #CCCCCC;
 }
 
+#pick-city {
+    display: inline-block;
+}
+
+#path-controls {
+    display: inline-block;
+}
+
 .ping{
     fill: none;
     stroke: red;
@@ -63,4 +71,12 @@ input, label {
 .checkbox {
   float: left;
   vertical-align: top;
+}
+
+#annotation-input-container {
+    display: table-cell;
+}
+#annotation-input {
+    display: table-cell;
+    width: 100%;
 }

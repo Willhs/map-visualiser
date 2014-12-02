@@ -93,11 +93,10 @@ d3.json("data/kaz_places.json", function(error, json){
 	.data(cities)
 	.enter()
 	.append("g")
+	.attr("id", function(d, i) { return i; })
 	.on("dblclick.zoom", cityClicked)
-	.attr("class", "place")
-	.attr("id", function(d, i) {
-		return i;
-	});
+	.on("click", selectLocation)
+	.attr("class", "place");
 
 	places.append("path")
 	.attr("d", path);
@@ -119,10 +118,26 @@ d3.json("data/kaz_places.json", function(error, json){
 		var entry = document.createElement("option");
 		entry.text = cities[i].properties.NAME;
 		entry.value = i;
-		document.getElementById("cityList").appendChild(entry);
+		document.getElementById("city-list").appendChild(entry);
 	}
 
 });
+
+// shows information about the location and allows user to add annotations
+function selectLocation(city){
+	document.getElementById("location-title").innerHTML = city.properties.NAME;
+
+	var country = document.createElement("li");
+	country.innerHTML = "Country: " + city.properties.SOV0NAME;
+
+	var population = document.createElement("li");
+	population.innerHTML = "Population: " + city.properties.GN_POP;
+
+	var list = document.getElementById("location-info");
+	list.innerHTML = null; // initialise list
+	list.appendChild(country);
+	list.appendChild(population);
+}
 
 // The movement function
 var start = [width / 2, height / 2, height],
@@ -249,7 +264,7 @@ function goToLoc(index) {
 
 
 // A function that returns the selected city
-function getSelected(elem) {
+function getSelectedInPath(elem) {
 	return elem.options[elem.selectedIndex].value;
 }
 

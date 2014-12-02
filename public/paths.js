@@ -15,7 +15,7 @@ function addToPath(index) {
 	entry.className = "city-entry";
 	entry.setAttribute("ondblclick", 'goToLoc(' + index + ')');
 	entry.setAttribute("onmouseover", 'ping(' + index + ')');
-	document.getElementById('pathList').add(entry, null);
+	document.getElementById('path-list').add(entry, null);
 }
 
 // removes a city from the path
@@ -24,7 +24,7 @@ function removeFromPath(index) {
 	if (loc > -1) {
 		transitionList.splice(loc, 1);
 	}
-	var pathList = document.getElementById('pathList');
+	var pathList = document.getElementById('path-list');
 	if (pathList.options.length > 0) {
 		pathList.remove(pathList.options.selectedIndex);
 	}

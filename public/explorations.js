@@ -87,7 +87,7 @@ function startRecording() {
 
 	// listeners for all events that cause scale and pan transitions
 	// go to city button
-	goToCity.addEventListener("click", recordTravel(document.getElementById('cityList').value));
+	goToCity.addEventListener("click", recordTravel(document.getElementById('city-list').value));
 
 	// cities on the map
 	var mapCities = document.getElementsByClassName("place");
