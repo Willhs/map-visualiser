@@ -137,9 +137,9 @@ function move(city, cb) {
 	};
 
 	// if camera is already zoomed in on city
-	if (centered === city){
+	/*if (centered === city){
 		return reset();
-	}
+	}*/
 
 	var b = path.centroid(city);
 	var x = b[0],
@@ -200,7 +200,7 @@ function getTranslate(transformStr){
 }
 
 // A function to reset the map view.
-function reset(){
+/*function reset(){
 	x = width / 2;
 	y = height / 2;
 	k = 1;
@@ -214,7 +214,7 @@ function reset(){
 	.tween("update-zoom", function(){
 		return updateScaleAndTrans; // updates global scale and transition variables
 	});
-}
+}*/
 
 // sets the easing function and animation speed
 // from the information in the text file.
