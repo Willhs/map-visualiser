@@ -66,7 +66,8 @@ var svg = d3.select("body").append("svg")
 .attr("class", "svg_map")
 .call(zoom);
 
-var g = svg.append("g");
+var g = svg.append("g")
+	.attr("transform", "translate(0,0)scale(1)");
 
 // Read country outline from file
 d3.json("data/kaz.json", function(error, json) {
@@ -87,14 +88,12 @@ d3.json("data/kaz.json", function(error, json) {
 // Add cities
 d3.json("data/kaz_places.json", function(error, json){
 	cities = json.features;
-
-
-	// group to contain all elements of a place
+	// places group to contain all elements of a place
 	var places = g.selectAll("place")
 	.data(cities)
 	.enter()
 	.append("g")
-	.on("click.zoom", cityClicked)
+	.on("dblclick.zoom", cityClicked)
 	.attr("class", "place")
 	.attr("id", function(d, i) {
 		return i;
@@ -181,33 +180,27 @@ function move(city, cb) {
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
-	var scale = getScale(g.attr("transform"));
-	var translate = getTranslate(g.attr("transform"));
-	zoom.scale(scale);
-	zoom.translate(translate);
+	zoom.scale(getScale(g.attr("transform")));
+	zoom.translate(getTranslate(g.attr("transform")));
 }
 
-// gets the current map scale
+// gets the scale from a html transform string 
 function getScale(transformStr){
-	// console.log(transformStr);
 	var length = transformStr.length;
 	var scale = transformStr.slice(transformStr.indexOf("scale")+6, length-1);
-	// console.log(scale);
 	return parseFloat(scale);
 }
 
+// gets the translation from a html transform string
 function getTranslate(transformStr){
-	// console.log(transformStr);
 	var length = transformStr.length;
 	var translationX = transformStr.slice(transformStr.indexOf("translate")+10, transformStr.indexOf(","));
 	var translationY = transformStr.slice(transformStr.indexOf(",")+1, transformStr.indexOf(")"));
-	//console.log("translation: " + [translationX, translationY]);
 	return [parseFloat(translationX), parseFloat(translationY)];
 }
 
 // A function to reset the map view.
 function reset(){
-	//console.log("resetting");
 	x = width / 2;
 	y = height / 2;
 	k = 1;
@@ -221,11 +214,9 @@ function reset(){
 	.tween("update-zoom", function(){
 		return updateScaleAndTrans; // updates global scale and transition variables
 	});
-
 }
 
-
-// A function to set the easing function and animation speed
+// sets the easing function and animation speed
 // from the information in the text file.
 function setEaseFunction(index){
 	var zoomIn = FROM_TEXT_FILE[index][0];
@@ -256,89 +247,9 @@ function goToLoc(index) {
 	move(cities[index]);
 }
 
-var transitionList = [];
-
-// Remove all cities from the path
-function clearPath() {
-	transitionList = [];
-}
-
-// A function to add a city to the path
-function addToPath(index) {
-	var city = cities[index];
-	transitionList.push(city);
-	var entry = document.createElement("option");
-	entry.value = index;
-	entry.text = city.properties.NAME;
-	entry.className = "city-entry";
-	entry.setAttribute("ondblclick", 'goToLoc(' + index + ')');
-	entry.setAttribute("onmouseover", 'ping(' + index + ')');
-	document.getElementById('pathList').add(entry, null);
-}
-
-// A function that removes a city from the path
-function removeFromPath(index) {
-	var loc = transitionList.indexOf(cities[index]);
-	if (loc > -1) {
-		transitionList.splice(loc, 1);
-	}
-	var pathList = document.getElementById('pathList');
-	if (pathList.options.length > 0) {
-		pathList.remove(pathList.options.selectedIndex);
-	}
-
-}
-
-// A function that takes the user through the path
-var pathTimer = [];
-function followPath(index) {
-	if (transitionList.length > index) {
-		console.log("1");
-		move(transitionList[index], function() {
-
-
-			pathTimer = followPath(index + 1);
-		});
-		return new Date().getTime();
-	}
-}
-
-//A function that takes the user through the path
-
-
-function savePath(){
-
-	//var map = transitionList.map(function(i){return JSON.stringify(i)});
-	// console.log(map);
-	$.ajax({
-		type: 'POST',
-		url: "/postpath",//url of receiver file on server
-		data: {"path_taken":JSON.stringify(transitionList, null, 4)},
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
-		dataType: "json" //text/json...
-
-	});
-
-}
-function saveExploration(){
-
-	$.ajax({
-		type: 'POST',
-		url: "/postExploration",//url of receiver file on server
-		data: {"exploration":JSON.stringify(record, null, 4)},
-		success: function(response){ console.log("save successful") }, //callback when ajax request finishes
-		dataType: "json" //text/json...
-
-	});
-
-}
-
-
 
 // A function that returns the selected city
 function getSelected(elem) {
-	console.log(elem);
-	console.log(elem.options[elem.selectedIndex]);
 	return elem.options[elem.selectedIndex].value;
 }
 
@@ -425,315 +336,3 @@ function getAbsoluteBounds() {
 
 	return [[xcenter, ycenter], [(width / 2) / transforms.scale[1], (height / 2) / transforms.scale[1]]];
 }
-
-// constructor for Event objects
-function Event(type, body, time){
-	this.type = type;
-	this.body = body;
-	this.time = time; // time that event occured at
-}
-
-// a record of an exploration of the visualisation
-var record = {
-
-	events : [], // events that took place over the course of the exploration
-	firstEventTime : null,
-
-	addEvent : function (type, body){
-		var currentTime = new Date().getTime();
-		if (this.firstEventTime == null){
-			this.firstEventTime = currentTime;
-		}
-		var timeFromFirstEvent = currentTime - this.firstEventTime;
-		var event = new Event(type, body, timeFromFirstEvent);
-		this.events.push(event);
-	},
-
-	getEvent : function (i){
-		return this.events[i];
-	},
-
-	hasNextEvent : function (event){
-		if (this.events.indexOf(event) >= this.events.length-1){
-			return false;
-		}
-		return true;
-	},
-
-	nextEvent : function (event){
-		if (!isNextEvent(event)){
-			throw "there's no next events in record";
-		}
-		return this.events[this.events.indexOf(event) + 1];
-	},
-
-	numEvents : function(){
-		return this.events.length;
-	},
-
-	isEmpty : function(){
-		return this.events.length == 0;
-	},
-
-	reset : function(){
-		this.events = [];
-		this.firstEventTime = null;
-	}
-}
-
-function handlePathUpload(file){
-	//console.log(file);
-	fr = new FileReader();
-	fr.onload = receivedText;
-	fr.readAsText(file);
-
-	clearPath();
-
-	function receivedText() {
-		var inputCities = JSON.parse(fr.result);
-
-		for (var i = 0; i < inputCities.length; i++){
-			var inputCity = inputCities[i];
-
-			addToPath(getCityIndex(inputCity))
-		}
-		console.log(transitionList.length + " transitions");
-	}
-	//transitionList = function(i){return data[i]};
-}
-
-// handles the upload of an file containing exploration data
-function handleExplorationUpload(file){
-	//console.log(file);
-	fr = new FileReader();
-	fr.onload = receivedText;
-	fr.readAsText(file);
-	function receivedText() {
-		var fileRecord = JSON.parse(fr.result);
-		// replaces properties of local record.
-		record.events = fileRecord.events;
-		record.firstEventTime = fileRecord.firstEventTime;
-
-		console.log(record.numEvents() + " events add from exploration file");
-	}
-}
-
-// beings recording of certain user navigation actions
-function startRecording() {
-
-	buttonImageConvert("record-button", "record_red.jpeg");
-	buttonImageConvert("stop-button", "stop_red.jpeg");
-	buttonImageConvert("reset-button","reset_red.jpeg");
-	buttonImageConvert("save-exploration-button", "save_blue.jpeg");
-	buttonImageConvert("play-exploration-button","play_green.jpg");
-	stopExplButton.disabled = false;
-	saveExplButton.disabled = false;
-	playExplButton.disabled = false;
-	//playExplButton.disabled = true;
-
-	// adds event listeners which record user navigation actions
-	zoom.on("zoom.record", recordMovement);
-	saveExplButton.disabled = true; // have to stop recording before saving
-
-	// listeners for all events that cause scale and pan transitions
-	// go to city button
-	goToCity.addEventListener("click", recordTravel(document.getElementById('cityList').value));
-
-	// cities on the map
-	var mapCities = document.getElementsByClassName("place");
-	for (var i = 0; i < mapCities.length; i++){
-		var city = mapCities.item(i);
-		city.addEventListener("click", recordTravel(city.id));
-	}
-
-	// entries in the side bar drop-down menu
-	var cityEntries = document.getElementsByClassName("city-entry");
-	for (var i = 0; i < cityEntries.length; i++){
-		var entry = cityEntries.item(i);
-		entry.addEventListener("dblclick", recordTravel(entry.value));
-	}
-
-	addRecordingGraphics();
-}
-
-// adds graphics to the map to show that recording is in progress.
-function addRecordingGraphics(){
-	//var points = [0, 0, width, height];
-	var borderWidth = 20;
-	var circleRadius = 30;
-	var padding = 10;
-	var circleCX = borderWidth + circleRadius;
-	var circleCY = borderWidth + circleRadius;
-
-	svg.append("rect")
-		.attr("id", "record-border")
-		.attr("x", 0)
-		.attr("y", 0)
-		.attr("width", width)
-		.attr("height", height - borderWidth/2)
-		.style("stroke", "red")
-		.style("fill", "none")
-		.style("stroke-width", borderWidth);
-
-	svg.append('circle')
-		.attr("id", "record-circle")
-	    .attr('cx', circleCX)
-	    .attr('cy', circleCY)
-	    .attr('r', circleRadius/1.5)
-	    .style('fill', 'red')
-	    .transition().duration();
-}
-
-// ends recording of user navigation
-function stopRecording() {
-	buttonImageConvert("record-button", "record_gray.jpeg");
-	saveExplButton.disabled = false;
-	if(!record.isEmpty()){
-		console.log("events size: "+record.numEvents());
-		buttonImageConvert("save-exploration-button", "save_blue.jpeg");
-		buttonImageConvert("play-exploration-button", "play_green.jpg");
-		buttonImageConvert("reset-button", "reset_red.jpeg");
-
-	}else{
-
-		buttonImageConvert("play-exploration-button", "play_gray.jpeg");
-		buttonImageConvert("save-exploration-button", "save_gray.jpeg");
-		buttonImageConvert("reset-button", "reset_gray.jpeg");
-	}
-	// removes event listeners which are recording user navigation.
-	goToCity.removeEventListener("click", recordTravel);
-	zoom.on("zoom.record", null);//remove recording zoom listener
-	//saveExplButton.disabled = false; // can now save recording.
-
-	// cities on the map
-	var mapCities = document.getElementsByClassName("place");
-	for (var i = 0; i < mapCities.length; i++){
-		var city = mapCities.item(i);
-		city.removeEventListener("onclick", recordTravel(city.id));
-	}
-
-	// entries in the side bar drop-down menu
-	var cityEntries = document.getElementsByClassName("city-entry");
-	for (var i = 0; i < cityEntries.length; i++){
-		var entry = cityEntries.item(i);
-		entry.removeEventListener("dblclick", recordTravel(entry.value));
-	}
-	// remove recording related graphics
-	d3.select("#record-border").remove();
-	d3.select("#record-circle").remove();
-
-	console.log("Recorded " + record.numEvents() + " events");
-}
-
-// records an instance of a user action to travel to a place on the map
-function recordTravel(cityIndex){
-	return function (){
-		record.addEvent("travel", cityIndex);
-	}
-}
-
-// records a user pan or zoom
-function recordMovement(){
-	record.addEvent("movement", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-}
-
-// plays a recording of navigation events (from events array)
-function playRecording(){
-	if (record.numEvents() == 0) {
-		return; // if no events, do nothing.
-	}
-	// plays all events recursively from index i to events.length-1
-	function launchEvent(i){
-		var currentEvent = record.getEvent(i);
-		switch (currentEvent.type){
-			case ("travel"):
-				goToLoc(parseInt(currentEvent.body));
-				break;
-			case ("movement"):
-				g.attr("transform", currentEvent.body);
-				break;
-		}
-
-		if (!record.hasNextEvent(currentEvent)){ return; } // if reached end of array, stop.
-
-		var nextEvent = record.getEvent(i+1);
-		var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
-
-		setTimeout(launchEvent, delay, i + 1);
-	}
-	stopRecording();
-	launchEvent(0); // launch the first event.
-}
-
-function buttonImageConvert(myImgId, imageName)
-{
-	var loc = "http://localhost:3000/image/";
-	var getId = document.getElementById(myImgId);
-	getId.src = loc + imageName;
-}
-function resetExplButtonFunction () {
-	record.reset();
-	stopExplButton.disabled = true;
-	saveExplButton.disabled = true;
-	playExplButton.disabled = true;
-	buttonImageConvert("record-button", "record_gray.jpeg");
-	buttonImageConvert('save-exploration-button', "save_gray.jpeg");
-	buttonImageConvert("stop-button", "stop_gray.jpeg");
-	buttonImageConvert("play-exploration-button", "play_gray.jpeg");
-	d3.select("#record-border").remove();
-	d3.select("#record-circle").remove();
-
-}
-
-function saveExplButtonFunction () {
-	buttonImageConvert("stop-button", "stop_gray.jpeg");
-	buttonImageConvert("save-exploration-button", "save_gray.jpeg");
-	if(!record.isEmpty())	saveExploration();
-	else alert("record list are empty!");
-}
-function loadExplButtonFunction () {
-	buttonImageConvert("play-exploration-button", "play_green.jpg");
-	handleExplorationUpload(document.getElementById("load-exploration-button").files[0]);
-	stopExplButton.disabled = true;
-	saveExplButton.disabled = true;
-	resetExplButton.disabled = true;
-	recordExplButton.disabled = true;
-	playExplButton.disabled = false;
-}
-// -------------- event handling for DOM elements ----------------
-
-var goToCity = document.getElementById("go-to-city");
-goToCity.addEventListener("click", function () { goToLoc(document.getElementById('cityList').value); });
-
-// events for html elements.
-document.getElementById("add-to-path").onclick = function () { addToPath(document.getElementById('cityList').value); }
-document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelected(document.getElementById('pathList'))); }
-document.getElementById("follow-path").onclick = function () { followPath(0); }
-document.getElementById('save-path').onclick = function () { savePath(); }
-
-var resetExplButton = document.getElementById("reset-button");
-resetExplButton.onclick = resetExplButtonFunction;
-
-document.getElementById("upload-path").addEventListener('change', function () {
-
-	handlePathUpload(document.getElementById("upload-path").files[0]);}, false);
-
-document.getElementById("load-exploration-button").addEventListener('change', loadExplButtonFunction, false);
-
-var recordExplButton = document.getElementById("record-button");
-recordExplButton.addEventListener("click", startRecording);
-
-var stopExplButton = document.getElementById("stop-button")
-stopExplButton.addEventListener('click', stopRecording);
-
-var playExplButton = document.getElementById("play-exploration-button");
-playExplButton.addEventListener('click', function () {
-	if(record.isEmpty()) alert("Record before repaly!")
-	d3.select("#record-border").remove();
-	d3.select("#record-circle").remove();
-	playRecording();
-});
-
-var saveExplButton = document.getElementById('save-exploration-button');
-saveExplButton.onclick = saveExplButtonFunction;
-
