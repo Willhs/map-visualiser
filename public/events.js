@@ -36,5 +36,9 @@ var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExplButtonFunction;
 
 
-var user1Button = document.getElementById('user1');
-user1Button.onclick = function(){users.push(new user("user1"));};
+var user1Button = document.getElementById('Barack Obama');
+user1Button.onclick = function(){users.push(new user("Barack Obama"));};
+var user2Button = document.getElementById('John Key');
+user1Button.onclick = function(){users.push(new user("John Key"));};
+var user3Button = document.getElementById('Will Hardwick-Smith');
+user1Button.onclick = function(){users.push(new user("Will Hardwick-Smith"));};
