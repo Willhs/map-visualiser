@@ -3,9 +3,9 @@
  */
 
 var userInfo = {
-	user: john,
+	user: "obama",
 	//records: null,
-	image: "http://localhost:3000/image/userImage/john.jpeg",
+	image: "http://localhost:3000/image/userImage/obama.jpeg ",
 	setUser: function(name){
 		this.user = name;
 		console.log(name);
