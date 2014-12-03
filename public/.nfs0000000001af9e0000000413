@@ -1,5 +1,5 @@
 html{
-    font-size: 100%;
+    font-size: 100%;    
 }
 
 body{
@@ -56,11 +56,11 @@ body{
 input, label {
    display:block;
 }
-
+    
 #slider {
   margin-left:10px;
 }
-
+    
 #zoomChosen, #panChosen {
   border-radius:10px;
   width:45px;
@@ -83,7 +83,4 @@ input, label {
 #annotation-input {
     display: table-cell;
     width: 100%;
-}
-#obama{
-	color:red;
 }

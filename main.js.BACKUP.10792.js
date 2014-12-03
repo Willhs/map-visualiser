@@ -46,9 +46,15 @@ app.post('/postpath', function(req, res){
 	if (!fs.existsSync("public/data/path")){
 		fs.mkdirSync("public/data/path");
 	}
-
-	fs.writeFile("public/data/path/" + Timestamp + "-savePath.json", path+"\n", function(err){
+<<<<<<< HEAD
+	fs.writeFile("path/" + timestamp + "-savePath.json", path+"\n", function(err){
 		if(err){ console.log(err); }
+=======
+	fs.writeFile("public/data/path/" + Timestamp + "-savePath.json", path+"\n", function(err){
+		if(err){
+			console.log(err);
+		}
+>>>>>>> b6d3c412d2f1345393e92402e11ab5462cb357f0
 	});
 });
 
@@ -57,6 +63,16 @@ app.post('/postExploration', function(req, res){
 	var timestamp = new Date();
 	var exploration = req.body.exploration;
 
+<<<<<<< HEAD
+	// makes 'exploration' dir for files if none exist.
+	if (!fs.existsSync("Exploration")){
+		fs.mkdirSync("Exploration");
+	}
+
+	console.log("writing");
+	fs.writeFile("Exploration/saveExploration " + timestamp + ".json", exploration+"\n", function(err){
+		if(err){ console.log(err); }
+=======
 	// makes 'directory' for files if none exist.
 	if (!fs.existsSync("public/data/Exploration")){
 		fs.mkdirSync("public/data/Exploration");
@@ -64,7 +80,10 @@ app.post('/postExploration', function(req, res){
 
 	console.log("writing");
 	fs.writeFile("public/data/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
-		if(err){ console.log(err); }
+		if(err){
+			console.log(err);
+		}
+>>>>>>> b6d3c412d2f1345393e92402e11ab5462cb357f0
 	});
 });
 
@@ -72,6 +91,16 @@ app.post('/postExploration', function(req, res){
 app.post('/postUser', function(req, res){
 	var timestamp = new Date();
 	var user = req.body.user;
+<<<<<<< HEAD
+	// makes 'user' dir for files if none exist.
+	if (!fs.existsSync("User-"+userInfo.user)){
+		fs.mkdirSync("User-"+userInfo.user);
+	}
+
+	console.log("User-"+userInfo.user);
+	fs.writeFile("User-" + userInfo.user + "/saveUser " + timestamp + ".json", user+"\n", function(err){
+		if(err){ console.log(err); }
+=======
 	var userName = req.body.userName;
 	// makes 'directory' for files if none exist.
 	if (!fs.existsSync("public/data/user/User-"+userName)){
@@ -81,6 +110,7 @@ app.post('/postUser', function(req, res){
 		if(err){
 			console.log(err);
 		}
+>>>>>>> b6d3c412d2f1345393e92402e11ab5462cb357f0
 	});
 });
 

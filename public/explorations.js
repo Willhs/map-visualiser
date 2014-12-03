@@ -84,7 +84,6 @@ function startRecording() {
 
 	// adds event listeners which record user navigation actions
 	zoom.on("zoom.record", recordMovement);
-	saveExplButton.disabled = true; // have to stop recording before saving
 
 	// listeners for all events that cause scale and pan transitions
 	// go to city button
@@ -222,7 +221,7 @@ function buttonImageConvert(myImgId, imageName){
 }
 function resetExplButtonFunction () {
 	record.reset();
-	reset();
+	//reset();
 	stopExplButton.disabled = true;
 	saveExplButton.disabled = true;
 	playExplButton.disabled = true;
@@ -239,8 +238,10 @@ function saveExplButtonFunction () {
 	buttonImageConvert("stop-button", "stop_gray.jpeg");
 	buttonImageConvert("save-exploration-button", "save_gray.jpeg");
 	if(!record.isEmpty()){
-		//saveExploration();
-		userInfo.setRecord(record);
+		saveExploration();
+	}
+	if(!userInfo.isEmpty()){
+//		userInfo.setRecord(record);
 		saveUser();
 	}
 	else alert("record list are empty!");
