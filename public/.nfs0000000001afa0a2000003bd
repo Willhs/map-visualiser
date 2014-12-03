@@ -35,30 +35,5 @@ playExplButton.addEventListener('click', function () {
 var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExplButtonFunction;
 
-
-var user1Button = document.getElementById('obama');
-user1Button.onclick = function(){
-	userInfo.setUser('obama');
-	userInfo.setImage(getElementBySrc("obama"));
-	};
-var user2Button = document.getElementById('john');
-user2Button.onclick = function(){
-	userInfo.setUser('john');
-	userInfo.setImage(getElementBySrc("john"));
-	};
-var user3Button = document.getElementById('lorde');
-user3Button.onclick = function(){
-	userInfo.setUser('lorde');
-	userInfo.setImage(getElementBySrc("lorde"));
-	};
-var user4Button = document.getElementById('will');
-user4Button.onclick = function(){
-	userInfo.setUser('will');
-	userInfo.setImage(getElementBySrc("will"));
-	};
-
-function getElementBySrc(id){
-	var nodes = [];
-	var src = document.getElementById(id).src;
-  return src;
-}
+var user1Button = document.getElementById('user1');
+user1Button.onclick = createNewUser("user1");

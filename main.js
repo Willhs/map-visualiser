@@ -58,10 +58,10 @@ app.post('/postpath', function(req, res){
 	var path = req.body.path_taken;
 
 	// create 'path' dir if it doesn't already exist
-	if (!fs.existsSync("path")){
-		fs.mkdirSync("path");
+	if (!fs.existsSync("public/data/path")){
+		fs.mkdirSync("public/data/path");
 	}
-	fs.writeFile("path/" + Timestamp + "-savePath.json", path+"\n", function(err){
+	fs.writeFile("public/data/path/" + Timestamp + "-savePath.json", path+"\n", function(err){
 		if(err){
 			console.log(err);
 		}
@@ -76,12 +76,12 @@ app.post('/postExploration', function(req, res){
 	var exploration = req.body.exploration;
 
 	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("Exploration")){
-		fs.mkdirSync("Exploration");
+	if (!fs.existsSync("public/data/Exploration")){
+		fs.mkdirSync("public/data/Exploration");
 	}
 
 	console.log("writing");
-	fs.writeFile("Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
+	fs.writeFile("public/data/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
 		if(err){
 			console.log(err);
 		}
@@ -94,13 +94,12 @@ app.post('/postUser', function(req, res){
 
 	var Timestamp = new Date();
 	var user = req.body.user;
+	var userName = req.body.userName;
 	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("User-"+userInfo.user)){
-		fs.mkdirSync("User-"+userInfo.user);
+	if (!fs.existsSync("public/data/user/User-"+userName)){
+		fs.mkdirSync("public/data/user/User-"+userName);
 	}
-
-	console.log("User-"+userInfo.user);
-	fs.writeFile("User-" + userInfo.user + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
+	fs.writeFile("public/data/user/User-" + userName + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
 		if(err){
 			console.log(err);
 		}
