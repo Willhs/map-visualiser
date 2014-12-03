@@ -46,6 +46,9 @@ var PATH_TO_FILE = "data/functions/easingFunctions20.txt"
 // data to be bound to svg elements
 var cities, distances, direction, paths;
 
+// location/city that was last selected.
+var selectedLocation;
+
 var projection = d3.geo.mercator()
 .center([68.0, 48.0])
 .scale(2000)
@@ -123,10 +126,12 @@ d3.json("data/kaz_places.json", function(error, json){
 
 });
 
-// shows information about the location and allows user to add annotations
+// updates info bar to show information about the location and allows user to add annotations
 function selectLocation(city){
+	selectedLocation = city;
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
 
+	// make and add list items to the location description
 	var country = document.createElement("li");
 	country.innerHTML = "Country: " + city.properties.SOV0NAME;
 
@@ -137,6 +142,44 @@ function selectLocation(city){
 	list.innerHTML = null; // initialise list
 	list.appendChild(country);
 	list.appendChild(population);
+
+	// show annotations
+	$.ajax({
+		type: 'GET',
+		url: "/getAnnotation",//url of receiver file on server
+		data: {locationName: JSON.stringify(city.properties.NAME, null, 4) },
+		success: function(response){ updateUI(response); }, //callback when ajax request finishes
+		dataType: "json"
+	});		
+
+	function updateUI(annotation){
+		if (annotation === 0){
+			return; // no annotations are found
+		}
+		var container = document.getElementById("annotation-container");
+		container.innerHTML = annotation.text;
+	}
+}
+
+// adds an annotations to the currently selected location
+function addAnnotation(annText){
+
+	var annotation = {
+		user: userInfo.user,
+		location: selectedLocation,
+		text: annText,
+		number: 9 // for testing server
+	};
+
+	$.ajax({
+		type: 'POST',
+		url: "/postAnnotation",//url of receiver file on server
+		data: { "annotation": JSON.stringify(annotation, null, 4) }, // plain object
+		success: function(response){ console.log(response); }, // callback when ajax request finishes
+		dataType: "json"
+	});	
+	// refresh the location info bar
+	selectLocation(selectedLocation);
 }
 
 // The movement function
@@ -152,7 +195,7 @@ function move(city, cb) {
 	};
 
 	// if camera is already zoomed in on city
-	/*if (centered === city){
+	/*if (centered === city){	
 		return reset();
 	}*/
 

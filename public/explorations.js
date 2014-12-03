@@ -261,8 +261,7 @@ function saveExploration(){
 		type: 'POST',
 		url: "/postExploration",//url of receiver file on server
 		data: {"exploration":JSON.stringify(record, null, 4)},
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
+		success: function(response){ "response: " + console.log(response) }, //callback when ajax request finishes
 		dataType: "json" //text/json...
-
 	});
 }

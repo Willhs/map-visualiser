@@ -1,8 +1,3 @@
-/**
- *
- */
-var users = [];
-
 function user(name){
 	userInfo.setUser(name);
 }
@@ -24,7 +19,8 @@ function saveUser(){
 
 		data: {"user":JSON.stringify(userInfo, null, 4)},
 		success: function(response){ console.log(response) }, //callback when ajax request finishes
-		dataType: "json" //text/json...
+		dataType: "json"
 
 	});
 }
+

@@ -35,25 +35,10 @@ var server = app.listen(3000, function() {
 
 app.use(express.static(__dirname + '/public'));
 
-//A test post implementation to evaluate correct data transaction between
-//the web-application and server.
-app.post('/posttest', function(req, res){
-	res.send(req.body);
-
-	var text = "ZoomIn: "+req.body.In+" ZoomOut: "+req.body.Out;
-	fs.appendFile("test.txt", text+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
-	});
-});
-
 // post path on the map
 
 app.post('/postpath', function(req, res){
-	res.send(req.body);
-
-	var Timestamp = new Date();
+	var timestamp = new Date();
 
 	var path = req.body.path_taken;
 
@@ -61,48 +46,72 @@ app.post('/postpath', function(req, res){
 	if (!fs.existsSync("path")){
 		fs.mkdirSync("path");
 	}
-	fs.writeFile("path/" + Timestamp + "-savePath.json", path+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
+	fs.writeFile("path/" + timestamp + "-savePath.json", path+"\n", function(err){
+		if(err){ console.log(err); }
 	});
 });
 
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
-	res.send(req.body);
-
-	var Timestamp = new Date();
+	var timestamp = new Date();
 	var exploration = req.body.exploration;
 
-	// makes 'directory' for files if none exist.
+	// makes 'exploration' dir for files if none exist.
 	if (!fs.existsSync("Exploration")){
 		fs.mkdirSync("Exploration");
 	}
 
 	console.log("writing");
-	fs.writeFile("Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
+	fs.writeFile("Exploration/saveExploration " + timestamp + ".json", exploration+"\n", function(err){
+		if(err){ console.log(err); }
 	});
 });
 
 //post user info, exporation and path on the map for loading
 app.post('/postUser', function(req, res){
-	res.send(req.body);
-
-	var Timestamp = new Date();
+	var timestamp = new Date();
 	var user = req.body.user;
-	// makes 'directory' for files if none exist.
+	// makes 'user' dir for files if none exist.
 	if (!fs.existsSync("User-"+userInfo.user)){
 		fs.mkdirSync("User-"+userInfo.user);
 	}
 
 	console.log("User-"+userInfo.user);
-	fs.writeFile("User-" + userInfo.user + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
+	fs.writeFile("User-" + userInfo.user + "/saveUser " + timestamp + ".json", user+"\n", function(err){
+		if(err){ console.log(err); }
 	});
+});
+
+app.post('/postAnnotation', function(req, res){
+
+	for (prop in req.body.annotation){
+		console.log("property: " + prop);
+	}
+
+	var timestamp = new Date();
+	var annotation = req.body.annotation;
+	var location = annotation.location;
+	var user = annotation.user; // string
+	console.log("string: " + req.body.string);
+
+	// makes annotation dir if none exists.
+	if (!fs.existsSync("annotation")){
+		fs.mkdirSync("annotation");
+	}
+	var fileName = "annotation/" + location.properties.NAME + "/" + user + timestamp.getHours() + "/" + timestamp.getMinutes();
+	fs.writeFile(fileName, annotation, function(err) {
+		if (err){ console.log(err); }
+	});
+});
+
+app.get("/getAnnotation", function(req, res){
+	var locationName = req.body.locationName;
+	var dir = "annotation/" + locationName + "/";
+	if (!fs.existsSync(dir)){
+		res.send(JSON.stringify(0)); // TODO use standard failure response
+	}
+	fs.readFile(dir, function(err, data){
+		//if (err) throw err;
+		res.send(JSON.stringify(data));
+	});	
 });

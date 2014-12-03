@@ -3,18 +3,19 @@
 var goToCity = document.getElementById("go-to-city");
 goToCity.addEventListener("click", function () { goToLoc(document.getElementById('city-list').value); });
 
-// events for html elements.
+// paths
 document.getElementById("add-to-path").onclick = function () { addToPath(document.getElementById('city-list').value); }
 document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelectedInPath(document.getElementById('path-list'))); }
 document.getElementById("follow-path").onclick = function () { followPath(0); }
 document.getElementById('save-path').onclick = function () { savePath(); }
 
+document.getElementById("upload-path").addEventListener('change', function () {
+	handlePathUpload(document.getElementById("upload-path").files[0]);
+}, false);
+
+// explorations
 var resetExplButton = document.getElementById("reset-button");
 resetExplButton.onclick = resetExplButtonFunction;
-
-document.getElementById("upload-path").addEventListener('change', function () {
-
-	handlePathUpload(document.getElementById("upload-path").files[0]);}, false);
 
 document.getElementById("load-exploration-button").addEventListener('change', loadExplButtonFunction, false);
 
@@ -35,6 +36,10 @@ playExplButton.addEventListener('click', function () {
 var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExplButtonFunction;
 
-
+// users
 var user1Button = document.getElementById('user1');
 user1Button.onclick = function(){users.push(new user("user1"));};
+
+// annotations
+var annInput = document.getElementById("annotation-input");
+document.getElementById("submit-annotation").onclick = function() { addAnnotation(annInput.value); }

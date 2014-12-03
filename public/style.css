@@ -23,6 +23,10 @@ body{
     background-color: #ccc;
 }
 
+.location-pane {
+    background-color: yellow;
+}
+
 .tab{
     font-size:13px;
     background-color: #EEEEEE;
