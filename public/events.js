@@ -38,27 +38,45 @@ saveExplButton.onclick = saveExplButtonFunction;
 
 var user1Button = document.getElementById('obama');
 user1Button.onclick = function(){
+
+	setButtonBorderColorOff('obama');
+	user1Button.style.borderColor = "red";
 	userInfo.setUser('obama');
 	userInfo.setImage(getElementBySrc("obama"));
 	};
+
 var user2Button = document.getElementById('john');
 user2Button.onclick = function(){
+	setButtonBorderColorOff('john');
+	user2Button.style.borderColor = "red";
 	userInfo.setUser('john');
 	userInfo.setImage(getElementBySrc("john"));
 	};
 var user3Button = document.getElementById('lorde');
 user3Button.onclick = function(){
+
+	setButtonBorderColorOff('lorde');
+	user3Button.style.borderColor = "red";
 	userInfo.setUser('lorde');
 	userInfo.setImage(getElementBySrc("lorde"));
 	};
 var user4Button = document.getElementById('will');
 user4Button.onclick = function(){
+
+	setButtonBorderColorOff('will');
+	user4Button.style.borderColor = "red";
 	userInfo.setUser('will');
 	userInfo.setImage(getElementBySrc("will"));
 	};
 
 function getElementBySrc(id){
-	var nodes = [];
 	var src = document.getElementById(id).src;
   return src;
 }
+function setButtonBorderColorOff(name){
+	for(var i = 0; i< buttons.length; i++){
+		if(name != buttons[i])
+			document.getElementById(buttons[i]).style.borderColor = "black";
+	}
+}
+var buttons = ['obama','john','lorde','will'];
