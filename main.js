@@ -107,5 +107,27 @@ app.post('/postExploration', function(req, res){
 	});
 });
 
-//post user info, exporation and path on the map for loading
+//post file to shared user folder
+app.post('/postFile', function(req, res){
+	res.send(req.body);
 
+	var Timestamp = new Date();
+	var file = req.body.file;
+	var username = req.body.name;
+	// makes 'directory' for files if none exist.
+	if (!fs.existsSync("public/data/user/user-"+username+"/Shared")){
+		console.log("create new shared folder")
+		fs.mkdirSync("public/data/user/user-"+username+"/Shared");
+	}
+	if (!fs.existsSync("public/data/user/user-"+username+"/Shared/File")){
+		console.log("create new shared folder")
+		fs.mkdirSync("public/data/user/user-"+username+"/Shared/File");
+	}
+
+	console.log("writing");
+	fs.writeFile("public/data/user/user-"+username+"/Shared/File/saveFile " + Timestamp + ".json", file +"\n", function(err){
+		if(err){
+			console.log(err);
+		}
+	});
+});

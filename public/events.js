@@ -46,11 +46,16 @@ document.getElementById("submit-userName").onclick = function(){
 	saveUser();
 }
 
-doucment.getElementById("submit-message").onclick = function(){
-	var userLableValue = doucment.getElementById("userId").value;
-	if(userlableValue!=null)
-	saveExploration(userLabelValue);
-	
+document.getElementById("submit-message").onclick = function(){
+
+	var userLabelValue = doucment.getElementById("userId").value;
+	console.log(userLabelValue);
+	if(userlabelValue!=null){
+		handleFileUpload(document.getElementById("load-file-button").files[0]);
+		saveFileToSharedUser(userLabelValue);
+	}
+
+
 }
 
 //
