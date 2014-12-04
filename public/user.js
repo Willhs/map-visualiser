@@ -25,7 +25,7 @@ function saveUser(){
 		url: "/postUser",//url of receiver file on server
 
 		data: {"user":JSON.stringify(userInfo, null, 4),"userName": userInfo.user},
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
+		//success: function(response){ console.log(response) }, //callback when ajax request finishes
 		dataType: "json"
 
 	});

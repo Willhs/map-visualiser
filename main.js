@@ -42,12 +42,11 @@ app.post('/postpath', function(req, res){
 
 	var path = req.body.path_taken;
 
-	// create 'path' dir if it doesn't already exist
-	if (!fs.existsSync("public/data/path")){
-		fs.mkdirSync("public/data/path");
-	}
+	// create 'path' path if it doesn't already exist
+	var filePath = "public/data/path/";
+	ensureDirExists(filePath)
 
-	fs.writeFile("public/data/path/" + Timestamp + "-savePath.json", path+"\n", function(err){
+	fs.writeFile(filePath + timestamp + "-savePath.json", path+"\n", function(err){
 		if(err){ console.log(err); }
 	});
 });
@@ -57,13 +56,12 @@ app.post('/postExploration', function(req, res){
 	var timestamp = new Date();
 	var exploration = req.body.exploration;
 
-	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/Exploration")){
-		fs.mkdirSync("public/data/Exploration");
-	}
+	// makes 'pathectory' for files if none exist.
+	var path = "public/data/Exploration/";
+	ensureDirExists(path)
 
 	console.log("writing");
-	fs.writeFile("public/data/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
+	fs.writeFile(path + timestamp + ".json", exploration+"\n", function(err){
 		if(err){ console.log(err); }
 	});
 });
@@ -73,11 +71,11 @@ app.post('/postUser', function(req, res){
 	var timestamp = new Date();
 	var user = req.body.user;
 	var userName = req.body.userName;
-	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/User-"+userName)){
-		fs.mkdirSync("public/data/user/User-"+userName);
-	}
-	fs.writeFile("public/data/user/User-" + userName + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
+	// makes 'pathectory' for files if none exist.
+	var path = "public/data/user/User-" + userName + "/";
+	ensureDirExists(path);
+
+	fs.writeFile(path + timestamp + ".json", user+"\n", function(err){
 		if(err){
 			console.log(err);
 		}
@@ -86,34 +84,62 @@ app.post('/postUser', function(req, res){
 
 app.post('/postAnnotation', function(req, res){
 
-	for (prop in req.body.annotation){
-		console.log("property: " + prop);
-	}
-
-	var timestamp = new Date();
-	var annotation = req.body.annotation;
+	var annotation = JSON.parse(req.body.annotation);
+	var timestamp = new Date(annotation.timestamp); // apparently timestamp is now a string...
 	var location = annotation.location;
 	var user = annotation.user; // string
-	console.log("string: " + req.body.string);
+	var text = annotation.text;
 
-	// makes annotation dir if none exists.
-	if (!fs.existsSync("annotation")){
-		fs.mkdirSync("annotation");
-	}
-	var fileName = "annotation/" + location.properties.NAME + "/" + user + timestamp.getHours() + "/" + timestamp.getMinutes();
-	fs.writeFile(fileName, annotation, function(err) {
-		if (err){ console.log(err); }
+	console.log("posting annotation: " + text);
+
+	var path = "public/data/annotation/";
+	// makes annotation path if none exists.
+	ensureDirExists(path);
+	path += location.properties.NAME + "/";
+	ensureDirExists(path);
+
+	var fileName = path + user + " " + timestamp.getHours() + ":" 
+		+ timestamp.getMinutes() + ":" + timestamp.getSeconds() + ".json";
+	fs.writeFile(fileName, JSON.stringify(annotation, 4, null), function(err) {
+		if (err){ console.log("errooor: "+err); }
 	});
+	res.send(200);
 });
 
 app.get("/getAnnotation", function(req, res){
-	var locationName = req.body.locationName;
-	var dir = "annotation/" + locationName + "/";
-	if (!fs.existsSync(dir)){
-		res.send(JSON.stringify(0)); // TODO use standard failure response
+	var locationName = req._parsedUrl.query; // data is appended to the URL
+	console.log("retrieving annotations for: " + locationName);
+
+	var path = "public/data/annotation/";
+	// ensure both dirs exist.
+	ensureDirExists(path);
+	path += locationName + "/";
+	ensureDirExists(path);
+
+	var annotationFiles = fs.readdirSync(path);
+	// if none, return '0'
+	if (annotationFiles.length === 0){
+		res.send(JSON.stringify("no_annotations")); // code for 'no files'
+	}	
+	else {
+		// get all annotation objeZcts (1 per file)
+		var annotations = [];
+
+		annotationFiles.forEach(function(filename, index){
+			annotations[index] = JSON.parse(fs.readFileSync(path+filename));
+		});
+
+		annotations.sort(function(a, b){ // by date
+			return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+		});
+
+		res.send(JSON.stringify(annotations));
 	}
-	fs.readFile(dir, function(err, data){
-		//if (err) throw err;
-		res.send(JSON.stringify(data));
-	});	
 });
+
+// returns whether the dir existed
+function ensureDirExists(path){
+	if (!fs.existsSync(path)){
+		fs.mkdirSync(path);
+	}
+}

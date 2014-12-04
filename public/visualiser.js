@@ -139,47 +139,68 @@ function selectLocation(city){
 	population.innerHTML = "Population: " + city.properties.GN_POP;
 
 	var list = document.getElementById("location-info");
-	list.innerHTML = null; // initialise list
+	list.innerHTML = null; // clear previous info list
 	list.appendChild(country);
 	list.appendChild(population);
 
-	// show annotations
+	var annotations = document.getElementById("annotation-container");
+	annotations.innerHTML = null; // clear previous annotations
+
+	// get annotations for this location
 	$.ajax({
 		type: 'GET',
-		url: "/getAnnotation",//url of receiver file on server
-		data: {locationName: JSON.stringify(city.properties.NAME, null, 4) },
-		success: function(response){ updateUI(response); }, //callback when ajax request finishes
-		dataType: "json"
+		url: "/getAnnotation",
+		data: city.properties.NAME,
+		success: addAnnotations, 
+		dataType: "json",
+		complete: function(){ console.log("get complete"); }
 	});		
 
-	function updateUI(annotation){
-		if (annotation === 0){
-			return; // no annotations are found
-		}
+	// adds annotations to the location info
+	function addAnnotations(annotations){
+		if (annotations === "no_annotations") return;
 		var container = document.getElementById("annotation-container");
-		container.innerHTML = annotation.text;
+
+		annotations.forEach(function(annotation){
+			console.log("adding annotation");
+		 	var div = document.createElement("div")
+		 	var par = document.createElement("p");
+		 	par.innerHTML = annotation.text;
+		 	div.appendChild(par);
+			container.appendChild(div);
+		});		
 	}
+
+	//remove and add new annotation input
+	var annotationInputCont = document.getElementById("annotation-input-container")
+	annotationInputCont.innerHTML = null;
+	makeAnnotationInput(annotationInputCont);
 }
 
 // adds an annotations to the currently selected location
-function addAnnotation(annText){
+function submitAnnotation(annotationText){
 
 	var annotation = {
 		user: userInfo.user,
 		location: selectedLocation,
-		text: annText,
-		number: 9 // for testing server
+		text: annotationText,
+		timestamp: new Date()
 	};
+
+	console.log("timestamp: " + (typeof annotation.timestamp));
 
 	$.ajax({
 		type: 'POST',
 		url: "/postAnnotation",//url of receiver file on server
 		data: { "annotation": JSON.stringify(annotation, null, 4) }, // plain object
-		success: function(response){ console.log(response); }, // callback when ajax request finishes
-		dataType: "json"
-	});	
-	// refresh the location info bar
-	selectLocation(selectedLocation);
+		dataType: "json",
+		complete: refreshInfo
+	});
+
+	// refresh the location info bar (to show the new annotation)
+	function refreshInfo(){
+		selectLocation(selectedLocation);
+	}
 }
 
 // The movement function
@@ -193,11 +214,6 @@ function move(city, cb) {
 			cb();
 		}
 	};
-
-	// if camera is already zoomed in on city
-	/*if (centered === city){	
-		return reset();
-	}*/
 
 	var b = path.centroid(city);
 	var x = b[0],

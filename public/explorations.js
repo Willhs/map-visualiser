@@ -171,7 +171,7 @@ function stopRecording() {
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();
 
-	console.log("Recorded " + record.numEvents() + " events");
+	console.log("Recorded/Played " + record.numEvents() + " events");
 }
 
 // records an instance of a user action to travel to a place on the map
