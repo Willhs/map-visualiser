@@ -51,10 +51,29 @@ app.post('/postpath', function(req, res){
 	});
 });
 
+app.post('/postUser', function(req, res){
+	res.send(req.body);
+
+	var Timestamp = new Date();
+	var user = req.body.user;
+	var username = req.body.name;
+	console.log("username: "+ username);
+	// makes 'directory' for files if none exist.
+	if (!fs.existsSync("public/data/user/user-"+username)){
+		fs.mkdirSync("public/data/user/user-"+username);
+	}
+	fs.writeFile("public/data/user/user-" + username + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
+		if(err){
+			console.log(err);
+		}
+	});
+});
+
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 	var timestamp = new Date();
 	var exploration = req.body.exploration;
+<<<<<<< HEAD
 
 	// makes 'pathectory' for files if none exist.
 	var path = "public/data/Exploration/";
@@ -76,10 +95,50 @@ app.post('/postUser', function(req, res){
 	ensureDirExists(path);
 
 	fs.writeFile(path + timestamp + ".json", user+"\n", function(err){
+=======
+	var username = req.body.name;
+	// makes 'directory' for files if none exist.
+	if (!fs.existsSync("public/data/user/user-"+username+"/Exploration")){
+		console.log("create new exploration folder")
+		fs.mkdirSync("public/data/user/user-"+username+"/Exploration");
+	}
+
+	console.log("writing");
+	fs.writeFile("public/data/user/user-"+username+"/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
 		if(err){
 			console.log(err);
 		}
 	});
+});
+
+//post file to shared user folder
+app.post('/postFile', function(req, res){
+	res.send(req.body);
+
+	var Timestamp = new Date();
+	var file = req.body.file;
+	var to = req.body.to;
+	var from = req.body.from;
+	console.log("to: "+ to + " from: "+ from);
+	// makes 'directory' for files if none exist.
+	if (!fs.existsSync("public/data/user/user-"+to)){
+		fs.mkdirSync("public/data/user/user-"+to);
+	}
+	if (!fs.existsSync("public/data/user/user-"+to+"/Shared")){
+		fs.mkdirSync("public/data/user/user-"+to+"/Shared");
+	}
+	if (!fs.existsSync("public/data/user/user-"+to+"/Shared/File")){
+		fs.mkdirSync("public/data/user/user-"+to+"/Shared/File");
+	}
+
+	console.log("writing");
+	fs.writeFile("public/data/user/user-"+to+"/Shared/File/sharedFileFrom"+ from+" - " + Timestamp + ".json", file +"\n", function(err){
+>>>>>>> 1471fe0a4b4824efcc679276fd4994d87cb15e9b
+		if(err){
+			console.log(err);
+		}
+	});
+<<<<<<< HEAD
 });
 
 app.post('/postAnnotation', function(req, res){
@@ -143,3 +202,6 @@ function ensureDirExists(path){
 		fs.mkdirSync(path);
 	}
 }
+=======
+});
+>>>>>>> 1471fe0a4b4824efcc679276fd4994d87cb15e9b

@@ -21,6 +21,7 @@ body{
     width: 20%;
     height: 95%;
     background-color: #ccc;
+    border: 3px solid black;
 }
 
 .location-pane {
@@ -35,7 +36,6 @@ body{
     border-top: 1px solid #CCCCCC;
     border-right: 1px solid #333333;
     border-bottom: 1px solid #333333;
-    border-left: 1px solid #CCCCCC;
 }
 
 #pick-city {

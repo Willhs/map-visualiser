@@ -1,4 +1,4 @@
-// -------------- event handling for DOM elements ----------------
+//-------------- event handling for DOM elements ----------------
 
 var goToCity = document.getElementById("go-to-city");
 goToCity.addEventListener("click", function () { goToLoc(document.getElementById('city-list').value); });
@@ -50,47 +50,23 @@ function makeAnnotationInput(container){
 }
 
 // users
-var user1Button = document.getElementById('obama');
-user1Button.onclick = function(){
+document.getElementById("obama").onclick= function() {	setButtonAndSetUser("obama");}
+document.getElementById("john").onclick= function() {	setButtonAndSetUser("john");}
+document.getElementById("lorde").onclick= function() {	setButtonAndSetUser("lorde");}
+document.getElementById("will").onclick= function() {	setButtonAndSetUser("will");}
 
-	setButtonBorderColorOff('obama');
-	user1Button.style.borderColor = "red";
-	userInfo.setUser('obama');
-	userInfo.setImage(getElementBySrc("obama"));
-	};
-
-var user2Button = document.getElementById('john');
-user2Button.onclick = function(){
-	setButtonBorderColorOff('john');
-	user2Button.style.borderColor = "red";
-	userInfo.setUser('john');
-	userInfo.setImage(getElementBySrc("john"));
-	};
-var user3Button = document.getElementById('lorde');
-user3Button.onclick = function(){
-
-	setButtonBorderColorOff('lorde');
-	user3Button.style.borderColor = "red";
-	userInfo.setUser('lorde');
-	userInfo.setImage(getElementBySrc("lorde"));
-	};
-var user4Button = document.getElementById('will');
-user4Button.onclick = function(){
-
-	setButtonBorderColorOff('will');
-	user4Button.style.borderColor = "red";
-	userInfo.setUser('will');
-	userInfo.setImage(getElementBySrc("will"));
-	};
-
-function getElementBySrc(id){
-	var src = document.getElementById(id).src;
-  return src;
+document.getElementById("submit-userName").onclick = function(){
+	currentUser = new user(document.getElementById("userName-input").value, currentUser.userImage);
+	record.user = currentUser;
+	saveUser();
 }
-function setButtonBorderColorOff(name){
-	for(var i = 0; i< buttons.length; i++){
-		if(name != buttons[i])
-			document.getElementById(buttons[i]).style.borderColor = "black";
+document.getElementById("load-file-button").addEventListener('change',loadFileButtonFunction, false);
+
+document.getElementById("submit-message").onclick = function(){
+
+	var userLabelValue = document.getElementById("userId").value;
+	console.log("userID: "+userLabelValue);
+	if(userLabelValue!=null){
+		saveFileToSharedUser(userLabelValue);
 	}
 }
-var buttons = ['obama','john','lorde','will'];

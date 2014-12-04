@@ -7,10 +7,9 @@ function Event(type, body, time){
 
 // a record of an exploration of the visualisation
 var record = {
-	user: currentUser,
+
 	events : [], // events that took place over the course of the exploration
 	firstEventTime : null,
-
 
 	addEvent : function (type, body){
 		var currentTime = new Date().getTime();
@@ -222,6 +221,7 @@ function buttonImageConvert(myImgId, imageName){
 }
 function resetExplButtonFunction () {
 	record.reset();
+	//reset();
 	stopExplButton.disabled = true;
 	saveExplButton.disabled = true;
 	playExplButton.disabled = true;
@@ -240,9 +240,11 @@ function saveExplButtonFunction () {
 	if(!record.isEmpty()){
 		saveExploration();
 	}
+	if(!userInfo.isEmpty()){
+//		userInfo.setRecord(record);
+		saveUser();
+	}
 	else alert("record list are empty!");
-
-
 }
 
 function loadExplButtonFunction () {
@@ -259,8 +261,8 @@ function saveExploration(){
 	$.ajax({
 		type: 'POST',
 		url: "/postExploration",//url of receiver file on server
-		data: {"exploration":JSON.stringify(record, null, 4),"name": currentUser.fname},
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
+		data: {"exploration":JSON.stringify(record, null, 4)},
+		success: function(response){ "response: " + console.log(response) }, //callback when ajax request finishes
 		dataType: "json" //text/json...
 	});
 }
