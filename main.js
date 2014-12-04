@@ -68,20 +68,39 @@ app.post('/postpath', function(req, res){
 	});
 });
 
+app.post('/postUser', function(req, res){
+	res.send(req.body);
+
+	var Timestamp = new Date();
+	var user = req.body.user;
+	var username = req.body.name;
+	console.log("username: "+ username);
+	// makes 'directory' for files if none exist.
+	if (!fs.existsSync("public/data/user/user-"+username)){
+		fs.mkdirSync("public/data/user/user-"+username);
+	}
+	fs.writeFile("public/data/user/user-" + username + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
+		if(err){
+			console.log(err);
+		}
+	});
+});
+
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 	res.send(req.body);
 
 	var Timestamp = new Date();
 	var exploration = req.body.exploration;
-
+	var username = req.body.name;
 	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/Exploration")){
-		fs.mkdirSync("public/data/Exploration");
+	if (!fs.existsSync("public/data/user/user-"+username+"/Exploration")){
+		console.log("create new exploration folder")
+		fs.mkdirSync("public/data/user/user-"+username+"/Exploration");
 	}
 
 	console.log("writing");
-	fs.writeFile("public/data/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
+	fs.writeFile("public/data/user/user-"+username+"/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
 		if(err){
 			console.log(err);
 		}
@@ -89,19 +108,4 @@ app.post('/postExploration', function(req, res){
 });
 
 //post user info, exporation and path on the map for loading
-app.post('/postUser', function(req, res){
-	res.send(req.body);
 
-	var Timestamp = new Date();
-	var user = req.body.user;
-	var userName = req.body.name;
-	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/User-"+userName)){
-		fs.mkdirSync("public/data/user/User-"+userName);
-	}
-	fs.writeFile("public/data/user/User-" + userName + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
-	});
-});

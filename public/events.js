@@ -40,3 +40,65 @@ document.getElementById("john").onclick= function() {	setButtonAndSetUser("john"
 document.getElementById("lorde").onclick= function() {	setButtonAndSetUser("lorde");}
 document.getElementById("will").onclick= function() {	setButtonAndSetUser("will");}
 
+document.getElementById("submit-userName").onclick = function(){
+	currentUser = new user(document.getElementById("userName-input").value, currentUser.userImage);
+	record.user = currentUser;
+	saveUser();
+}
+
+doucment.getElementById("submit-message").onclick = function(){
+	var userLableValue = doucment.getElementById("userId").value;
+	if(userlableValue!=null)
+	saveExploration(userLabelValue);
+	
+}
+
+//
+//respondToSizingMessage = function(e) {
+//	if(e.origin == 'http://localhost:3000/') {
+//		// e.data is the string sent by the origin with postMessage.
+//		if(e.data == 'sizing?') {
+//			e.source.postMessage('sizing:'+document.body.scrollHeight+','+document.body.scrollWidth, e.origin);
+//		}
+//	}
+//}
+//// we have to listen for 'message'
+//window.addEventListener('message', respondToSizingMessage, false);
+//
+//
+//
+//handleSizingResponse = function(e) {
+//	if(e.origin == 'http://localhost:3000/') {
+//		var action = e.data.split(':')[0]
+//		if(action == 'sizing') {
+//			resizeCanvas(e.data.split(':')[1]);
+//		} else {
+//			console.log("Unknown message: "+e.data);
+//		}
+//	}
+//}
+//window.addEventListener('message', handleSizingResponse, false);
+//
+//
+//iframe = document.getElementById('content');
+//iframe.contentWindow.postMessage('sizing?', 'http://localhost:3000/');
+//
+//
+//
+//
+
+//document.getElementById("iframe").contentWindow.postMessage(
+//        document.getElementById("message").value,
+//        "http://localhost:3000/index.html"
+//);
+//
+//window.onmessage = function(e){
+//	  if ( e.origin !== "http://localhost:3000/index.html" ) {
+//		  alert("ppp");
+//	    return;
+//	  }
+//	  alert("bbb");
+//	  document.getElementById("test").innerHTML = e.origin + " said: " + e.data;
+//	};
+//
+//

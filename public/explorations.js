@@ -241,7 +241,6 @@ function saveExplButtonFunction () {
 		saveExploration();
 	}
 	else alert("record list are empty!");
-	saveUser();
 
 
 }
@@ -260,7 +259,7 @@ function saveExploration(){
 	$.ajax({
 		type: 'POST',
 		url: "/postExploration",//url of receiver file on server
-		data: {"exploration":JSON.stringify(record, null, 4)},
+		data: {"exploration":JSON.stringify(record, null, 4),"name": currentUser.fname},
 		success: function(response){ console.log(response) }, //callback when ajax request finishes
 		dataType: "json" //text/json...
 

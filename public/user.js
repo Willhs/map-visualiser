@@ -41,7 +41,7 @@ function saveUser(){
 		type: 'POST',
 		url: "/postUser",//url of receiver file on server
 
-		data: {"user":JSON.stringify(userInfo, null, 4),"name": currentUser},
+		data: {"user":JSON.stringify(currentUser, null, 4),"name": currentUser.fname},
 		success: function(response){ console.log(response) }, //callback when ajax request finishes
 		dataType: "json" //text/json...
 
@@ -52,6 +52,8 @@ function setButtonAndSetUser(fname){
 	setButtonBorderColorOff(fname);
 	document.getElementById(fname).style.borderColor = "red";
 	currentUser = new user(fname,document.getElementById(fname).src);
+	record.user = currentUser;
+	saveUser();
 }
 function setButtonBorderColorOff(name){
 	var userNames = ['obama','john','lorde','will'];
@@ -61,4 +63,3 @@ function setButtonBorderColorOff(name){
 			document.getElementById(userNames[i]).style.borderColor = "black";
 	}
 }
-
