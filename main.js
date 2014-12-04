@@ -113,19 +113,22 @@ app.post('/postFile', function(req, res){
 
 	var Timestamp = new Date();
 	var file = req.body.file;
-	var username = req.body.name;
+	var to = req.body.to;
+	var from = req.body.from;
+	console.log("to: "+ to + " from: "+ from);
 	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/user-"+username+"/Shared")){
-		console.log("create new shared folder")
-		fs.mkdirSync("public/data/user/user-"+username+"/Shared");
+	if (!fs.existsSync("public/data/user/user-"+to)){
+		fs.mkdirSync("public/data/user/user-"+to);
 	}
-	if (!fs.existsSync("public/data/user/user-"+username+"/Shared/File")){
-		console.log("create new shared folder")
-		fs.mkdirSync("public/data/user/user-"+username+"/Shared/File");
+	if (!fs.existsSync("public/data/user/user-"+to+"/Shared")){
+		fs.mkdirSync("public/data/user/user-"+to+"/Shared");
+	}
+	if (!fs.existsSync("public/data/user/user-"+to+"/Shared/File")){
+		fs.mkdirSync("public/data/user/user-"+to+"/Shared/File");
 	}
 
 	console.log("writing");
-	fs.writeFile("public/data/user/user-"+username+"/Shared/File/saveFile " + Timestamp + ".json", file +"\n", function(err){
+	fs.writeFile("public/data/user/user-"+to+"/Shared/File/sharedFileFrom"+ from+" - " + Timestamp + ".json", file +"\n", function(err){
 		if(err){
 			console.log(err);
 		}

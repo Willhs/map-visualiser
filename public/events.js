@@ -45,65 +45,16 @@ document.getElementById("submit-userName").onclick = function(){
 	record.user = currentUser;
 	saveUser();
 }
+document.getElementById("load-file-button").addEventListener('change',loadFileButtonFunction, false);
 
 document.getElementById("submit-message").onclick = function(){
 
-	var userLabelValue = doucment.getElementById("userId").value;
-	console.log(userLabelValue);
-	if(userlabelValue!=null){
-		handleFileUpload(document.getElementById("load-file-button").files[0]);
+	var userLabelValue = document.getElementById("userId").value;
+	console.log("userID: "+userLabelValue);
+	if(userLabelValue!=null){
 		saveFileToSharedUser(userLabelValue);
 	}
-
-
 }
 
-//
-//respondToSizingMessage = function(e) {
-//	if(e.origin == 'http://localhost:3000/') {
-//		// e.data is the string sent by the origin with postMessage.
-//		if(e.data == 'sizing?') {
-//			e.source.postMessage('sizing:'+document.body.scrollHeight+','+document.body.scrollWidth, e.origin);
-//		}
-//	}
-//}
-//// we have to listen for 'message'
-//window.addEventListener('message', respondToSizingMessage, false);
-//
-//
-//
-//handleSizingResponse = function(e) {
-//	if(e.origin == 'http://localhost:3000/') {
-//		var action = e.data.split(':')[0]
-//		if(action == 'sizing') {
-//			resizeCanvas(e.data.split(':')[1]);
-//		} else {
-//			console.log("Unknown message: "+e.data);
-//		}
-//	}
-//}
-//window.addEventListener('message', handleSizingResponse, false);
-//
-//
-//iframe = document.getElementById('content');
-//iframe.contentWindow.postMessage('sizing?', 'http://localhost:3000/');
-//
-//
-//
-//
 
-//document.getElementById("iframe").contentWindow.postMessage(
-//        document.getElementById("message").value,
-//        "http://localhost:3000/index.html"
-//);
-//
-//window.onmessage = function(e){
-//	  if ( e.origin !== "http://localhost:3000/index.html" ) {
-//		  alert("ppp");
-//	    return;
-//	  }
-//	  alert("bbb");
-//	  document.getElementById("test").innerHTML = e.origin + " said: " + e.data;
-//	};
-//
-//
+
