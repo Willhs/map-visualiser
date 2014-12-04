@@ -32,8 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 <script src="data/d3.v3.min.js"></script>
 <script src="data/topojson.v1.min.js"></script>
 <script src="data/jquery.min.js"></script>
+
+
 </head>
-<body>
+
+<body onload = "currentUser">
 	<div class="sideBar">
 
 		<div class="users">
@@ -107,7 +110,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
 
 		</div>
-		<div id="location-div" class="location-pane">
+		<div id="location-div" class="location-pane" >
 			<h1 id="location-title" class="location-pane"></h1>
 			<ul id="location-info" class="location-pane">
 				<!-- script will insert elements here -->
@@ -123,9 +126,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			<input type="submit" id="submit-annotation" value="submit">
 		</div>
 	</div>
-	<script src="user.js"></script>
-	<script src="visualiser.js"></script>
+<script src="visualiser.js"></script>
 	<script src="paths.js"></script>
+	<script src="user.js"></script>
 	<script src="explorations.js"></script>
 	<script src="events.js"></script>
 

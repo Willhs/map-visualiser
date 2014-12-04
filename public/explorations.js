@@ -7,9 +7,10 @@ function Event(type, body, time){
 
 // a record of an exploration of the visualisation
 var record = {
-
+	user: currentUser,
 	events : [], // events that took place over the course of the exploration
 	firstEventTime : null,
+
 
 	addEvent : function (type, body){
 		var currentTime = new Date().getTime();
@@ -221,7 +222,6 @@ function buttonImageConvert(myImgId, imageName){
 }
 function resetExplButtonFunction () {
 	record.reset();
-	//reset();
 	stopExplButton.disabled = true;
 	saveExplButton.disabled = true;
 	playExplButton.disabled = true;
@@ -240,11 +240,10 @@ function saveExplButtonFunction () {
 	if(!record.isEmpty()){
 		saveExploration();
 	}
-	if(!userInfo.isEmpty()){
-//		userInfo.setRecord(record);
-		saveUser();
-	}
 	else alert("record list are empty!");
+	saveUser();
+
+
 }
 
 function loadExplButtonFunction () {

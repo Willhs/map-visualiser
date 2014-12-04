@@ -94,7 +94,7 @@ app.post('/postUser', function(req, res){
 
 	var Timestamp = new Date();
 	var user = req.body.user;
-	var userName = req.body.userName;
+	var userName = req.body.name;
 	// makes 'directory' for files if none exist.
 	if (!fs.existsSync("public/data/user/User-"+userName)){
 		fs.mkdirSync("public/data/user/User-"+userName);
