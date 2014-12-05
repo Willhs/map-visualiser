@@ -51,34 +51,16 @@ app.post('/postpath', function(req, res){
 	});
 });
 
-app.post('/postUser', function(req, res){
-	res.send(req.body);
 
-	var Timestamp = new Date();
-	var user = req.body.user;
-	var username = req.body.name;
-	console.log("username: "+ username);
-	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/user-"+username)){
-		fs.mkdirSync("public/data/user/user-"+username);
-	}
-	fs.writeFile("public/data/user/user-" + username + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
-	});
-});
 
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 	var timestamp = new Date();
 	var exploration = req.body.exploration;
-<<<<<<< HEAD
-
+	var name = req.body.name;
 	// makes 'pathectory' for files if none exist.
-	var path = "public/data/Exploration/";
+	var path = "public/data/user/User-"+ name+"/Exploration/";
 	ensureDirExists(path)
-
 	console.log("writing");
 	fs.writeFile(path + timestamp + ".json", exploration+"\n", function(err){
 		if(err){ console.log(err); }
@@ -87,24 +69,16 @@ app.post('/postExploration', function(req, res){
 
 //post user info, exporation and path on the map for loading
 app.post('/postUser', function(req, res){
-	var timestamp = new Date();
+	res.send(req.body);
+
+	var Timestamp = new Date();
 	var user = req.body.user;
-	var userName = req.body.userName;
-	// makes 'pathectory' for files if none exist.
-	var path = "public/data/user/User-" + userName + "/";
-	ensureDirExists(path);
-
-	fs.writeFile(path + timestamp + ".json", user+"\n", function(err){
-=======
 	var username = req.body.name;
+	console.log("username: "+ username);
 	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/user-"+username+"/Exploration")){
-		console.log("create new exploration folder")
-		fs.mkdirSync("public/data/user/user-"+username+"/Exploration");
-	}
-
-	console.log("writing");
-	fs.writeFile("public/data/user/user-"+username+"/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
+	var path = "public/data/user/User-" + username;
+	ensureDirExists(path);
+	fs.writeFile(path + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
 		if(err){
 			console.log(err);
 		}
@@ -121,24 +95,15 @@ app.post('/postFile', function(req, res){
 	var from = req.body.from;
 	console.log("to: "+ to + " from: "+ from);
 	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/user-"+to)){
-		fs.mkdirSync("public/data/user/user-"+to);
-	}
-	if (!fs.existsSync("public/data/user/user-"+to+"/Shared")){
-		fs.mkdirSync("public/data/user/user-"+to+"/Shared");
-	}
-	if (!fs.existsSync("public/data/user/user-"+to+"/Shared/File")){
-		fs.mkdirSync("public/data/user/user-"+to+"/Shared/File");
-	}
-
-	console.log("writing");
-	fs.writeFile("public/data/user/user-"+to+"/Shared/File/sharedFileFrom"+ from+" - " + Timestamp + ".json", file +"\n", function(err){
->>>>>>> 1471fe0a4b4824efcc679276fd4994d87cb15e9b
+	var path = "public/data/user/User-" + to;
+	ensureDirExists(path);
+	ensureDirExists(path +"/Shared");
+	ensureDirExists(path +"/Shared/"+from);
+	fs.writeFile(path +"/Shared/"+ from+"/" + from  +"-"+ Timestamp + ".json", file +"\n", function(err){
 		if(err){
 			console.log(err);
 		}
 	});
-<<<<<<< HEAD
 });
 
 app.post('/postAnnotation', function(req, res){
@@ -157,7 +122,7 @@ app.post('/postAnnotation', function(req, res){
 	path += location.properties.NAME + "/";
 	ensureDirExists(path);
 
-	var fileName = path + user + " " + timestamp.getHours() + ":" 
+	var fileName = path + user + " " + timestamp.getHours() + ":"
 		+ timestamp.getMinutes() + ":" + timestamp.getSeconds() + ".json";
 	fs.writeFile(fileName, JSON.stringify(annotation, 4, null), function(err) {
 		if (err){ console.log("errooor: "+err); }
@@ -179,7 +144,7 @@ app.get("/getAnnotation", function(req, res){
 	// if none, return '0'
 	if (annotationFiles.length === 0){
 		res.send(JSON.stringify("no_annotations")); // code for 'no files'
-	}	
+	}
 	else {
 		// get all annotation objeZcts (1 per file)
 		var annotations = [];
@@ -195,6 +160,25 @@ app.get("/getAnnotation", function(req, res){
 		res.send(JSON.stringify(annotations));
 	}
 });
+app.get("/getNotification", function(req, res){
+	var userName = req._parsedUrl.query; // data is appended to the URL
+	var path = "public/data/user/";
+	// ensure both dirs exist.
+	ensureDirExists(path);
+	path += "User-"+userName + "/Shared";
+	ensureDirExists(path);
+
+	var sharedFiles = fs.readdirSync(path);
+	// if none, return '0'
+	if (sharedFiles.length === 0){
+		res.send(JSON.stringify("no_sharedFiles")); // code for 'no files'
+	}
+	else {
+		// get all annotation objeZcts (1 per file)
+		res.send(JSON.stringify(sharedFiles.length));
+
+	}
+});
 
 // returns whether the dir existed
 function ensureDirExists(path){
@@ -202,6 +186,3 @@ function ensureDirExists(path){
 		fs.mkdirSync(path);
 	}
 }
-=======
-});
->>>>>>> 1471fe0a4b4824efcc679276fd4994d87cb15e9b

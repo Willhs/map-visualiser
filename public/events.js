@@ -43,7 +43,7 @@ function makeAnnotationInput(container){
 	annInput.placeholder = "Add annotation";
 
 	annInput.onkeydown = function(event) { // if enter is pushed, submit the annotation
-		if (event.keyCode === 13) submitAnnotation(annInput.value); 
+		if (event.keyCode === 13) submitAnnotation(annInput.value);
 	}
 	container.appendChild(annInput);
 	annInput.focus();
@@ -56,9 +56,8 @@ document.getElementById("lorde").onclick= function() {	setButtonAndSetUser("lord
 document.getElementById("will").onclick= function() {	setButtonAndSetUser("will");}
 
 document.getElementById("submit-userName").onclick = function(){
-	currentUser = new user(document.getElementById("userName-input").value, currentUser.userImage);
-	record.user = currentUser;
-	saveUser();
+	//currentUser = new user(document.getElementById("userName-input").value, currentUser.userImage);
+	checkUsersName(document.getElementById("userName-input").value, currentUser.userImage);
 }
 document.getElementById("load-file-button").addEventListener('change',loadFileButtonFunction, false);
 

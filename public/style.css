@@ -78,7 +78,7 @@ input, label {
 }
 
 #annotation-input-container {
-    
+
 }
 #annotation-input {
     -webkit-box-sizing: border-box;
@@ -88,4 +88,28 @@ input, label {
 }
 #obama{
 	color:red;
+}
+
+#minimap {
+	background-color: #ccc;
+	border: 3px solid rgb(0,0, 1);
+	position: fixed;
+	left : 1370px;
+	top: 800px;
+	width: 339px;
+	height: 200px;
+
+}
+#minimap-div {
+	overflow: hidden;
+	margin: 1px left;
+	max-width: 339px;
+	max-height: 200px;
+}
+#minimap-iframe{
+	border: 0px none;
+	margin-left: -185px;
+	height: 859px;
+	margin-top: -533px;
+	width: 926px;
 }

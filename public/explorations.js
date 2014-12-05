@@ -56,6 +56,7 @@ var record = {
 
 // handles the upload of an file containing exploration data
 function handleExplorationUpload(file){
+	console.log(file);
 	fr = new FileReader();
 	fr.onload = receivedText;
 	fr.readAsText(file);
