@@ -86,29 +86,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<td><input type="image" id="reset-button"
 					src="image/reset_gray.jpeg" width="40" height="40" border="0"
 					alt="javascript button"></td>
-			</table>
-			<h3>
-				<b>Load Exploration</b>
-			</h3>
-			<input id="load-exploration-button" type='file' name='userFile'><br>
+			</table>			
 		</div>
         <div>
             <form name="form">
                 <h3>
+                    <b>Load Exploration</b>
+                </h3>
+                <input id="load-exploration-button" type='file' name='userFile'>
+                <h3>
                     <label for="to">To:</label>
                 </h3>
                 <input type="text" id="userId" name="user" value="" />
-                <h3>
-                    <b>Load File to Share:</b>
-                </h3>
-                <input id="load-file-button" type='file' name='userFile'><br>
-
-                <button type = 'button' id="submit-message">Send</button>
-                <div id = "notificaiton-container">
-                    <h2 id="notificaiton"></h2>
-                </div>
+                <button type='button' id="submit-message">Send</button>
             </form>
-        </div>	
+        </div>
+        <div id="notificaiton-container">
+            <h2 id="notificaiton"></h2>
+        </div>
         <div id="location-div" class="location-pane">
             <h2 id="location-title"></h2>
             <ul id="location-info">
@@ -122,12 +117,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
             </div>
         </div>
     </div>
-		
-	<div id = "minimap">
-		<div id = "minimap-div">
-			<iframe id='minimap-iframe' scrolling="no" src="http://localhost:3000/"
-				>
-			</iframe>
+
+	</div>
+	<div id="minimap">
+		<div id="minimap-div">
+			<iframe id='minimap-iframe' scrolling="no"
+				src="http://localhost:3000/"> </iframe>
 		</div>
 	</div>
 

@@ -59,7 +59,6 @@ document.getElementById("submit-userName").onclick = function(){
 	//currentUser = new user(document.getElementById("userName-input").value, currentUser.userImage);
 	checkUsersName(document.getElementById("userName-input").value, currentUser.userImage);
 }
-document.getElementById("load-file-button").addEventListener('change',loadFileButtonFunction, false);
 
 document.getElementById("submit-message").onclick = function(){
 
