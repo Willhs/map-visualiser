@@ -104,6 +104,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                 <input id="load-file-button" type='file' name='userFile'><br>
 
                 <button type = 'button' id="submit-message">Send</button>
+                <div id = "notificaiton-container">
+                    <h2 id="notificaiton"></h2>
+                </div>
             </form>
         </div>	
         <div id="location-div" class="location-pane">
@@ -118,8 +121,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                 <!-- input will be added -->
             </div>
         </div>
-
+    </div>
+		
+	<div id = "minimap">
+		<div id = "minimap-div">
+			<iframe id='minimap-iframe' scrolling="no" src="http://localhost:3000/"
+				>
+			</iframe>
+		</div>
 	</div>
+
 	<script src="visualiser.js"></script>
 	<script src="paths.js"></script>
 	<script src="user.js"></script>

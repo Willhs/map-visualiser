@@ -56,6 +56,7 @@ var record = {
 
 // handles the upload of an file containing exploration data
 function handleExplorationUpload(file){
+	console.log(file);
 	fr = new FileReader();
 	fr.onload = receivedText;
 	fr.readAsText(file);
@@ -72,15 +73,6 @@ function handleExplorationUpload(file){
 // beings recording of certain user navigation actions
 function startRecording() {
 
-	buttonImageConvert("record-button", "record_red.jpeg");
-	buttonImageConvert("stop-button", "stop_red.jpeg");
-	buttonImageConvert("reset-button","reset_red.jpeg");
-	buttonImageConvert("save-exploration-button", "save_blue.jpeg");
-	buttonImageConvert("play-exploration-button","play_green.jpg");
-	stopExplButton.disabled = false;
-	saveExplButton.disabled = false;
-	playExplButton.disabled = false;
-	recordExplButton.disabled = false;
 	//playExplButton.disabled = true;
 
 	// adds event listeners which record user navigation actions
@@ -88,7 +80,7 @@ function startRecording() {
 
 	// listeners for all events that cause scale and pan transitions
 	// go to city button
-	goToCity.addEventListener("click", recordTravel(document.getElementById('city-list').value));
+	//goToCity.addEventListener("click", recordTravel(document.getElementById('city-list').value));
 
 	// cities on the map
 	var mapCities = document.getElementsByClassName("place");
@@ -103,7 +95,16 @@ function startRecording() {
 		var entry = cityEntries.item(i);
 		entry.addEventListener("dblclick", recordTravel(entry.value));
 	}
-
+	
+	buttonImageConvert("record-button", "record_red.jpeg");
+	buttonImageConvert("stop-button", "stop_red.jpeg");
+	buttonImageConvert("reset-button","reset_red.jpeg");
+	buttonImageConvert("save-exploration-button", "save_blue.jpeg");
+	buttonImageConvert("play-exploration-button","play_green.jpg");
+	stopExplButton.disabled = false;
+	saveExplButton.disabled = false;
+	playExplButton.disabled = false;
+	recordExplButton.disabled = false;
 	addRecordingGraphics();
 }
 
@@ -151,7 +152,7 @@ function stopRecording() {
 		buttonImageConvert("reset-button", "reset_gray.jpeg");
 	}
 	// removes event listeners which are recording user navigation.
-	goToCity.removeEventListener("click", recordTravel);
+	// goToCity.removeEventListener("click", recordTravel);
 	zoom.on("zoom.record", null);//remove recording zoom listener
 	//saveExplButton.disabled = false; // can now save recording.
 
