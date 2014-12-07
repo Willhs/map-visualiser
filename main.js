@@ -51,29 +51,10 @@ app.post('/postpath', function(req, res){
 	});
 });
 
-app.post('/postUser', function(req, res){
-	res.send(req.body);
-
-	var Timestamp = new Date();
-	var user = req.body.user;
-	var username = req.body.name;
-	console.log("username: "+ username);
-	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/user-"+username)){
-		fs.mkdirSync("public/data/user/user-"+username);
-	}
-	fs.writeFile("public/data/user/user-" + username + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
-	});
-});
-
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 	var timestamp = new Date();
 	var exploration = req.body.exploration;
-<<<<<<< HEAD
 
 	// makes 'pathectory' for files if none exist.
 	var path = "public/data/Exploration/";
@@ -94,17 +75,7 @@ app.post('/postUser', function(req, res){
 	var path = "public/data/user/User-" + userName + "/";
 	ensureDirExists(path);
 
-	fs.writeFile(path + timestamp + ".json", user+"\n", function(err){
-=======
-	var username = req.body.name;
-	// makes 'directory' for files if none exist.
-	if (!fs.existsSync("public/data/user/user-"+username+"/Exploration")){
-		console.log("create new exploration folder")
-		fs.mkdirSync("public/data/user/user-"+username+"/Exploration");
-	}
-
-	console.log("writing");
-	fs.writeFile("public/data/user/user-"+username+"/Exploration/saveExploration " + Timestamp + ".json", exploration+"\n", function(err){
+	fs.writeFile(path + timestamp + ".json", user+"\n", function(err){	
 		if(err){
 			console.log(err);
 		}
@@ -133,12 +104,10 @@ app.post('/postFile', function(req, res){
 
 	console.log("writing");
 	fs.writeFile("public/data/user/user-"+to+"/Shared/File/sharedFileFrom"+ from+" - " + Timestamp + ".json", file +"\n", function(err){
->>>>>>> 1471fe0a4b4824efcc679276fd4994d87cb15e9b
 		if(err){
 			console.log(err);
 		}
 	});
-<<<<<<< HEAD
 });
 
 app.post('/postAnnotation', function(req, res){
@@ -162,7 +131,7 @@ app.post('/postAnnotation', function(req, res){
 	fs.writeFile(fileName, JSON.stringify(annotation, 4, null), function(err) {
 		if (err){ console.log("errooor: "+err); }
 	});
-	res.send(200);
+	res.send(200); // success code
 });
 
 app.get("/getAnnotation", function(req, res){
@@ -196,12 +165,31 @@ app.get("/getAnnotation", function(req, res){
 	}
 });
 
+app.post("/deleteAnnotation", function(req, res){
+	console.log("delete annotation");
+	var annotation = JSON.parse(req.body.annotation);
+	var locationName = annotation.location.properties.NAME;
+	var path = "public/data/annotation/" + locationName + "/";
+	var annotationFiles = fs.readdirSync(path);
+
+	// find and delete the file corresponding to the annotation specified.
+	annotationFiles.forEach(function(filename){
+		var inputAnnotation = JSON.parse(fs.readFileSync(path + filename));
+		
+		//console.log(JSON.stringify(annotation) + "\n" + JSON.stringify(inputAnnotation) + "\n\n");
+		// if annotations are equal, delete the file
+		if (//annotation.user === inputAnnotation.user
+			annotation.timestamp === inputAnnotation.timestamp
+			&& annotation.text === inputAnnotation.text){
+			fs.unlink(path + filename);
+			res.send(200); // success code
+		}
+	});
+});
+
 // returns whether the dir existed
 function ensureDirExists(path){
 	if (!fs.existsSync(path)){
 		fs.mkdirSync(path);
 	}
 }
-=======
-});
->>>>>>> 1471fe0a4b4824efcc679276fd4994d87cb15e9b

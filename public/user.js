@@ -49,6 +49,7 @@ function setButtonAndSetUser(fname){
 	currentUser = new user(fname,document.getElementById(fname).src);
 	record.user = currentUser;
 	saveUser();
+	refreshLocationInfo();
 }
 function setButtonBorderColorOff(name){
 	var userNames = ['obama','john','lorde','will'];

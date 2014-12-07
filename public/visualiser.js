@@ -117,12 +117,12 @@ d3.json("data/kaz_places.json", function(error, json){
 	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
 
 	//Populate city selector
-	for (var i = 0; i < cities.length; i++) {
+	/*for (var i = 0; i < cities.length; i++) {
 		var entry = document.createElement("option");
 		entry.text = cities[i].properties.NAME;
 		entry.value = i;
 		document.getElementById("city-list").appendChild(entry);
-	}
+	}*/
 
 });
 
@@ -132,16 +132,13 @@ function selectLocation(city){
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
 
 	// make and add list items to the location description
-	var country = document.createElement("li");
-	country.innerHTML = "Country: " + city.properties.SOV0NAME;
-
-	var population = document.createElement("li");
+	
+	/*var population = document.createElement("li");
 	population.innerHTML = "Population: " + city.properties.GN_POP;
 
 	var list = document.getElementById("location-info");
 	list.innerHTML = null; // clear previous info list
-	list.appendChild(country);
-	list.appendChild(population);
+	list.appendChild(population);*/
 
 	var annotations = document.getElementById("annotation-container");
 	annotations.innerHTML = null; // clear previous annotations
@@ -153,21 +150,61 @@ function selectLocation(city){
 		data: city.properties.NAME,
 		success: addAnnotations, 
 		dataType: "json",
-		complete: function(){ console.log("get complete"); }
 	});		
 
-	// adds annotations to the location info
+	// displays annotations associated with the current location
 	function addAnnotations(annotations){
 		if (annotations === "no_annotations") return;
 		var container = document.getElementById("annotation-container");
 
 		annotations.forEach(function(annotation){
-			console.log("adding annotation");
-		 	var div = document.createElement("div")
-		 	var par = document.createElement("p");
-		 	par.innerHTML = annotation.text;
-		 	div.appendChild(par);
-			container.appendChild(div);
+
+			var user = annotation.user;
+			var timestamp = new Date(annotation.timestamp);
+			var time = timestamp.getHours() + ":" + timestamp.getMinutes();
+			var date = timestamp.getDate() + "/" + timestamp.getMonth();
+		 	var annInfo = "<i> – " + user.fname + "  " + date + " " + time + "</i>";
+
+		 	// make necessary DOM elements
+		 	var rowDiv = document.createElement("div");
+		 	var textDiv = document.createElement("div");
+		 	var controlsDiv = document.createElement("div");
+		 	var textPar = document.createElement("p");
+		 	var infoPar = document.createElement("p");
+
+		 	// stylistic and positional properties
+		 	rowDiv.style.display = "table-row";
+		 	textDiv.style.padding = "5px 10px";
+		 	controlsDiv.style.padding = "5px 10px";
+		 	textDiv.style.display = "table-cell";
+		 	controlsDiv.style.display = "table-cell";
+		 	controlsDiv.style.paddingLeft = "50px";
+		 	textPar.style.display = 'inline';
+		 	textPar.style.color = "red";
+		 	infoPar.style.display = 'inline';
+
+		 	textPar.innerHTML = annotation.text;
+		 	infoPar.innerHTML = annInfo;
+
+		 	// display delete button if user owns the annotation
+		 	// TODO: more reliable equality check
+		 	if (currentUser.fname === user.fname){
+			 	var deleteButton = document.createElement("input");
+			 	deleteButton.type = "image";
+			 	deleteButton.src = "image/delete.png";
+			 	deleteButton.style.width = "10px";
+			 	deleteButton.style.height = "10px";
+			 	deleteButton.onclick = function () { deleteAnnotation(annotation); }
+		 		controlsDiv.appendChild(deleteButton);
+		 	}
+		 	
+		 	textDiv.appendChild(textPar);
+		 	textDiv.appendChild(infoPar);
+
+		 	rowDiv.appendChild(textDiv);
+		 	rowDiv.appendChild(controlsDiv);
+
+			container.appendChild(rowDiv);			
 		});		
 	}
 
@@ -181,7 +218,7 @@ function selectLocation(city){
 function submitAnnotation(annotationText){
 
 	var annotation = {
-		user: userInfo.user,
+		user: currentUser,
 		location: selectedLocation,
 		text: annotationText,
 		timestamp: new Date()
@@ -191,16 +228,28 @@ function submitAnnotation(annotationText){
 
 	$.ajax({
 		type: 'POST',
-		url: "/postAnnotation",//url of receiver file on server
+		url: "/postAnnotation",
 		data: { "annotation": JSON.stringify(annotation, null, 4) }, // plain object
 		dataType: "json",
-		complete: refreshInfo
-	});
+		complete: refreshLocationInfo
+	});	
+}
 
-	// refresh the location info bar (to show the new annotation)
-	function refreshInfo(){
-		selectLocation(selectedLocation);
-	}
+// refresh the location info bar (to show the new annotation)
+function refreshLocationInfo(){
+	selectLocation(selectedLocation);
+}
+
+// removing an annotation from a location.
+function deleteAnnotation(annotation){
+	console.log("delete annotation");
+	$.ajax({
+		type: 'POST',
+		url: "deleteAnnotation",
+		data: { "annotation": JSON.stringify(annotation, null, 4) },
+		dataType: "json",
+		complete: refreshLocationInfo
+	})
 }
 
 // The movement function

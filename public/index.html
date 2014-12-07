@@ -47,10 +47,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 						<b>Select User:</b>
 					</h3>
 					</p>
-					</td>
 					<td><input type="image" id='obama' name="obama"
 						src="image/userImage/obama.jpeg" width="40" height="40" border="3"
-						alt="javascript button">
+						alt="javascript button"></td>
 					<td><input type="image" id='john' name="john"
 						src="image/userImage/john.jpeg" width="40" height="40" border="3"
 						alt="javascript button"></td>
@@ -63,91 +62,62 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 					<td><input type="text" id="userName-input" value='user name'>
 						<input type="submit" id="submit-userName" value="Add User">
 					</td>
-
 				</table>
 			</div>
 		</div>
-
 		<div class="items">
-			<div id="item1" class="tab">
-				<br>
-				<div id="pick-city">
-					<select id="city-list"></select> <input id="go-to-city"
-						type="Submit" value="Go to City"> <select id="path-list"
-						size="5"></select>
-				</div>
-				<div id="path-controls">
-					<input id="add-to-path" type="Submit" value="Add to Path">
-					<input id="remove-from-path" type="Submit" value="Remove from Path">
-					<input id="follow-path" type="Submit" value="Follow Path">
-					<input id="save-path" type="Submit" value="Save Path">
-				</div>
-				<h3>
-					<b>Load path</b>
-				</h3>
-				<input id="upload-path" type='file' name='userFile'><br>
-			</div>
+            <h2>Exploration recording controls</h2> 
+			<table border="10">
+				<td><input type="image" id="record-button"
+					src="image/record_gray.jpeg" width="40" height="40" border="0"
+					alt="javascript button"></td>
+				<td><input type="image" id="play-exploration-button"
+					src="image/play_gray.jpeg" width="40" height="40" border="0"
+					alt="javascript button"></td>
+				<td><input type="image" id="pause-button" name="jsbuttonPause"
+					src="image/pause_gray.jpeg" width="40" height="40" border="0"
+					alt="javascript button"> </td>
+				<td><input type="image" id="stop-button"
+					src="image/stop_gray.jpeg" width="40" height="40" border="0"
+					alt="javascript button"></td>
+				<td><input type="image" id="save-exploration-button"
+					src="image/save_gray.jpeg" width="40" height="40" border="0"
+					alt="javascript button"></td>
+				<td><input type="image" id="reset-button"
+					src="image/reset_gray.jpeg" width="40" height="40" border="0"
+					alt="javascript button"></td>
+			</table>
+			<h3>
+				<b>Load Exploration</b>
+			</h3>
+			<input id="load-exploration-button" type='file' name='userFile'><br>
+		</div>
+        <div>
+            <form name="form">
+                <h3>
+                    <label for="to">To:</label>
+                </h3>
+                <input type="text" id="userId" name="user" value="" />
+                <h3>
+                    <b>Load File to Share:</b>
+                </h3>
+                <input id="load-file-button" type='file' name='userFile'><br>
 
-			<div class="items">
-				<table border="10">
-					<td><input type="image" id="record-button"
-						src="image/record_gray.jpeg" width="40" height="40" border="0"
-						alt="javascript button"></td>
-					<td><input type="image" id="play-exploration-button"
-						src="image/play_gray.jpeg" width="40" height="40" border="0"
-						alt="javascript button"></td>
-					<td><input type="image" id="pause-button" name="jsbuttonPause"
-						src="image/pause_gray.jpeg" width="40" height="40" border="0"
-						alt="javascript button"> </t>
-					<td><input type="image" id="stop-button"
-						src="image/stop_gray.jpeg" width="40" height="40" border="0"
-						alt="javascript button"></td>
-					<td><input type="image" id="save-exploration-button"
-						src="image/save_gray.jpeg" width="40" height="40" border="0"
-						alt="javascript button"></td>
-					<td><input type="image" id="reset-button"
-						src="image/reset_gray.jpeg" width="40" height="40" border="0"
-						alt="javascript button"></td>
-				</table>
-				<h3>
-					<b>Load Exploration</b>
-				</h3>
-				<input id="load-exploration-button" type='file' name='userFile'><br>
-			</div>	
-        </div>
+                <button type = 'button' id="submit-message">Send</button>
+            </form>
+        </div>	
         <div id="location-div" class="location-pane">
-            <h1 id="location-title" class="location-pane"></h1>
-            <ul id="location-info" class="location-pane">
+            <h2 id="location-title"></h2>
+            <ul id="location-info">
                 <!-- script will insert elements here -->
             </ul>
-            <div id="annotation-container">
+            <div id="annotation-container" display="table">
                 <!-- will be populated by user annotations -->
             </div>
             <div id="annotation-input-container">
                 <!-- input will be added -->
             </div>
         </div>
-
-		<div>
-			<div
-				style="border: 3px solid rgb(201, 0, 1); overflow: hidden; margin: 15px auto; max-width: 339px; max-height: 200px">
-				<iframe scrolling="no" src="http://localhost:3000/"
-					style="border: 0px none; margin-left: -185px; height: 859px; margin-top: -533px; width: 926px;">
-				</iframe>
-			</div>
-			<form name="form">
-				<h3>
-					<label for="to">To:</label>
-				</h3>
-				<input type="text" id="userId" name="user" value="" />
-				<h3>
-					<b>Load File to Share:</b>
-				</h3>
-				<input id="load-file-button" type='file' name='userFile'><br>
-
-				<button type = 'button' id="submit-message">Send</button>
-			</form>
-		</div>
 
 	</div>
 	<script src="visualiser.js"></script>

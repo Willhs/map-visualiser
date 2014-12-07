@@ -1,9 +1,8 @@
 //-------------- event handling for DOM elements ----------------
-
+/*p
+// paths
 var goToCity = document.getElementById("go-to-city");
 goToCity.addEventListener("click", function () { goToLoc(document.getElementById('city-list').value); });
-
-// paths
 document.getElementById("add-to-path").onclick = function () { addToPath(document.getElementById('city-list').value); }
 document.getElementById("remove-from-path").onclick = function () { removeFromPath(getSelectedInPath(document.getElementById('path-list'))); }
 document.getElementById("follow-path").onclick = function () { followPath(0); }
@@ -11,7 +10,7 @@ document.getElementById('save-path').onclick = function () { savePath(); }
 
 document.getElementById("upload-path").addEventListener('change', function () {
 	handlePathUpload(document.getElementById("upload-path").files[0]);
-}, false);
+}, false);*/
 
 // explorations
 var resetExplButton = document.getElementById("reset-button");
@@ -50,10 +49,11 @@ function makeAnnotationInput(container){
 }
 
 // users
-document.getElementById("obama").onclick= function() {	setButtonAndSetUser("obama");}
-document.getElementById("john").onclick= function() {	setButtonAndSetUser("john");}
-document.getElementById("lorde").onclick= function() {	setButtonAndSetUser("lorde");}
-document.getElementById("will").onclick= function() {	setButtonAndSetUser("will");}
+var users = ["obama", "john", "lorde", "will"];
+
+users.forEach(function(userName){
+	document.getElementById(userName).onclick= function() {	setButtonAndSetUser(userName);}	
+});
 
 document.getElementById("submit-userName").onclick = function(){
 	currentUser = new user(document.getElementById("userName-input").value, currentUser.userImage);
