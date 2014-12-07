@@ -59,7 +59,11 @@ app.post('/postExploration', function(req, res){
 	var exploration = req.body.exploration;
 	var name = req.body.name;
 	// makes 'pathectory' for files if none exist.
-	var path = "public/data/user/User-"+ name+"/Exploration/";
+	var path = "public/data/user/";
+	ensureDirExists(path);
+	path += "user-"+name;
+	ensureDirExists(path);
+	path +="/Exploration/";
 	ensureDirExists(path)
 	console.log("writing");
 	fs.writeFile(path + timestamp + ".json", exploration+"\n", function(err){
@@ -68,28 +72,27 @@ app.post('/postExploration', function(req, res){
 });
 
 //post user info, exporation and path on the map for loading
-app.post('/postUser', function(req, res){
-	res.send(req.body);
-
-	var Timestamp = new Date();
-	var user = req.body.user;
-	var username = req.body.name;
-	console.log("username: "+ username);
-	// makes 'directory' for files if none exist.
-	var path = "public/data/user/User-" + username;
-	ensureDirExists(path);
-	fs.writeFile(path + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
-		if(err){
-			console.log(err);
-		}
-	});
-});
+//app.post('/postUser', function(req, res){
+//	res.send(req.body);
+//
+//	var Timestamp = new Date();
+//	var user = req.body.user;
+//	var username = req.body.name;
+//	console.log("username: "+ username);
+//	// makes 'directory' for files if none exist.
+//	var path = "public/data/user/User-" + username;
+//	ensureDirExists(path);
+//	fs.writeFile(path + "/saveUser " + Timestamp + ".json", user+"\n", function(err){
+//		if(err){
+//			console.log(err);
+//		}
+//	});
+//});
 
 //post file to shared user folder
-app.post('/postFile', function(req, res){
-	res.send(req.body);
+app.post('/shareExploration', function(req, res){
 
-	var Timestamp = new Date();
+	var timestamp = new Date();
 	var file = req.body.file;
 	var to = req.body.to;
 	var from = req.body.from;
@@ -97,9 +100,8 @@ app.post('/postFile', function(req, res){
 	// makes 'directory' for files if none exist.
 	var path = "public/data/user/User-" + to;
 	ensureDirExists(path);
-	ensureDirExists(path +"/Shared");
-	ensureDirExists(path +"/Shared/"+from);
-	fs.writeFile(path +"/Shared/"+ from+"/" + from  +"-"+ Timestamp + ".json", file +"\n", function(err){
+	ensureDirExists(path +"/Shared/");
+	fs.writeFile(path +"/Shared/" + from  +"-"+ timestamp + ".json", file +"\n", function(err){
 		if(err){
 			console.log(err);
 		}

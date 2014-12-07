@@ -61,10 +61,10 @@ function handleExplorationUpload(file){
 	fr.onload = receivedText;
 	fr.readAsText(file);
 	function receivedText() {
-		var fileRecord = JSON.parse(fr.result);
+		record = JSON.parse(fr.result);
 		// replaces properties of local record.
-		record.events = fileRecord.events;
-		record.firstEventTime = fileRecord.firstEventTime;
+//		record.events = fileRecord.events;
+//		record.firstEventTime = fileRecord.firstEventTime;
 
 		console.log(record.numEvents() + " events add from exploration file");
 	}
