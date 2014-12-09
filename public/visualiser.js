@@ -129,31 +129,32 @@ d3.json("data/kaz_places.json", function(error, json){
 // updates info bar to show information about the location and allows user to add annotations
 function selectLocation(city){
 	selectedLocation = city;
+	displayLocationInfo(city);
+}
+
+function displayLocationInfo(city){
+
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
-
-	// make and add list items to the location description
-	
-	/*var population = document.createElement("li");
-	population.innerHTML = "Population: " + city.properties.GN_POP;
-
-	var list = document.getElementById("location-info");
-	list.innerHTML = null; // clear previous info list
-	list.appendChild(population);*/
 
 	var annotations = document.getElementById("annotation-container");
 	annotations.innerHTML = null; // clear previous annotations
+
+	//remove and add new annotation input
+	var annotationInputCont = document.getElementById("annotation-input-container");
+	annotationInputCont.innerHTML = null;
+	makeAnnotationInput(annotationInputCont);
 
 	// get annotations for this location
 	$.ajax({
 		type: 'GET',
 		url: "/getAnnotation",
 		data: city.properties.NAME,
-		success: makeLocationPopup, 
+		success: displayAnnotations, 
 		dataType: "json",
 	});		
 
 	// displays annotations associated with the current location
-	function makeLocationPopup(annotations){
+	function displayAnnotations(annotations){
 		// if response is "no_annotations", no annotations were found, so do nothing
 		if (annotations === "no_annotations") return;
 		// make a secondary annotation container so that all annotations can be loaded at once
@@ -207,12 +208,20 @@ function selectLocation(city){
 		// TODO: load all annotations at once
 		document.getElementById("annotation-container")	
 			.appendChild(container);
-	}
+	}	
+}
 
-	//remove and add new annotation input
-	var annotationInputCont = document.getElementById("annotation-input-container");
-	annotationInputCont.innerHTML = null;
-	makeAnnotationInput(annotationInputCont);
+// makes an annotation text input element.
+function makeAnnotationInput(container){
+	var annInput = document.createElement("input");
+	annInput.type = "text";
+	annInput.placeholder = "Add annotation";
+
+	annInput.onkeydown = function(event) { // if enter is pushed, submit the annotation
+		if (event.keyCode === 13) submitAnnotation(annInput.value);
+	}
+	container.appendChild(annInput);
+	annInput.focus();
 }
 
 // adds an annotations to the currently selected location

@@ -35,19 +35,6 @@ playExplButton.addEventListener('click', function () {
 var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExplButtonFunction;
 
-// annotations
-function makeAnnotationInput(container){
-	var annInput = document.createElement("input");
-	annInput.type = "text";
-	annInput.placeholder = "Add annotation";
-
-	annInput.onkeydown = function(event) { // if enter is pushed, submit the annotation
-		if (event.keyCode === 13) submitAnnotation(annInput.value);
-	}
-	container.appendChild(annInput);
-	annInput.focus();
-}
-
 // users
 var users = ["obama", "john", "lorde", "will"];
 
