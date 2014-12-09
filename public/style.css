@@ -8,10 +8,10 @@ body{
 }
 
 .map {
-  position: absolute;
-  width: 80%;
-  height: 95%;
-  top: 3px;
+    position: absolute;
+    width: 80%;
+    height: 95%;
+    top: 3px;
 }
 
 .sideBar{
@@ -22,24 +22,6 @@ body{
     height: 95%;
     background-color: #ccc;
     border: 3px solid black;
-}
-
-.tab{
-    font-size:13px;
-    background-color: #EEEEEE;
-    color: #333;
-    padding: 2px 6px 2px 6px;
-    border-top: 1px solid #CCCCCC;
-    border-right: 1px solid #333333;
-    border-bottom: 1px solid #333333;
-}
-
-#pick-city {
-    display: inline-block;
-}
-
-#path-controls {
-    display: inline-block;
 }
 
 .ping{
@@ -58,38 +40,82 @@ input, label {
 }
 
 #zoomChosen, #panChosen {
-  border-radius:10px;
-  width:45px;
-  padding-top:10px; padding-bottom:10px;
-  text-align:center;
-  color:#000000;
-  font-weight:bold;
-  font-size: 1em;
-  margin-left:40px;
+    border-radius :10px;
+    width:45px ;
+    padding-top: 10px; 
+    padding-bottom: 10px;
+    text-align: center;
+    color: #000000;
+    font-weight: bold;
+    font-size: 1em;
+    margin-left: 40px;
 }
 
 .checkbox {
-  float: left;
-  vertical-align: top;
+    float: left;
+    vertical-align: top;
+}
+
+#obama{
+    color:red;
+}
+
+.user-button {
+    width: 40px;
+    height: 40px;
+    border-style: solid;
+}
+
+.exploration-button {
+    width: 40px; 
+    height: 40px;
+    border: 0px ;
 }
 
 .location-pane {
     /*background-color: rgb(0,150,150);*/
 }
 
-#annotation-input-container {
-
-}
-#annotation-input {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    width:100
-}
-#obama{
-	color:red;
+/* Annotation stuff */
+#delete-button {
+    width: 10px;
+    height: 10px;
 }
 
+.annotation-row {
+    /*display: table-row;*/
+    padding: 5px 10px; 
+}
+
+.annotation-inner-container {
+    display: inline-block;
+}
+
+.annotation-text-container {
+    width: 80%;
+    /*overflow: hidden;*/
+}
+
+.annotation-controls {
+    /*min-width: 30%;*/
+    padding-right: 20px;
+    float: right;
+}
+
+.annotation-text {
+    font-size: 14px;
+    display: inline;
+}
+
+.annotation-content {
+    color: red;    
+}
+
+.annotation-info {
+    color: black;
+}
+
+/* Mini-map */
 #minimap {
 	background-color: #ccc;
 	border: 3px solid rgb(0,0, 1);

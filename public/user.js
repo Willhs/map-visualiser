@@ -12,15 +12,8 @@ function setButtonAndSetUser(fname){
 	var srcAdd = document.getElementById(fname).src;
 	currentUser = new userObject(fname,srcAdd);
 	record.user = currentUser;
-	//saveUser();
-//	$.ajax({
-//		type: 'GET',
-//		url: "/getNotification",
-//		success: notification,
-//		dataType: "json",
-//		complete: function(){ console.log("get complete"); }
-//	});
 }
+
 var numberOfFiles = 0;
 
 function notification(notifications){
@@ -33,7 +26,6 @@ function notification(notifications){
 function setButtonBorderColorOff(name){
 	var userNames = ['obama','john','lorde','will'];
 	for(var i = 0; i< userNames.length; i++){
-
 		if(name != userNames[i])
 			document.getElementById(userNames[i]).style.borderColor = "black";
 	}
@@ -44,10 +36,13 @@ function saveFileToSharedUser(name){
 	$.ajax({
 		type: 'POST',
 		url: "/shareExploration",//url of receiver file on server
-		data: {"file":JSON.stringify(record, null, 4),"to":name, "from":currentUser.fname },
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
-		dataType: "json" //text/json...
-
+		data: JSON.stringify({
+			"file": record, 
+			"to": name, 
+			"from": currentUser.fname 
+		}),
+		success: function(response){ console.log(response); }, //callback when ajax request finishes
+		contentType: "application/json"
 	});
 }
 

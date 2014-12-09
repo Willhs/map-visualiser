@@ -64,9 +64,9 @@ function savePath(){
 	$.ajax({
 		type: 'POST',
 		url: "/postpath",//url of receiver file on server
-		data: {"path_taken":JSON.stringify(transitionList, null, 4)},
+		data: JSON.stringify(transitionList),
 		success: function(response){ console.log(response) }, //callback when ajax request finishes
-		dataType: "json" //text/json...
+		contentType: "application/json" //text/json...
 
 	});
 }

@@ -138,19 +138,7 @@ function addRecordingGraphics(){
 }
 
 // ends recording of user navigation
-function stopRecording() {
-	buttonImageConvert("record-button", "record_gray.jpeg");
-	saveExplButton.disabled = false;
-	if(!record.isEmpty()){
-		buttonImageConvert("save-exploration-button", "save_blue.jpeg");
-		buttonImageConvert("play-exploration-button", "play_green.jpg");
-		buttonImageConvert("reset-button", "reset_red.jpeg");
-
-	}else{
-		buttonImageConvert("play-exploration-button", "play_gray.jpeg");
-		buttonImageConvert("save-exploration-button", "save_gray.jpeg");
-		buttonImageConvert("reset-button", "reset_gray.jpeg");
-	}
+function stopRecording() {	
 	// removes event listeners which are recording user navigation.
 	// goToCity.removeEventListener("click", recordTravel);
 	zoom.on("zoom.record", null);//remove recording zoom listener
@@ -172,6 +160,20 @@ function stopRecording() {
 	// remove recording related graphics
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();
+
+	// Jacky's gross stuff
+	buttonImageConvert("record-button", "record_gray.jpeg");
+	saveExplButton.disabled = false;
+	if(!record.isEmpty()){
+		buttonImageConvert("save-exploration-button", "save_blue.jpeg");
+		buttonImageConvert("play-exploration-button", "play_green.jpg");
+		buttonImageConvert("reset-button", "reset_red.jpeg");
+
+	}else{
+		buttonImageConvert("play-exploration-button", "play_gray.jpeg");
+		buttonImageConvert("save-exploration-button", "save_gray.jpeg");
+		buttonImageConvert("reset-button", "reset_gray.jpeg");
+	}
 
 	console.log("Recorded/Played " + record.numEvents() + " events");
 }
@@ -242,8 +244,6 @@ function saveExplButtonFunction () {
 		saveExploration();
 	}
 	else alert("record list are empty!");
-
-
 }
 
 function loadExplButtonFunction () {
@@ -260,8 +260,8 @@ function saveExploration(){
 	$.ajax({
 		type: 'POST',
 		url: "/postExploration",//url of receiver file on server
-		data: {"exploration":JSON.stringify(record, null, 4),"name": currentUser.fname},
+		data: JSON.stringify(record),
 		success: function(response){ console.log(response) }, //callback when ajax request finishes
-		dataType: "json" //text/json...
+		contentType: "application/json"
 	});
 }

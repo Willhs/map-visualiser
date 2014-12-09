@@ -27,7 +27,7 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var app = express();
 
-app.use(bodyParser());
+app.use(bodyParser.json());
 
 var server = app.listen(3000, function() {
 	console.log('Listening on port %d', server.address().port);
@@ -40,32 +40,34 @@ app.use(express.static(__dirname + '/public'));
 app.post('/postpath', function(req, res){
 	var timestamp = new Date();
 
-	var path = req.body.path_taken;
+	var path = req.body;
 
 	// create 'path' path if it doesn't already exist
 	var filePath = "public/data/path/";
 	ensureDirExists(filePath)
 
-	fs.writeFile(filePath + timestamp + "-savePath.json", path+"\n", function(err){
+	fs.writeFile(filePath + timestamp + "-savePath.json", JSON.stringify(path, null, 4), function(err){
 		if(err){ console.log(err); }
 	});
 });
 
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
+
+	var exploration = req.body;
+	var name = exploration.user.fname;
 	var timestamp = new Date();
-	var exploration = req.body.exploration;
-	var name = req.body.name;
-	// makes 'pathectory' for files if none exist.
+	// makes directory for files if none exist.
 	var path = "public/data/user/";
 	ensureDirExists(path);
 	path += "user-"+name;
 	ensureDirExists(path);
 	path +="/Exploration/";
-	ensureDirExists(path)
-	fs.writeFile(path + timestamp + ".json", exploration+"\n", function(err){
+	ensureDirExists(path);
+	fs.writeFile(path + timestamp + ".json", JSON.stringify(exploration, null, 4), function(err){
 		if(err){ console.log(err); }
 	});
+	console.log("wrote exploration file");
 });
 
 //post file to shared user folder
@@ -75,12 +77,12 @@ app.post('/shareExploration', function(req, res){
 	var file = req.body.file;
 	var to = req.body.to;
 	var from = req.body.from;
-	console.log("to: "+ to + " from: "+ from);
-	// makes 'directory' for files if none exist.
+	console.log("shared exploration to: "+ to + " from: "+ from);
+	// makes directory for files if none exist.
 	var path = "public/data/user/User-" + to;
 	ensureDirExists(path);
 	ensureDirExists(path +"/Shared/");
-	fs.writeFile(path +"/Shared/" + from  +"-"+ timestamp + ".json", file +"\n", function(err){
+	fs.writeFile(path +"/Shared/" + from  +"-"+ timestamp + ".json", JSON.stringify(file, null, 4), function(err){
 		if(err){
 			console.log(err);
 		}
@@ -88,8 +90,8 @@ app.post('/shareExploration', function(req, res){
 });
 
 app.post('/postAnnotation', function(req, res){
-
-	var annotation = JSON.parse(req.body.annotation);
+	
+	var annotation = req.body;
 	var timestamp = new Date(annotation.timestamp); // apparently timestamp is now a string...
 	var location = annotation.location;
 	var user = annotation.user; // string
@@ -108,7 +110,7 @@ app.post('/postAnnotation', function(req, res){
 	fs.writeFile(fileName, JSON.stringify(annotation, 4, null), function(err) {
 		if (err){ console.log("errooor: "+err); }
 	});
-	res.send(200); // success code
+	res.sendStatus(200); // success code
 });
 
 app.get("/getAnnotation", function(req, res){
@@ -163,7 +165,7 @@ app.get("/getNotification", function(req, res){
 
 app.post("/deleteAnnotation", function(req, res){
 	console.log("delete annotation");
-	var annotation = JSON.parse(req.body.annotation);
+	var annotation = req.body;
 	var locationName = annotation.location.properties.NAME;
 	var path = "public/data/annotation/" + locationName + "/";
 	var annotationFiles = fs.readdirSync(path);
@@ -174,11 +176,11 @@ app.post("/deleteAnnotation", function(req, res){
 		
 		//console.log(JSON.stringify(annotation) + "\n" + JSON.stringify(inputAnnotation) + "\n\n");
 		// if annotations are equal, delete the file
-		if (//annotation.user === inputAnnotation.user
-			annotation.timestamp === inputAnnotation.timestamp
+		if (annotation.user.fname === inputAnnotation.user.fname
+			&& annotation.timestamp === inputAnnotation.timestamp
 			&& annotation.text === inputAnnotation.text){
 			fs.unlink(path + filename);
-			res.send(200); // success code
+			res.sendStatus(200); // success code
 		}
 	});
 });
