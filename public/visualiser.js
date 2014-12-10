@@ -67,7 +67,8 @@ var svg = d3.select("body").append("svg")
 .attr("width", width)
 .attr("height", height)
 .attr("class", "svg_map")
-.call(zoom);
+.call(zoom) // attach zoom listener
+.on("dblclick.zoom", null); // disable double-click zoom
 
 var g = svg.append("g")
 	.attr("transform", "translate(0,0)scale(1)");
@@ -96,7 +97,7 @@ d3.json("data/kaz_places.json", function(error, json){
 	.data(cities)
 	.enter()
 	.append("g")
-	.attr("id", function(d, i) { return i; })
+	.attr("id", function(d, i) { return d.properties.NAME; })
 	.on("dblclick.zoom", cityClicked)
 	.on("click", selectLocation)
 	.attr("class", "place");

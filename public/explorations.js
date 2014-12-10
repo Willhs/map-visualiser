@@ -73,20 +73,16 @@ function handleExplorationUpload(file){
 // beings recording of certain user navigation actions
 function startRecording() {
 
-	//playExplButton.disabled = true;
-
 	// adds event listeners which record user navigation actions
 	zoom.on("zoom.record", recordMovement);
 
 	// listeners for all events that cause scale and pan transitions
-	// go to city button
-	//goToCity.addEventListener("click", recordTravel(document.getElementById('city-list').value));
-
+	
 	// cities on the map
 	var mapCities = document.getElementsByClassName("place");
 	for (var i = 0; i < mapCities.length; i++){
 		var city = mapCities.item(i);
-		city.addEventListener("dblclick", recordTravel(city.id));
+		city.addEventListener("dblclick", recordTravel(getCityIndex(city.id)));
 	}
 
 	// entries in the side bar drop-down menu
@@ -95,6 +91,9 @@ function startRecording() {
 		var entry = cityEntries.item(i);
 		entry.addEventListener("dblclick", recordTravel(entry.value));
 	}
+
+	// go to city button
+	//goToCity.addEventListener("click", recordTravel(document.getElementById('city-list').value));
 	
 	buttonImageConvert("record-button", "record_red.jpeg");
 	buttonImageConvert("stop-button", "stop_red.jpeg");
@@ -148,7 +147,7 @@ function stopRecording() {
 	var mapCities = document.getElementsByClassName("place");
 	for (var i = 0; i < mapCities.length; i++){
 		var city = mapCities.item(i);
-		city.removeEventListener("onclick", recordTravel(city.id));
+		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
 	}
 
 	// entries in the side bar drop-down menu
@@ -200,10 +199,13 @@ function playRecording(){
 		var currentEvent = record.getEvent(i);
 		switch (currentEvent.type){
 			case ("travel"):
-				goToLoc(parseInt(currentEvent.body));
+				var cityIndex = currentEvent.body;
+				goToLoc(parseInt(cityIndex));
 				break;
 			case ("movement"):
-				g.attr("transform", currentEvent.body);
+				var transform = currentEvent.body;
+				g.attr("transform", transform);
+				updateScaleAndTrans();
 				break;
 		}
 
