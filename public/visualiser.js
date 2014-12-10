@@ -256,7 +256,7 @@ function deleteAnnotation(annotation){
 		type: 'POST',
 		url: "deleteAnnotation",
 		data: JSON.stringify(annotation),
-		dataType: "json",
+		contentType: "application/json",
 		complete: refreshLocationInfo
 	})
 }
