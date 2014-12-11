@@ -24,6 +24,10 @@ body{
     border: 3px solid black;
 }
 
+.sideBar > * { /* all child elements of sidebar */
+    padding-left: 1em;
+}
+
 .ping{
     fill: none;
     stroke: red;
@@ -84,7 +88,7 @@ input, label {
 
 .annotation-row {
     /*display: table-row;*/
-    padding: 5px 10px; 
+    padding: 5px; 
 }
 
 .annotation-inner-container {

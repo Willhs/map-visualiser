@@ -65,7 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 		<div class="exploration-controls">
             <h2>Exploration recording controls</h2> 
-			<table border="10">
+			<table border="5">
 				<td><input type="image" id="record-button" 
                     class="exploration-button"
 					src="image/record_gray.jpeg"
@@ -92,20 +92,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 					alt="javascript button"></td>
 			</table>			
 		</div>
-        <div>
-            <form name="form">
-                <h3>
-                    <b>Load Exploration</b>
-                </h3>
-                <input id="load-exploration-button" type='file' name='userFile'><h3>
-                    <label for="to">To:</label>
-                </h3>
-                <input type="text" id="userId" name="user" value="" />
-                <button type='button' id="submit-message">Send</button>
-            </form>
+        <div class="exploration-io">
+            <h3>
+                <b>Load Exploration</b>
+            </h3>
+            <input id="load-exploration-button" type='file' name='userFile'><h3>
+                <label for="to">To:</label>
+            </h3>
+            <input type="text" id="userId" name="user" value="" />
+            <button type='button' id="submit-message">Send</button>
         </div>
         <div id="notificaiton-container">
             <h2 id="notificaiton"></h2>
+        </div>
+         <div class='select-device'>
+            <label for='audioSource'>Audio source: </label>
+            <select id='audioSource'></select>
         </div>
         <div id="location-div" class="location-pane">
             <h2 id="location-title"></h2>
@@ -127,11 +129,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 	</div> -->
 
-	<script src="visualiser.js"></script>
-	<script src="paths.js"></script>
-	<script src="user.js"></script>
-	<script src="explorations.js"></script>
-	<script src="events.js"></script>
+	<script src="js/visualiser.js"></script>
+	<script src="js/paths.js"></script>
+	<script src="js/user.js"></script>
+	<script src="js/explorations.js"></script>
+	<script src="js/events.js"></script>
+    <script src="js/audio/audio.js"></script>
 
 </body>
 </html>
