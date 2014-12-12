@@ -132,7 +132,7 @@ function selectLocation(city){
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
 
 	// make and add list items to the location description
-	
+
 	/*var population = document.createElement("li");
 	population.innerHTML = "Population: " + city.properties.GN_POP;
 
@@ -148,9 +148,9 @@ function selectLocation(city){
 		type: 'GET',
 		url: "/getAnnotation",
 		data: city.properties.NAME,
-		success: addAnnotations, 
+		success: addAnnotations,
 		dataType: "json",
-	});		
+	});
 
 	// displays annotations associated with the current location
 	function addAnnotations(annotations){
@@ -197,15 +197,15 @@ function selectLocation(city){
 			 	deleteButton.onclick = function () { deleteAnnotation(annotation); }
 		 		controlsDiv.appendChild(deleteButton);
 		 	}
-		 	
+
 		 	textDiv.appendChild(textPar);
 		 	textDiv.appendChild(infoPar);
 
 		 	rowDiv.appendChild(textDiv);
 		 	rowDiv.appendChild(controlsDiv);
 
-			container.appendChild(rowDiv);			
-		});		
+			container.appendChild(rowDiv);
+		});
 	}
 
 	//remove and add new annotation input
@@ -232,12 +232,15 @@ function submitAnnotation(annotationText){
 		data: { "annotation": JSON.stringify(annotation, null, 4) }, // plain object
 		dataType: "json",
 		complete: refreshLocationInfo
-	});	
+	});
 }
 
 // refresh the location info bar (to show the new annotation)
 function refreshLocationInfo(){
-	selectLocation(selectedLocation);
+	if(selectedLocation!=null){
+		selectLocation(selectedLocation);
+
+	}
 }
 
 // removing an annotation from a location.

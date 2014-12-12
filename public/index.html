@@ -66,7 +66,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			</div>
 		</div>
 		<div class="items">
-            <h2>Exploration recording controls</h2> 
+            <h2>Exploration recording controls</h2>
 			<table border="10">
 				<td><input type="image" id="record-button"
 					src="image/record_gray.jpeg" width="40" height="40" border="0"
@@ -86,14 +86,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<td><input type="image" id="reset-button"
 					src="image/reset_gray.jpeg" width="40" height="40" border="0"
 					alt="javascript button"></td>
-			</table>			
+			</table>
 		</div>
         <div>
             <form name="form">
                 <h3>
                     <b>Load Exploration</b>
                 </h3>
-                <input id="load-exploration-button" type='file' name='userFile'>
+                <div id = "chooiceFiles"></div><input id="load-exploration-button" type='file' name='userFile' multiple/>
+                	<div id = "fileslist-container">
+                	<output id = "list"></output>
+                	</div>
+                </div>
                 <h3>
                     <label for="to">To:</label>
                 </h3>
@@ -101,9 +105,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
                 <button type='button' id="submit-message">Send</button>
             </form>
         </div>
-        <div id="notificaiton-container">
-            <h2 id="notificaiton"></h2>
-        </div>
+
         <div id="location-div" class="location-pane">
             <h2 id="location-title"></h2>
             <ul id="location-info">
@@ -118,13 +120,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
         </div>
     </div>
 
-	</div>
+	<!--
 	<div id="minimap">
 		<div id="minimap-div">
 			<iframe id='minimap-iframe' scrolling="no"
 				src="http://localhost:3000/"> </iframe>
 		</div>
-	</div>
+	</div> -->
+ 	<div id = "notification" class="notificaiton-container"></div>
+ 	<div id = "notification-files"class = "notificaitonfiles-container">
+ 	</div>
 
 	<script src="visualiser.js"></script>
 	<script src="paths.js"></script>

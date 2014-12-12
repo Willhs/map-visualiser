@@ -12,7 +12,7 @@ document.getElementById("upload-path").addEventListener('change', function () {
 	handlePathUpload(document.getElementById("upload-path").files[0]);
 }, false);*/
 
-// explorations
+//explorations
 var resetExplButton = document.getElementById("reset-button");
 resetExplButton.onclick = resetExplButtonFunction;
 
@@ -35,7 +35,7 @@ playExplButton.addEventListener('click', function () {
 var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExplButtonFunction;
 
-// annotations
+//annotations
 function makeAnnotationInput(container){
 	var annInput = document.createElement("input");
 	annInput.type = "text";
@@ -48,23 +48,26 @@ function makeAnnotationInput(container){
 	annInput.focus();
 }
 
-// users
+//users
 var users = ["obama", "john", "lorde", "will"];
 
 users.forEach(function(userName){
-	document.getElementById(userName).onclick= function() {	setButtonAndSetUser(userName);}	
+	document.getElementById(userName).onclick= function() {setButtonAndSetUser(userName);}
 });
 
 document.getElementById("submit-userName").onclick = function(){
-	//currentUser = new user(document.getElementById("userName-input").value, currentUser.userImage);
 	checkUsersName(document.getElementById("userName-input").value, currentUser.userImage);
 }
 
-document.getElementById("submit-message").onclick = function(){
+document.getElementById("submit-message").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("userId").value;
 	console.log("userID: "+userLabelValue);
 	if(userLabelValue!=null){
 		saveFileToSharedUser(userLabelValue);
 	}
-}
+});
+document.getElementById("notification").addEventListener('click',function(){
+	showListNotifications();
+});
+
