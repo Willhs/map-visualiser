@@ -67,7 +67,8 @@ var svg = d3.select("body").append("svg")
 .attr("width", width)
 .attr("height", height)
 .attr("class", "svg_map")
-.call(zoom);
+.call(zoom) // attach zoom listener
+.on("dblclick.zoom", null); // disable double-click zoom
 
 var g = svg.append("g")
 	.attr("transform", "translate(0,0)scale(1)");
@@ -96,7 +97,7 @@ d3.json("data/kaz_places.json", function(error, json){
 	.data(cities)
 	.enter()
 	.append("g")
-	.attr("id", function(d, i) { return i; })
+	.attr("id", function(d, i) { return d.properties.NAME; })
 	.on("dblclick.zoom", cityClicked)
 	.on("click", selectLocation)
 	.attr("class", "place");
@@ -129,33 +130,37 @@ d3.json("data/kaz_places.json", function(error, json){
 // updates info bar to show information about the location and allows user to add annotations
 function selectLocation(city){
 	selectedLocation = city;
+	displayLocationInfo(city);
+}
+
+function displayLocationInfo(city){
+
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
-
-	// make and add list items to the location description
-
-	/*var population = document.createElement("li");
-	population.innerHTML = "Population: " + city.properties.GN_POP;
-
-	var list = document.getElementById("location-info");
-	list.innerHTML = null; // clear previous info list
-	list.appendChild(population);*/
 
 	var annotations = document.getElementById("annotation-container");
 	annotations.innerHTML = null; // clear previous annotations
+
+	//remove and add new annotation input
+	var annotationInputCont = document.getElementById("annotation-input-container");
+	annotationInputCont.innerHTML = null;
+	makeAnnotationInput(annotationInputCont);
 
 	// get annotations for this location
 	$.ajax({
 		type: 'GET',
 		url: "/getAnnotation",
 		data: city.properties.NAME,
-		success: addAnnotations,
+		success: displayAnnotations, 
 		dataType: "json",
-	});
+	});		
 
 	// displays annotations associated with the current location
-	function addAnnotations(annotations){
+	function displayAnnotations(annotations){
+		// if response is "no_annotations", no annotations were found, so do nothing
 		if (annotations === "no_annotations") return;
-		var container = document.getElementById("annotation-container");
+		// make a secondary annotation container so that all annotations can be loaded at once
+		var container = document.createElement("div");
+		container.className["annotation-container-2"]; 
 
 		annotations.forEach(function(annotation){
 
@@ -163,28 +168,24 @@ function selectLocation(city){
 			var timestamp = new Date(annotation.timestamp);
 			var time = timestamp.getHours() + ":" + timestamp.getMinutes();
 			var date = timestamp.getDate() + "/" + timestamp.getMonth();
-		 	var annInfo = "<i> – " + user.fname + "  " + date + " " + time + "</i>";
+		 	var annInfo = "<i> – " + user.fname + " " + date + " " + time + "</i>";
 
 		 	// make necessary DOM elements
 		 	var rowDiv = document.createElement("div");
 		 	var textDiv = document.createElement("div");
 		 	var controlsDiv = document.createElement("div");
-		 	var textPar = document.createElement("p");
-		 	var infoPar = document.createElement("p");
+		 	var content = document.createElement("p");
+		 	var info = document.createElement("p");
 
-		 	// stylistic and positional properties
-		 	rowDiv.style.display = "table-row";
-		 	textDiv.style.padding = "5px 10px";
-		 	controlsDiv.style.padding = "5px 10px";
-		 	textDiv.style.display = "table-cell";
-		 	controlsDiv.style.display = "table-cell";
-		 	controlsDiv.style.paddingLeft = "50px";
-		 	textPar.style.display = 'inline';
-		 	textPar.style.color = "red";
-		 	infoPar.style.display = 'inline';
+		 	// set class (styles are applied in styles.css)
+		 	content.className = "annotation-text annotation-content";
+		 	info.className = "annotation-text annotation-info";
+		 	controlsDiv.className ="annotation-inner-container annotation-controls";
+		 	textDiv.className ="annotation-inner-container annotation-text-container";
+		 	rowDiv.className = "annotation-row";
 
-		 	textPar.innerHTML = annotation.text;
-		 	infoPar.innerHTML = annInfo;
+		 	content.innerHTML = annotation.text;
+		 	info.innerHTML = annInfo;
 
 		 	// display delete button if user owns the annotation
 		 	// TODO: more reliable equality check
@@ -192,26 +193,36 @@ function selectLocation(city){
 			 	var deleteButton = document.createElement("input");
 			 	deleteButton.type = "image";
 			 	deleteButton.src = "image/delete.png";
-			 	deleteButton.style.width = "10px";
-			 	deleteButton.style.height = "10px";
+			 	deleteButton.id = "delete-button";
 			 	deleteButton.onclick = function () { deleteAnnotation(annotation); }
 		 		controlsDiv.appendChild(deleteButton);
 		 	}
-
-		 	textDiv.appendChild(textPar);
-		 	textDiv.appendChild(infoPar);
+		 	
+		 	textDiv.appendChild(content);
+		 	textDiv.appendChild(info);
 
 		 	rowDiv.appendChild(textDiv);
 		 	rowDiv.appendChild(controlsDiv);
 
-			container.appendChild(rowDiv);
-		});
-	}
+			container.appendChild(rowDiv);			
+		});		
+		// TODO: load all annotations at once
+		document.getElementById("annotation-container")	
+			.appendChild(container);
+	}	
+}
 
-	//remove and add new annotation input
-	var annotationInputCont = document.getElementById("annotation-input-container")
-	annotationInputCont.innerHTML = null;
-	makeAnnotationInput(annotationInputCont);
+// makes an annotation text input element.
+function makeAnnotationInput(container){
+	var annInput = document.createElement("input");
+	annInput.type = "text";
+	annInput.placeholder = "Add annotation";
+
+	annInput.onkeydown = function(event) { // if enter is pushed, submit the annotation
+		if (event.keyCode === 13) submitAnnotation(annInput.value);
+	}
+	container.appendChild(annInput);
+	annInput.focus();
 }
 
 // adds an annotations to the currently selected location
@@ -224,23 +235,19 @@ function submitAnnotation(annotationText){
 		timestamp: new Date()
 	};
 
-	console.log("timestamp: " + (typeof annotation.timestamp));
-
 	$.ajax({
 		type: 'POST',
 		url: "/postAnnotation",
-		data: { "annotation": JSON.stringify(annotation, null, 4) }, // plain object
-		dataType: "json",
+		data: JSON.stringify(annotation),
+		contentType: "application/json",
 		complete: refreshLocationInfo
-	});
+	});	
 }
 
-// refresh the location info bar (to show the new annotation)
+// refresh the location info bar
 function refreshLocationInfo(){
-	if(selectedLocation!=null){
+	if (selectedLocation)
 		selectLocation(selectedLocation);
-
-	}
 }
 
 // removing an annotation from a location.
@@ -249,8 +256,8 @@ function deleteAnnotation(annotation){
 	$.ajax({
 		type: 'POST',
 		url: "deleteAnnotation",
-		data: { "annotation": JSON.stringify(annotation, null, 4) },
-		dataType: "json",
+		data: JSON.stringify(annotation),
+		contentType: "application/json",
 		complete: refreshLocationInfo
 	})
 }
@@ -259,6 +266,7 @@ function deleteAnnotation(annotation){
 var start = [width / 2, height / 2, height],
 	end = [width / 2, height / 2, height];
 
+// smoothly transitions from current location to a city
 function move(city, cb) {
 
 	var callback = function() {
@@ -288,10 +296,10 @@ function move(city, cb) {
 	.attrTween("transform", function() {
 		return function(t) { return transform(i(t)); };
 	})
-	.tween("update-zoom", function(){
-		return updateScaleAndTrans; // updates global scale and transition variables
-	})
-	.each("end.cb", callback);
+	.each("end.cb", callback)
+	.each("end.update", function(){ 
+		updateScaleAndTrans(); // updates global scale and transition variables});
+	});
 
 	start = [x, y, scale];
 	centered = city;
@@ -306,8 +314,10 @@ function move(city, cb) {
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
-	zoom.scale(getScale(g.attr("transform")));
-	zoom.translate(getTranslate(g.attr("transform")));
+	var scale = getScale(g.attr("transform"));
+	var translate = getTranslate(g.attr("transform"));	
+	zoom.scale(scale);
+	zoom.translate(translate);
 }
 
 // gets the scale from a html transform string
@@ -370,7 +380,9 @@ function cityClicked(d){
 
 // A function that takes you to a city
 function goToLoc(index) {
-	move(cities[index]);
+	var location = cities[index];
+	selectLocation(location);
+	move(location);
 }
 
 

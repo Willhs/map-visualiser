@@ -65,27 +65,6 @@ var record = {
 		}
 }
 
-//handles the upload of an file containing exploration data
-//function handleExplorationUpload(file){
-//console.log("file size: "+ file.length);
-
-//console.log(file);
-//fr = new FileReader();
-//fr.onload = receivedText;
-//fr.readAsText(file);
-//function receivedText() {
-//var fileRecord = JSON.parse(fr.result);
-////replaces properties of local record.
-////currentUser = fileRecord.user;
-//record.user = fileRecord.user;
-//record.events = fileRecord.events;
-//record.firstEventTime = fileRecord.firstEventTime;
-//record.startTimeStamp = fileRecord.startTimeStamp;
-//record.fromuser = fileRecord.fromuser;
-//console.log(record.numEvents() + " events add from exploration file");
-//}
-//}
-
 var records = [];
 function nrecord() {
 	this.user = currentUser;
@@ -142,7 +121,9 @@ function addRecords(newRecord){
 
 }
 function addLabel(index, fileName, nd){
+	var div = document.getElementById("list");
 	var newLabel = document.createElement('labelChooseFiles');
+	var fileChooseLabelDiv = document.createElement("div");
 	newLabel.setAttribute("for", "labelChooseFile" +index);
 	newLabel.setAttribute("id", "labelChooseFile" +index);
 	newLabel.innerHTML = fileName;
@@ -155,19 +136,24 @@ function addLabel(index, fileName, nd){
 		record.startTimeStamp = records[index].startTimeStamp;
 		playRecording();
 	};
+	fileChooseLabelDiv.appendChild(newLabel);
+	var fileChooseDelDiv = document.createElement("div");
+	fileChooseDelDiv.className = "delDivClass";
+	div.appendChild(fileChooseLabelDiv);
 	var deleteButton = addDeleteButton();
 
 	deleteButton.onclick = function () {
 		console.log("click");
 		if(checkMatchedTimeStamp()==0){
-		deleteExplorationFile(record);
-		alert(" record are equals");
+			deleteExplorationFile(record);
+			alert(" record are equals");
 		}else alert(" record are not equals");
 	};
 
-	newLabel.appendChild(deleteButton);
-	var div = document.getElementById("list");
-	div.appendChild(newLabel);
+	fileChooseDelDiv.appendChild(deleteButton);
+	div.appendChild(fileChooseDelDiv);
+	var linebreak = document.createElement("br");
+	fileChooseLabelDiv.appendChild(linebreak);
 }
 
 //beings recording of certain user navigation actions
@@ -177,23 +163,11 @@ function startRecording() {
 
 	// adds event listeners which record user navigation actions
 	zoom.on("zoom.record", recordMovement);
-
-	// listeners for all events that cause scale and pan transitions
-	// go to city button
-	//goToCity.addEventListener("click", recordTravel(document.getElementById('city-list').value));
-
 	// cities on the map
 	var mapCities = document.getElementsByClassName("place");
 	for (var i = 0; i < mapCities.length; i++){
 		var city = mapCities.item(i);
 		city.addEventListener("dblclick", recordTravel(city.id));
-	}
-
-	// entries in the side bar drop-down menu
-	var cityEntries = document.getElementsByClassName("city-entry");
-	for (var i = 0; i < cityEntries.length; i++){
-		var entry = cityEntries.item(i);
-		entry.addEventListener("dblclick", recordTravel(entry.value));
 	}
 
 	buttonImageConvert("record-button", "record_red.jpeg");
@@ -239,6 +213,29 @@ function addRecordingGraphics(){
 
 //ends recording of user navigation
 function stopRecording() {
+	// removes event listeners which are recording user navigation.
+	// goToCity.removeEventListener("click", recordTravel);
+	zoom.on("zoom.record", null);//remove recording zoom listener
+	//saveExplButton.disabled = false; // can now save recording.
+
+	// cities on the map
+	var mapCities = document.getElementsByClassName("place");
+	for (var i = 0; i < mapCities.length; i++){
+		var city = mapCities.item(i);
+		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
+	}
+
+	// entries in the side bar drop-down menu
+	var cityEntries = document.getElementsByClassName("city-entry");
+	for (var i = 0; i < cityEntries.length; i++){
+		var entry = cityEntries.item(i);
+		entry.removeEventListener("dblclick", recordTravel(entry.value));
+	}
+	// remove recording related graphics
+	d3.select("#record-border").remove();
+	d3.select("#record-circle").remove();
+
+	//  gross stuff
 	buttonImageConvert("record-button", "record_gray.jpeg");
 	saveExplButton.disabled = false;
 	if(!record.isEmpty()){
@@ -251,27 +248,6 @@ function stopRecording() {
 		buttonImageConvert("save-exploration-button", "save_gray.jpeg");
 		buttonImageConvert("reset-button", "reset_gray.jpeg");
 	}
-	// removes event listeners which are recording user navigation.
-	// goToCity.removeEventListener("click", recordTravel);
-	zoom.on("zoom.record", null);//remove recording zoom listener
-	//saveExplButton.disabled = false; // can now save recording.
-
-	// cities on the map
-	var mapCities = document.getElementsByClassName("place");
-	for (var i = 0; i < mapCities.length; i++){
-		var city = mapCities.item(i);
-		city.removeEventListener("onclick", recordTravel(city.id));
-	}
-
-	// entries in the side bar drop-down menu
-	var cityEntries = document.getElementsByClassName("city-entry");
-	for (var i = 0; i < cityEntries.length; i++){
-		var entry = cityEntries.item(i);
-		entry.removeEventListener("dblclick", recordTravel(entry.value));
-	}
-	// remove recording related graphics
-	d3.select("#record-border").remove();
-	d3.select("#record-circle").remove();
 
 	console.log("Recorded/Played " + record.numEvents() + " events");
 }
@@ -294,18 +270,19 @@ function playRecording(){
 	if (record.numEvents() == 0) {
 		return; // if no events, do nothing.
 	}
-	// plays all events recursively from index i to events.length-1
 	function launchEvent(i){
 		var currentEvent = record.getEvent(i);
 		switch (currentEvent.type){
 		case ("travel"):
-			goToLoc(parseInt(currentEvent.body));
+			var cityIndex = currentEvent.body;
+		goToLoc(parseInt(cityIndex));
 		break;
 		case ("movement"):
-			g.attr("transform", currentEvent.body);
+			var transform = currentEvent.body;
+		g.attr("transform", transform);
+		updateScaleAndTrans();
 		break;
 		}
-
 		if (!record.hasNextEvent(currentEvent)){ return; } // if reached end of array, stop.
 
 		var nextEvent = record.getEvent(i+1);
@@ -338,12 +315,9 @@ function resetExplButtonFunction () {
 
 function saveExplButtonFunction () {
 	stopRecording();
-
-
 	buttonImageConvert("stop-button", "stop_gray.jpeg");
 	buttonImageConvert("save-exploration-button", "save_gray.jpeg");
 	if(!record.isEmpty()){
-
 		record.startTimeStamp = new Date();
 		currentUser.sharedFileTimeStamp.push(record.startTimeStamp);
 		record.setFromUser(record.user.fname);
@@ -359,6 +333,7 @@ function loadExplButtonFunction (evt) {
 	var files = evt.target.files;
 
 	stopRecording();
+	buttonImageConvert("record-button", "record_gray.jpeg");
 	buttonImageConvert("play-exploration-button", "play_green.jpg");
 	console.log("file: "+this.files.length );
 	//if(files.length==1){	handleExplorationUpload(this.files[0]);}
@@ -369,11 +344,12 @@ function loadExplButtonFunction (evt) {
 }
 
 function saveExploration(){
+	console.log("save: " + record.startTimeStamp);
 	$.ajax({
 		type: 'POST',
 		url: "/postExploration",//url of receiver file on server
-		data: {"exploration":JSON.stringify(record, null, 4),"name": currentUser.fname, "timestamp":record.startTimeStamp},
+		data: JSON.stringify(record),
 		success: function(response){ console.log(response) }, //callback when ajax request finishes
-		dataType: "json" //text/json...
+		contentType: "application/json"
 	});
 }

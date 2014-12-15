@@ -24,22 +24,8 @@ body {
 	border: 3px solid black;
 }
 
-.tab {
-	font-size: 13px;
-	background-color: #EEEEEE;
-	color: #333;
-	padding: 2px 6px 2px 6px;
-	border-top: 1px solid #CCCCCC;
-	border-right: 1px solid #333333;
-	border-bottom: 1px solid #333333;
-}
-
-#pick-city {
-	display: inline-block;
-}
-
-#path-controls {
-	display: inline-block;
+.sideBar>* { /* all child elements of sidebar */
+	padding-left: 1em;
 }
 
 .ping {
@@ -74,26 +60,67 @@ input,label {
 	vertical-align: top;
 }
 
+.user-button {
+	width: 40px;
+	height: 40px;
+	border-style: solid;
+}
+
+.exploration-button {
+	width: 40px;
+	height: 40px;
+	border: 0px;
+}
+
 .location-pane {
 	/*background-color: rgb(0,150,150);*/
 
 }
 
-#annotation-input-container {
-
+/* Annotation stuff */
+#delete-button {
+	width: 10px;
+	height: 10px;
 }
 
-#annotation-input {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	width: 100
+.annotation-row {
+	/*display: table-row;*/
+	padding: 5px;
+}
+
+.annotation-inner-container {
+	display: inline-block;
+}
+
+.annotation-text-container {
+	width: 80%;
+	/*overflow: hidden;*/
+}
+
+.annotation-controls {
+	/*min-width: 30%;*/
+	padding-right: 20px;
+	float: right;
+}
+
+.annotation-text {
+	font-size: 14px;
+	display: inline;
+}
+
+.annotation-content {
+	color: red;
+}
+
+.annotation-info {
+	color: black;
 }
 
 #obama {
 	color: red;
 }
 
+/* Mini-map */
 #minimap {
 	background-color: #ccc;
 	border: 3px solid rgb(0, 0, 1);
@@ -134,7 +161,7 @@ input,label {
 	position: fixed;
 	left: 63%;
 	top: 80%;
-	width: auto;
+	width: 340px;
 	height: 70px;
 	border: 2px solid black;
 	font-size: 150%;
@@ -145,9 +172,27 @@ input,label {
 
 #fileslist-container {
 	border: 2px solid black;
-	width: auto;
+	width: 305px;
 	height: 70px;
 	overflow: scroll;
 	background-color: #fff;
+}
+
+.delDivClass {
+	position: fixed;
+	padding-right: 2px;
+	float: right;
+	left: 79%;
+	top: 80%;
+
+}
+.quickPlayDivClass{
+	position: fixed;
+	padding-right: 2px;
+	float: left;
+	left: 78%;
+	top: 80.5%;
+	width: 5px;
+	height: 5px;
 
 }
