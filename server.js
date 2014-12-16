@@ -28,14 +28,17 @@ var fs = require('fs');
 var app = express();
 
 app.use(bodyParser.json());
-
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+//app.use(express.json({limit: '50mb'}));
+//app.use(express.urlencoded({limit: '50mb'}));
 var server = app.listen(3000, function() {
 	console.log('Listening on port %d', server.address().port);
 });
 
 app.use(express.static(__dirname + '/public'));
 
-// post path on the map
+//post path on the map
 
 app.post('/postpath', function(req, res){
 	var timestamp = new Date();
@@ -56,15 +59,16 @@ app.post('/postExploration', function(req, res){
 
 	var exploration = req.body;
 	var name = exploration.user.fname;
-	var timestamp = new Date();
+	//var timestamp = new Date();
+	var timestamp = exploration.startTimeStamp;
 	// makes directory for files if none exist.
 	var path = "public/data/user/";
 	ensureDirExists(path);
-	path += "user-"+name;
+	path += "User-"+name;
 	ensureDirExists(path);
 	path +="/Exploration/";
 	ensureDirExists(path);
-	fs.writeFile(path + timestamp + ".json", JSON.stringify(exploration, null, 4), function(err){
+	fs.writeFile(path +name+ timestamp + ".json", JSON.stringify(exploration, null, 4), function(err){
 		if(err){ console.log(err); }
 	});
 	console.log("wrote exploration file");
@@ -73,16 +77,16 @@ app.post('/postExploration', function(req, res){
 //post file to shared user folder
 app.post('/shareExploration', function(req, res){
 
-	var timestamp = new Date();
+	var timestamp = req.body.timestamp;
 	var file = req.body.file;
 	var to = req.body.to;
 	var from = req.body.from;
 	console.log("shared exploration to: "+ to + " from: "+ from);
 	// makes directory for files if none exist.
-	var path = "public/data/user/User-" + to;
+	var path = "public/data/user/User-" + to+"/";
 	ensureDirExists(path);
-	ensureDirExists(path +"/Shared/");
-	fs.writeFile(path +"/Shared/" + from  +"-"+ timestamp + ".json", JSON.stringify(file, null, 4), function(err){
+	ensureDirExists(path +"Shared/");
+	fs.writeFile(path +"/Shared/" + from  +"-"+ timestamp + ".json", file +"\n", function(err){
 		if(err){
 			console.log(err);
 		}
@@ -90,7 +94,7 @@ app.post('/shareExploration', function(req, res){
 });
 
 app.post('/postAnnotation', function(req, res){
-	
+
 	var annotation = req.body;
 	var timestamp = new Date(annotation.timestamp); // apparently timestamp is now a string...
 	var location = annotation.location;
@@ -106,7 +110,7 @@ app.post('/postAnnotation', function(req, res){
 	ensureDirExists(path);
 
 	var fileName = path + user + " " + timestamp.getHours() + ":"
-		+ timestamp.getMinutes() + ":" + timestamp.getSeconds() + ".json";
+	+ timestamp.getMinutes() + ":" + timestamp.getSeconds() + ".json";
 	fs.writeFile(fileName, JSON.stringify(annotation, 4, null), function(err) {
 		if (err){ console.log("errooor: "+err); }
 	});
@@ -144,21 +148,27 @@ app.get("/getAnnotation", function(req, res){
 	}
 });
 app.get("/getNotification", function(req, res){
+	console.log("get notification");
 	var userName = req._parsedUrl.query; // data is appended to the URL
 	var path = "public/data/user/";
 	// ensure both dirs exist.
 	ensureDirExists(path);
-	path += "User-"+userName + "/Shared";
+	ensureDirExists(path + "User-"+userName);
+	path += "User-"+userName + "/Shared/";
 	ensureDirExists(path);
 
 	var sharedFiles = fs.readdirSync(path);
 	// if none, return '0'
 	if (sharedFiles.length === 0){
-		res.send(JSON.stringify("no_sharedFiles")); // code for 'no files'
+		res.send(JSON.stringify("no_notifications")); // code for 'no files'
 	}
 	else {
-		// get all annotation objeZcts (1 per file)
-		res.send(JSON.stringify(sharedFiles.length));
+		var files = [];
+		sharedFiles.forEach(function(filename, index){
+			files[index] = JSON.parse(fs.readFileSync(path + filename));
+		});
+
+		res.send(JSON.stringify(files));
 
 	}
 });
@@ -173,19 +183,64 @@ app.post("/deleteAnnotation", function(req, res){
 	// find and delete the file corresponding to the annotation specified.
 	annotationFiles.forEach(function(filename){
 		var inputAnnotation = JSON.parse(fs.readFileSync(path + filename));
-		
+
 		//console.log(JSON.stringify(annotation) + "\n" + JSON.stringify(inputAnnotation) + "\n\n");
 		// if annotations are equal, delete the file
 		if (annotation.user.fname === inputAnnotation.user.fname
-			&& annotation.timestamp === inputAnnotation.timestamp
-			&& annotation.text === inputAnnotation.text){
+				&&annotation.timestamp === inputAnnotation.timestamp
+				&& annotation.text === inputAnnotation.text){
 			fs.unlink(path + filename);
 			res.sendStatus(200); // success code
 		}
 	});
 });
 
-// returns whether the dir existed
+app.post('/saveSharedPlayed', function(req, res){
+	console.log("save Played file from shared folder to playedShared");
+	var timestamp = req.body.timestamp;
+	var exploration = req.body.filePlayed;
+	var from = req.body.from;
+	var to = req.body.to;
+	// makes 'pathectory' for files if none exist.
+	var path = "public/data/user/";
+	ensureDirExists(path);
+	path += "User-"+from+"/";
+	ensureDirExists(path);
+	path +="PlayedShared/";
+	ensureDirExists(path)
+	fs.writeFile(path +to+ timestamp + ".json", exploration+"\n", function(err){
+		if(err){ console.log(err); }
+	});
+});
+app.post("/deletePlayed", function(req, res){
+	console.log("delete Played file from shared folder");
+	var playedFile = JSON.parse(req.body.playedFile);
+	var userName = playedFile.user.fname;
+
+	var path = "public/data/user/";
+	ensureDirExists(path);
+	path +="User-" + userName+ "/";
+	ensureDirExists(path);
+	path += "Shared/";
+	ensureDirExists(path);
+	var sharedFiles = fs.readdirSync(path);
+
+	// find and delete the file corresponding to the annotation specified.
+	sharedFiles.forEach(function(filename){
+
+		//console.log("aa: "+path + filename);
+		var inputSharedFile = JSON.parse(fs.readFileSync(path + filename));
+		console.log(playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0);
+		console.log("playedFile.startTimeStamp: "+playedFile.startTimeStamp);
+		console.log("inputSharedFile.startTimeStamp: "+inputSharedFile.startTimeStamp);
+		if (playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0){
+
+			fs.unlink(path + filename);
+			res.send(200); // success code
+		}
+	});
+});
+//returns whether the dir existed
 function ensureDirExists(path){
 	if (!fs.existsSync(path)){
 		fs.mkdirSync(path);
