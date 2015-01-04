@@ -1,0 +1,538 @@
+{
+    "name": "exploration 4",
+    "userName": "lorde",
+    "events": [
+        {
+            "type": "movement",
+            "body": "translate(27,-50)scale(1)",
+            "time": 0
+        },
+        {
+            "type": "movement",
+            "body": "translate(18,-57)scale(1)",
+            "time": 8
+        },
+        {
+            "type": "movement",
+            "body": "translate(13,-64)scale(1)",
+            "time": 16
+        },
+        {
+            "type": "movement",
+            "body": "translate(8,-71)scale(1)",
+            "time": 24
+        },
+        {
+            "type": "movement",
+            "body": "translate(8,-78)scale(1)",
+            "time": 32
+        },
+        {
+            "type": "movement",
+            "body": "translate(8,-90)scale(1)",
+            "time": 39
+        },
+        {
+            "type": "movement",
+            "body": "translate(8,-106)scale(1)",
+            "time": 47
+        },
+        {
+            "type": "movement",
+            "body": "translate(8,-125)scale(1)",
+            "time": 55
+        },
+        {
+            "type": "movement",
+            "body": "translate(13,-146)scale(1)",
+            "time": 63
+        },
+        {
+            "type": "movement",
+            "body": "translate(24,-167)scale(1)",
+            "time": 71
+        },
+        {
+            "type": "movement",
+            "body": "translate(35,-188)scale(1)",
+            "time": 79
+        },
+        {
+            "type": "movement",
+            "body": "translate(52,-207)scale(1)",
+            "time": 88
+        },
+        {
+            "type": "movement",
+            "body": "translate(73,-220)scale(1)",
+            "time": 96
+        },
+        {
+            "type": "movement",
+            "body": "translate(98,-231)scale(1)",
+            "time": 104
+        },
+        {
+            "type": "movement",
+            "body": "translate(123,-240)scale(1)",
+            "time": 112
+        },
+        {
+            "type": "movement",
+            "body": "translate(154,-242)scale(1)",
+            "time": 120
+        },
+        {
+            "type": "movement",
+            "body": "translate(187,-242)scale(1)",
+            "time": 128
+        },
+        {
+            "type": "movement",
+            "body": "translate(218,-242)scale(1)",
+            "time": 136
+        },
+        {
+            "type": "movement",
+            "body": "translate(247,-235)scale(1)",
+            "time": 144
+        },
+        {
+            "type": "movement",
+            "body": "translate(274,-222)scale(1)",
+            "time": 152
+        },
+        {
+            "type": "movement",
+            "body": "translate(297,-201)scale(1)",
+            "time": 160
+        },
+        {
+            "type": "movement",
+            "body": "translate(312,-178)scale(1)",
+            "time": 168
+        },
+        {
+            "type": "movement",
+            "body": "translate(327,-147)scale(1)",
+            "time": 176
+        },
+        {
+            "type": "movement",
+            "body": "translate(334,-116)scale(1)",
+            "time": 184
+        },
+        {
+            "type": "movement",
+            "body": "translate(339,-85)scale(1)",
+            "time": 192
+        },
+        {
+            "type": "movement",
+            "body": "translate(339,-56)scale(1)",
+            "time": 200
+        },
+        {
+            "type": "movement",
+            "body": "translate(337,-29)scale(1)",
+            "time": 208
+        },
+        {
+            "type": "movement",
+            "body": "translate(324,-4)scale(1)",
+            "time": 216
+        },
+        {
+            "type": "movement",
+            "body": "translate(307,21)scale(1)",
+            "time": 224
+        },
+        {
+            "type": "movement",
+            "body": "translate(288,44)scale(1)",
+            "time": 232
+        },
+        {
+            "type": "movement",
+            "body": "translate(263,59)scale(1)",
+            "time": 240
+        },
+        {
+            "type": "movement",
+            "body": "translate(234,74)scale(1)",
+            "time": 247
+        },
+        {
+            "type": "movement",
+            "body": "translate(203,89)scale(1)",
+            "time": 256
+        },
+        {
+            "type": "movement",
+            "body": "translate(172,91)scale(1)",
+            "time": 264
+        },
+        {
+            "type": "movement",
+            "body": "translate(137,108)scale(1)",
+            "time": 272
+        },
+        {
+            "type": "movement",
+            "body": "translate(100,105)scale(1)",
+            "time": 279
+        },
+        {
+            "type": "movement",
+            "body": "translate(65,108)scale(1)",
+            "time": 288
+        },
+        {
+            "type": "movement",
+            "body": "translate(30,89)scale(1)",
+            "time": 295
+        },
+        {
+            "type": "movement",
+            "body": "translate(-3,68)scale(1)",
+            "time": 303
+        },
+        {
+            "type": "movement",
+            "body": "translate(-36,45)scale(1)",
+            "time": 312
+        },
+        {
+            "type": "movement",
+            "body": "translate(-55,22)scale(1)",
+            "time": 320
+        },
+        {
+            "type": "movement",
+            "body": "translate(-70,-3)scale(1)",
+            "time": 328
+        },
+        {
+            "type": "movement",
+            "body": "translate(-81,-30)scale(1)",
+            "time": 336
+        },
+        {
+            "type": "movement",
+            "body": "translate(-83,-55)scale(1)",
+            "time": 344
+        },
+        {
+            "type": "movement",
+            "body": "translate(-83,-80)scale(1)",
+            "time": 353
+        },
+        {
+            "type": "movement",
+            "body": "translate(-81,-105)scale(1)",
+            "time": 360
+        },
+        {
+            "type": "movement",
+            "body": "translate(-72,-124)scale(1)",
+            "time": 368
+        },
+        {
+            "type": "movement",
+            "body": "translate(-57,-141)scale(1)",
+            "time": 375
+        },
+        {
+            "type": "movement",
+            "body": "translate(-28,-154)scale(1)",
+            "time": 385
+        },
+        {
+            "type": "movement",
+            "body": "translate(1,-163)scale(1)",
+            "time": 392
+        },
+        {
+            "type": "movement",
+            "body": "translate(40,-168)scale(1)",
+            "time": 401
+        },
+        {
+            "type": "movement",
+            "body": "translate(83,-168)scale(1)",
+            "time": 408
+        },
+        {
+            "type": "movement",
+            "body": "translate(128,-168)scale(1)",
+            "time": 417
+        },
+        {
+            "type": "movement",
+            "body": "translate(171,-159)scale(1)",
+            "time": 424
+        },
+        {
+            "type": "movement",
+            "body": "translate(208,-146)scale(1)",
+            "time": 433
+        },
+        {
+            "type": "movement",
+            "body": "translate(239,-129)scale(1)",
+            "time": 440
+        },
+        {
+            "type": "movement",
+            "body": "translate(270,-100)scale(1)",
+            "time": 449
+        },
+        {
+            "type": "movement",
+            "body": "translate(291,-69)scale(1)",
+            "time": 456
+        },
+        {
+            "type": "movement",
+            "body": "translate(304,-34)scale(1)",
+            "time": 465
+        },
+        {
+            "type": "movement",
+            "body": "translate(306,-1)scale(1)",
+            "time": 472
+        },
+        {
+            "type": "movement",
+            "body": "translate(306,30)scale(1)",
+            "time": 482
+        },
+        {
+            "type": "movement",
+            "body": "translate(299,59)scale(1)",
+            "time": 488
+        },
+        {
+            "type": "movement",
+            "body": "translate(284,86)scale(1)",
+            "time": 496
+        },
+        {
+            "type": "movement",
+            "body": "translate(261,109)scale(1)",
+            "time": 503
+        },
+        {
+            "type": "movement",
+            "body": "translate(236,126)scale(1)",
+            "time": 511
+        },
+        {
+            "type": "movement",
+            "body": "translate(207,158)scale(1)",
+            "time": 519
+        },
+        {
+            "type": "movement",
+            "body": "translate(172,160)scale(1)",
+            "time": 527
+        },
+        {
+            "type": "movement",
+            "body": "translate(133,194)scale(1)",
+            "time": 535
+        },
+        {
+            "type": "movement",
+            "body": "translate(94,192)scale(1)",
+            "time": 543
+        },
+        {
+            "type": "movement",
+            "body": "translate(55,209)scale(1)",
+            "time": 551
+        },
+        {
+            "type": "movement",
+            "body": "translate(20,190)scale(1)",
+            "time": 559
+        },
+        {
+            "type": "movement",
+            "body": "translate(-9,169)scale(1)",
+            "time": 567
+        },
+        {
+            "type": "movement",
+            "body": "translate(-30,146)scale(1)",
+            "time": 576
+        },
+        {
+            "type": "movement",
+            "body": "translate(-47,119)scale(1)",
+            "time": 584
+        },
+        {
+            "type": "movement",
+            "body": "translate(-56,90)scale(1)",
+            "time": 592
+        },
+        {
+            "type": "movement",
+            "body": "translate(-56,59)scale(1)",
+            "time": 600
+        },
+        {
+            "type": "movement",
+            "body": "translate(-56,26)scale(1)",
+            "time": 608
+        },
+        {
+            "type": "movement",
+            "body": "translate(-45,-1)scale(1)",
+            "time": 616
+        },
+        {
+            "type": "movement",
+            "body": "translate(-26,-24)scale(1)",
+            "time": 624
+        },
+        {
+            "type": "movement",
+            "body": "translate(-3,-41)scale(1)",
+            "time": 632
+        },
+        {
+            "type": "movement",
+            "body": "translate(34,-52)scale(1)",
+            "time": 640
+        },
+        {
+            "type": "movement",
+            "body": "translate(79,-61)scale(1)",
+            "time": 648
+        },
+        {
+            "type": "movement",
+            "body": "translate(124,-63)scale(1)",
+            "time": 656
+        },
+        {
+            "type": "movement",
+            "body": "translate(173,-63)scale(1)",
+            "time": 664
+        },
+        {
+            "type": "movement",
+            "body": "translate(222,-61)scale(1)",
+            "time": 672
+        },
+        {
+            "type": "movement",
+            "body": "translate(263,-48)scale(1)",
+            "time": 680
+        },
+        {
+            "type": "movement",
+            "body": "translate(298,-27)scale(1)",
+            "time": 688
+        },
+        {
+            "type": "movement",
+            "body": "translate(325,-6)scale(1)",
+            "time": 696
+        },
+        {
+            "type": "movement",
+            "body": "translate(344,21)scale(1)",
+            "time": 704
+        },
+        {
+            "type": "movement",
+            "body": "translate(351,48)scale(1)",
+            "time": 712
+        },
+        {
+            "type": "movement",
+            "body": "translate(351,73)scale(1)",
+            "time": 720
+        },
+        {
+            "type": "movement",
+            "body": "translate(349,96)scale(1)",
+            "time": 728
+        },
+        {
+            "type": "movement",
+            "body": "translate(332,115)scale(1)",
+            "time": 736
+        },
+        {
+            "type": "movement",
+            "body": "translate(313,128)scale(1)",
+            "time": 744
+        },
+        {
+            "type": "movement",
+            "body": "translate(284,137)scale(1)",
+            "time": 752
+        },
+        {
+            "type": "movement",
+            "body": "translate(249,139)scale(1)",
+            "time": 760
+        },
+        {
+            "type": "movement",
+            "body": "translate(214,139)scale(1)",
+            "time": 768
+        },
+        {
+            "type": "movement",
+            "body": "translate(179,139)scale(1)",
+            "time": 776
+        },
+        {
+            "type": "movement",
+            "body": "translate(148,136)scale(1)",
+            "time": 784
+        },
+        {
+            "type": "movement",
+            "body": "translate(117,127)scale(1)",
+            "time": 792
+        },
+        {
+            "type": "movement",
+            "body": "translate(96,118)scale(1)",
+            "time": 800
+        },
+        {
+            "type": "movement",
+            "body": "translate(79,107)scale(1)",
+            "time": 807
+        },
+        {
+            "type": "movement",
+            "body": "translate(72,96)scale(1)",
+            "time": 815
+        },
+        {
+            "type": "movement",
+            "body": "translate(67,81)scale(1)",
+            "time": 823
+        },
+        {
+            "type": "movement",
+            "body": "translate(67,68)scale(1)",
+            "time": 831
+        },
+        {
+            "type": "movement",
+            "body": "translate(67,53)scale(1)",
+            "time": 839
+        }
+    ],
+    "firstEventTime": 1418941782036,
+    "timeStamp": "2014-12-18T22:29:46.085Z"
+}

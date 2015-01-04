@@ -66,6 +66,14 @@ input,label {
 	border-style: solid;
 }
 
+.current-user-button {
+	border-color: red;
+}
+
+.other-user-button {
+	border-color: black;
+}
+
 .exploration-button {
 	width: 40px;
 	height: 40px;
@@ -161,11 +169,11 @@ input,label {
 	position: fixed;
 	left: 63%;
 	top: 80%;
-	width: 340px;
+	width: 300px;
 	height: 70px;
 	border: 2px solid black;
 	font-size: 150%;
-	background-color: #ccc;
+	background-color: #fff;
 	display: none;
 	overflow: scroll;
 }
@@ -182,16 +190,23 @@ input,label {
 	position: fixed;
 	padding-right: 2px;
 	float: right;
-	left: 79%;
-	top: 80%;
+	left: 78%;
+	top: 76.5%;
 
+}
+.delFileDivClass{
+	position: fixed;
+	padding-right: 2px;
+	float: right;
+	left: 94%;
+	top: 40%;
 }
 .quickPlayDivClass{
 	position: fixed;
 	padding-right: 2px;
 	float: left;
-	left: 78%;
-	top: 80.5%;
+	left: 77%;
+	top: 76.5%;
 	width: 5px;
 	height: 5px;
 
