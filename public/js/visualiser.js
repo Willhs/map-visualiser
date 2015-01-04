@@ -74,7 +74,7 @@ var g = svg.append("g")
 	.attr("transform", "translate(0,0)scale(1)");
 
 // Read country outline from file
-d3.json("data/kaz.json", function(error, json) {
+d3.json("data/map/kaz.json", function(error, json) {
 	var subunits = topojson.feature(json, json.objects.kaz_subunits);
 
 	// make outline of land mass
@@ -90,7 +90,7 @@ d3.json("data/kaz.json", function(error, json) {
 });
 
 // Add cities
-d3.json("data/kaz_places.json", function(error, json){
+d3.json("data/map/kaz_places.json", function(error, json){
 	cities = json.features;
 	// places group to contain all elements of a place
 	var places = g.selectAll("place")

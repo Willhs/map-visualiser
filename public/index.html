@@ -24,7 +24,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
+
 <head>
 <title>Path and Zoom V2</title>
 <meta charset="utf-8" name="viewport">
@@ -32,36 +34,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 <script src="js/lib/d3.v3.min.js"></script>
 <script src="js/lib/topojson.v1.min.js"></script>
 <script src="js/lib/jquery.min.js"></script>
-
-
 </head>
 
 <body>
 	<div class="sideBar">
 
-		<div class="users">
-			<div id="users1">
-				<table border="0" id="userTable">
-					<h3>
-						<b>Select User:</b>
-					</h3>
-					<td><input type="image" id='obama' class="user-button"
-						src="image/userImage/obama.jpeg"
-						alt="javascript button"></td>
-					<td><input type="image" id='john' class="user-button"
-						src="image/userImage/john.jpeg"
-						alt="javascript button"></td>
-					<td><input type="image" id='lorde' class="user-button"
-						src="image/userImage/lorde.jpeg"
-						alt="javascript button"></td>
-					<td><input type="image" id='will' class="user-button"
-						src="image/userImage/will.jpeg"
-						alt="javascript button"></td>
-					<td><input type="text" id="userName-input" value='user name'>
-						<input type="submit" id="submit-userName" value="Add User">
-					</td>
-				</table>
-			</div>
+		<div class="user-select">
+			<h3>
+				<b>Select User:</b>
+			</h3>
+			<input type="image" id='obama' class="user-button"
+				src="image/userImage/obama.jpeg"
+				alt="javascript button">
+			<input type="image" id='john' class="user-button"
+				src="image/userImage/john.jpeg"
+				alt="javascript button">
+			<input type="image" id='lorde' class="user-button"
+				src="image/userImage/lorde.jpeg"
+				alt="javascript button">
+			<input type="image" id='will' class="user-button"
+				src="image/userImage/will.jpeg"
+				alt="javascript button">
+            <div class="authentication">
+    			<input type="text" id="password-input" placeholder="password">
+    			<input type="submit" id="submit-password">
+            </div>
 		</div>
 		<div class="exploration-controls">
             <h2>Exploration recording controls</h2>
@@ -92,28 +89,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 					alt="javascript button"></td>
 			</table>
 		</div>
-        <div>
-
-                <h3>
-                    <b>Load Exploration</b>
-                </h3>
-                <div id = "chooiceFiles"></div><input id="load-exploration-button" type='file' name='userFile' multiple/>
-                	<div id = "fileslist-container">
-                	<output id = "list"></output>
-                	</div>
-                </div>
-                <div><h3>
-                    <label for="to">To:</label>
-                </h3>
-                <input type="text" id="userId" name="user" value="" />
-                <button type='button' id="submit-message">Send</button></div>
-
+        <div class="load-exploration">
+            <h3>
+                <b>Load Exploration</b>
+            </h3>
+            <div id = "chooiceFiles"><input id="load-exploration-button" type='file' name='userFile' multiple/>
+            	<div id = "fileslist-container">
+            	<output id = "list"></output>
+            	</div>
+            </div>
+            <div>
+            <h3>
+                <label for="to">To:</label>
+            </h3>
+            <input type="text" id="userId" name="user"/>
+            <button type='button' id="submit-message">Send</button>
+            </div>
         </div>
 
-         <div class='select-device'>
-            <label for='audioSource'>Audio source: </label>
-            <select id='audioSource'></select>
+        <div class='select-device'>
+                <label for='audioSource'>Audio source: </label>
+                <select id='audioSource'></select>       
         </div>
+
+    
         <div id="location-div" class="location-pane">
             <h2 id="location-title"></h2>
             <ul id="location-info">
@@ -136,8 +135,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 	</div> -->
  	<div id = "notification" class="notificaiton-container"></div>
- 	<div id = "notification-files"class = "notificaitonfiles-container">
- 	</div>
+ 	<div id = "notification-files"class = "notificaitonfiles-container"></div>
 
 	<script src="js/visualiser.js"></script>
 	<script src="js/paths.js"></script>

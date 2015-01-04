@@ -5,64 +5,62 @@ function Event(type, body, time){
 	this.time = time; // time that event occured at
 }
 
-//a record of an exploration of the visualisation
+// a record of an exploration of the map
 var record = {
-		user: currentUser,
-		fromuser: null,
-		events : [], // events that took place over the course of the exploration
-		firstEventTime : null,
+	user: currentUser,
+	fromuser: null,
+	events : [], // user navigation events that occured duraion exploration
+	firstEventTime : null,
+	startTimeStamp : null,
 
-		startTimeStamp : null,
+	setFromUser : function(name){
+		this.fromuser = name;
+	},
 
-		setFromUser : function(name){
-			this.fromuser = name;
-		},
-		setStartTimeStamp : function(timestamp){
-			//var date = new Date();
-			//var temp = date.getFullYear()+"-"+date.getMonth()+"-"+date.getDay()+"T"+
-			//date.getHours()+"-"+date.getMinutes()+"-"+date.getSeconds()+"Z";
-			this.startTimeStamp = timestamp;
-		},
-		addEvent : function (type, body){
-			var currentTime = new Date().getTime();
-			if (this.firstEventTime == null){
-				this.firstEventTime = currentTime;
-			}
-			var timeFromFirstEvent = currentTime - this.firstEventTime;
-			var event = new Event(type, body, timeFromFirstEvent);
-			this.events.push(event);
-		},
+	setStartTimeStamp : function(timestamp){	
+		this.startTimeStamp = timestamp;
+	},
 
-		getEvent : function (i){
-			return this.events[i];
-		},
-
-		hasNextEvent : function (event){
-			if (this.events.indexOf(event) >= this.events.length-1){
-				return false;
-			}
-			return true;
-		},
-
-		nextEvent : function (event){
-			if (!isNextEvent(event)){
-				throw "there's no next events in record";
-			}
-			return this.events[this.events.indexOf(event) + 1];
-		},
-
-		numEvents : function(){
-			return this.events.length;
-		},
-
-		isEmpty : function(){
-			return this.events.length == 0;
-		},
-
-		reset : function(){
-			this.events = [];
-			this.firstEventTime = null;
+	addEvent : function (type, body){
+		var currentTime = new Date().getTime();
+		if (this.firstEventTime == null){
+			this.firstEventTime = currentTime;
 		}
+		var timeFromFirstEvent = currentTime - this.firstEventTime;
+		var event = new Event(type, body, timeFromFirstEvent);
+		this.events.push(event);
+	},
+
+	getEvent : function (i){
+		return this.events[i];
+	},
+
+	hasNextEvent : function (event){
+		if (this.events.indexOf(event) >= this.events.length-1){
+			return false;
+		}
+		return true;
+	},
+
+	nextEvent : function (event){
+		if (!isNextEvent(event)){
+			throw "there's no next events in record";
+		}
+		return this.events[this.events.indexOf(event) + 1];
+	},
+
+	numEvents : function(){
+		return this.events.length;
+	},
+
+	isEmpty : function(){
+		return this.events.length == 0;
+	},
+
+	reset : function(){
+		this.events = [];
+		this.firstEventTime = null;
+	}
 }
 
 var records = [];
@@ -81,7 +79,6 @@ function nrecord() {
 function handleMultipleExplorationUpload(evt){
 	var files = evt.target.files;
 	if(files){
-
 		records = [];
 		removeLabels("list");
 		for(var i = 0, f; f=files[i]; i++){
@@ -94,6 +91,7 @@ function handleMultipleExplorationUpload(evt){
 		alert("Failed to load files");
 	}
 }
+
 function onloads(r, i){
 	r.onload = function(e){
 		var fileRecord = JSON.parse(e.target.result);
@@ -114,12 +112,9 @@ function onloads(r, i){
 	};
 }
 function addRecords(newRecord){
-
 	if(!contains(newRecord, records)) {records.push(newRecord);}
-
-
-
 }
+
 function addLabel(index, fileName, nd){
 	var div = document.getElementById("list");
 	var newLabel = document.createElement('labelChooseFiles');
@@ -210,6 +205,11 @@ function addRecordingGraphics(){
 	.style('fill', 'red')
 	.transition().duration();
 }
+// remove recording related graphics
+function removeRecordingGraphics(){	
+	d3.select("#record-border").remove();
+	d3.select("#record-circle").remove();
+}
 
 //ends recording of user navigation
 function stopRecording() {
@@ -225,16 +225,8 @@ function stopRecording() {
 		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
 	}
 
-	// entries in the side bar drop-down menu
-	var cityEntries = document.getElementsByClassName("city-entry");
-	for (var i = 0; i < cityEntries.length; i++){
-		var entry = cityEntries.item(i);
-		entry.removeEventListener("dblclick", recordTravel(entry.value));
-	}
-	// remove recording related graphics
-	d3.select("#record-border").remove();
-	d3.select("#record-circle").remove();
-
+	removeRecordingGraphics();
+	
 	//  gross stuff
 	buttonImageConvert("record-button", "record_gray.jpeg");
 	saveExplButton.disabled = false;
@@ -325,8 +317,6 @@ function saveExplButtonFunction () {
 		currentUser.reset();
 	}
 	else alert("record list are empty!");
-
-
 }
 
 function loadExplButtonFunction (evt) {

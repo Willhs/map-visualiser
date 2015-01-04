@@ -93,7 +93,7 @@ function gotMedia(stream) {
 }
 
 function errorCallback(error){
-    console.log("navigator.getUserMedia error: ", error);
+console.log("navigator.getUserMedia error: ", error);
 }
 
 // sends request to use mic

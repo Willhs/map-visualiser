@@ -24,7 +24,7 @@ body {
 	border: 3px solid black;
 }
 
-.sideBar>* { /* all child elements of sidebar */
+.sideBar > * { /* all child elements of sidebar */
 	padding-left: 1em;
 }
 
@@ -64,6 +64,11 @@ input,label {
 	width: 40px;
 	height: 40px;
 	border-style: solid;
+    display: inline;
+}
+
+.authentication {
+    display: inline-block;
 }
 
 .exploration-button {

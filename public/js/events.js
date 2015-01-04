@@ -27,8 +27,7 @@ stopExplButton.addEventListener('click', stopRecording);
 var playExplButton = document.getElementById("play-exploration-button");
 playExplButton.addEventListener('click', function () {
 	if(record.isEmpty()) { alert("Record before replay!"); }
-	d3.select("#record-border").remove();
-	d3.select("#record-circle").remove();
+	removeRecordingGraphics();
 	playRecording();
 });
 
@@ -36,15 +35,11 @@ var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExplButtonFunction;
 
 //users
-var users = ["obama", "john", "lorde", "will"];
+//set event handlers a for each user button.
 
-users.forEach(function(userName){
-	document.getElementById(userName).onclick= function() {setButtonAndSetUser(userName);}
+(function(userName){
+	document.getElementById(userName).onclick = function() {setButtonAndSetUser(userName);}
 });
-
-document.getElementById("submit-userName").onclick = function(){
-	checkUsersName(document.getElementById("userName-input").value, currentUser.userImage);
-}
 
 document.getElementById("submit-message").addEventListener('click',function(){
 

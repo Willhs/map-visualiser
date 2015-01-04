@@ -1,6 +1,6 @@
-var currentUser = new userObject("obama","http://localhost:3000/image/userImage/obama.jpeg" );
+var currentUser = new User("obama","http://localhost:3000/image/userImage/obama.jpeg" );
 
-function userObject(fname, image){
+function User(fname, image){
 	this.fname = fname;
 	this.userImage = image;
 	this.sharedFileTimeStamp = [];
@@ -29,28 +29,8 @@ function loadFileButtonFunction(){
 	handleFileUpload(document.getElementById("load-file-button").files[0]);
 }
 
-//if current user in users array return if not add to users array
-function checkUsersName(userName, srcAdd){
-	var inUserArray = false;
-	for (user in users){
-		if(users[user].fname.localeCompare(userName)==0){
-			alert("user name already used please choose another name");
-			inUserArray = true;
-		}
-	}
-	if(inUserArray==false){
-		console.log("inUserArray flase 1: "+ srcAdd + "  name: "+ userName);
-		currentUser = new userObject(userName,srcAdd);
-		console.log("inUserArray flase 2: "+ srcAdd);
-		users.push(currentUser);
-		record.user = currentUser;
-		saveUser();
-	}
-}
-//var notifications;
-
 function userAndSharedEvents(user, events){
-	this.user =user;
+	this.user = user;
 	this.events = events;
 	function getName (){
 		return this.user.fname;
@@ -63,7 +43,7 @@ function setButtonAndSetUser(fname){
 	setButtonBorderColorOff(fname);
 	document.getElementById(fname).style.borderColor = "red";
 	var srcAdd = document.getElementById(fname).src;
-	currentUser = new userObject(fname,srcAdd);
+	currentUser = new User(fname,srcAdd);
 	record.user = currentUser;
 	$.ajax({
 		type: 'GET',
@@ -73,11 +53,11 @@ function setButtonAndSetUser(fname){
 		dataType: "json",
 		complete: function(){ console.log("get complete"); }
 	});
-
 }
-var noOfSharedFiles = null;
-function notification(data){
 
+var noOfSharedFiles = 0;
+
+function notification(data){
 	if (data == "no_notifications"){
 		$("#notification").html("no files in shared folder");
 	}
@@ -90,11 +70,11 @@ function notification(data){
 }
 function addAllSharedFilesTimeStamp(files){
 	if(files.length!=0){
-		for (var i = 0; i<files.length; i++){
+		for (var i = 0; i < files.length; i++){
 			var temp = files[i];
 			var from = temp.user.sharedFileTimeStamp;
 			if(from.length!=0){
-				currentUser.sharedEventsFromOther.push(new userAndSharedEvents(temp.user,temp.events) );
+				currentUser.sharedEventsFromOther.push(new UserAndSharedEvents(temp.user,temp.events) );
 				for(var j = 0; j<from.length; j++){
 					var to = currentUser.sharedFileTimeStamp;
 					if(!contains(from[j], to )){
@@ -104,8 +84,6 @@ function addAllSharedFilesTimeStamp(files){
 			}
 		}
 	}
-
-
 }
 
 function contains( a, obj){
