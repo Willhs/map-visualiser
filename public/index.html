@@ -34,98 +34,95 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 <script src="js/lib/d3.v3.min.js"></script>
 <script src="js/lib/topojson.v1.min.js"></script>
 <script src="js/lib/jquery.min.js"></script>
+
+
 </head>
 
 <body>
 	<div class="sideBar">
 
-		<div class="user-select">
-			<h3>
-				<b>Select User:</b>
-			</h3>
-			<input type="image" id='obama' class="user-button"
-				src="image/userImage/obama.jpeg"
-				alt="javascript button">
-			<input type="image" id='john' class="user-button"
-				src="image/userImage/john.jpeg"
-				alt="javascript button">
-			<input type="image" id='lorde' class="user-button"
-				src="image/userImage/lorde.jpeg"
-				alt="javascript button">
-			<input type="image" id='will' class="user-button"
-				src="image/userImage/will.jpeg"
-				alt="javascript button">
-            <div class="authentication">
-    			<input type="text" id="password-input" placeholder="password">
-    			<input type="submit" id="submit-password">
-            </div>
+		<div class="users">
+			<div id="users1">
+				<table border="0" id="userTable">
+					<div><button id="logon">LOGON</div>
+
+					<input type="text" id="userName-input" value='user-name'>
+					<input type="text" id="passwrod-input" value='password'>
+					<input type="submit" id="submit-userandpassword" value="Submit">
+
+					<h3>
+						<b>Select User:</b>
+
+					</h3>
+					<td><input type="image" id='obama' class="user-button"
+						src="data/image/userImage/obama.jpeg" alt="javascript button"></td>
+					<td><input type="image" id='john' class="user-button"
+						src="data/image/userImage/john.jpeg" alt="javascript button"></td>
+					<td><input type="image" id='lorde' class="user-button"
+						src="data/image/userImage/lorde.jpeg" alt="javascript button"></td>
+					<td><input type="image" id='will' class="user-button"
+						src="data/image/userImage/will.jpeg" alt="javascript button"></td>
+				</table>
+
+			</div>
 		</div>
 		<div class="exploration-controls">
-            <h2>Exploration recording controls</h2>
+			<h2>Exploration recording controls</h2>
 			<table border="5">
-				<td><input type="image" id="record-button"
-                    class="exploration-button"
-					src="image/record_gray.jpeg"
+				<td><input type="image" id="record-exploration-button"
+					class="exploration-button" src="data/image/record_off.jpeg"
 					alt="javascript button"></td>
 				<td><input type="image" id="play-exploration-button"
-                    class="exploration-button"
-					src="image/play_gray.jpeg"
+					class="exploration-button" src="data/image/play_off.jpeg"
 					alt="javascript button"></td>
-				<td><input type="image" id="pause-button"
-                    class="exploration-button"
-					src="image/pause_gray.jpeg"
-					alt="javascript button"> </td>
-				<td><input type="image" id="stop-button"
-                    class="exploration-button"
-					src="image/stop_gray.jpeg"
+				<td><input type="image" id="pause-exploration-button"
+					class="exploration-button" src="data/image/pause_off.jpeg"
+					alt="javascript button"></td>
+				<td><input type="image" id="stop-exploration-button"
+					class="exploration-button" src="data/image/stop_off.jpeg"
 					alt="javascript button"></td>
 				<td><input type="image" id="save-exploration-button"
-                    class="exploration-button"
-					src="image/save_gray.jpeg"
+					class="exploration-button" src="data/image/save_off.jpeg"
 					alt="javascript button"></td>
-				<td><input type="image" id="reset-button"
-                    class="exploration-button"
-					src="image/reset_gray.jpeg"
+				<td><input type="image" id="reset-exploration-button"
+					class="exploration-button" src="data/image/reset_on.jpeg"
 					alt="javascript button"></td>
 			</table>
 		</div>
-        <div class="load-exploration">
-            <h3>
-                <b>Load Exploration</b>
-            </h3>
-            <div id = "chooiceFiles"><input id="load-exploration-button" type='file' name='userFile' multiple/>
-            	<div id = "fileslist-container">
-            	<output id = "list"></output>
-            	</div>
-            </div>
-            <div>
-            <h3>
-                <label for="to">To:</label>
-            </h3>
-            <input type="text" id="userId" name="user"/>
-            <button type='button' id="submit-message">Send</button>
-            </div>
-        </div>
+		<div>
+			<div class="selected-exploration">
+				<p id="selected-exploration-name"></p>
+			</div>
+			<div id="exploration-container">
+				<select id="exploration-selector" size="0"></select>
+			</div>
+			<div>
+				<p id="noOfFilesLoaded">no files loaded</p>
+			</div>
+		</div>
+		<div>
+			<h3>
+				<label for="to">To:</label>
+			</h3>
+			<input type="text" id="userId" name="user" value="" />
+			<button type='button' id="submit-shareFile">Send</button>
+		</div>
+		<div class='select-device'>
+			<label for='audioSource'>Audio source: </label> <select id='audioSource'></select>
+		</div>
 
-        <div class='select-device'>
-                <label for='audioSource'>Audio source: </label>
-                <select id='audioSource'></select>       
-        </div>
-
-    
-        <div id="location-div" class="location-pane">
-            <h2 id="location-title"></h2>
-            <ul id="location-info">
-                <!-- script will insert elements here -->
-            </ul>
-            <div id="annotation-container" display="table">
-                <!-- will be populated by user annotations -->
-            </div>
-            <div id="annotation-input-container">
-                <!-- input will be added -->
-            </div>
-        </div>
-    </div>
+		<div id="location-div" class="location-pane">
+			<h2 id="location-title"></h2>
+			<ul id="location-info">
+				<!-- script will insert elements here -->
+			</ul>
+			<div id="annotation-container" display="table">
+				<!-- will be populated by user annotations -->
+			</div>
+			<div id="annotation-input-container">
+				<!-- input will be added --></div>
+		</div>
+	</div>
 
 	<!--
 	<div id="minimap">

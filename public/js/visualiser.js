@@ -22,6 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
 
+var IMAGE_PATH = "data/image/";
+
 var width = $(window).width() * 0.8,
 height = $(window).height(),
 centered;
@@ -133,6 +135,7 @@ function selectLocation(city){
 	displayLocationInfo(city);
 }
 
+// displays information about the location selected
 function displayLocationInfo(city){
 
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
@@ -143,16 +146,17 @@ function displayLocationInfo(city){
 	//remove and add new annotation input
 	var annotationInputCont = document.getElementById("annotation-input-container");
 	annotationInputCont.innerHTML = null;
-	makeAnnotationInput(annotationInputCont);
+	if (currentUser != null)
+		makeAnnotationInput(annotationInputCont);
 
 	// get annotations for this location
 	$.ajax({
 		type: 'GET',
-		url: "/getAnnotation",
+		url: "/getAnnotations",
 		data: city.properties.NAME,
-		success: displayAnnotations, 
+		success: displayAnnotations,
 		dataType: "json",
-	});		
+	});
 
 	// displays annotations associated with the current location
 	function displayAnnotations(annotations){
@@ -160,15 +164,15 @@ function displayLocationInfo(city){
 		if (annotations === "no_annotations") return;
 		// make a secondary annotation container so that all annotations can be loaded at once
 		var container = document.createElement("div");
-		container.className["annotation-container-2"]; 
+		container.className["annotation-container-2"];
 
 		annotations.forEach(function(annotation){
 
-			var user = annotation.user;
+			var userName = annotation.userName;
 			var timestamp = new Date(annotation.timestamp);
 			var time = timestamp.getHours() + ":" + timestamp.getMinutes();
 			var date = timestamp.getDate() + "/" + timestamp.getMonth();
-		 	var annInfo = "<i> – " + user.fname + " " + date + " " + time + "</i>";
+		 	var annInfo = "<i> – " + userName + " " + date + " " + time + "</i>";
 
 		 	// make necessary DOM elements
 		 	var rowDiv = document.createElement("div");
@@ -189,27 +193,27 @@ function displayLocationInfo(city){
 
 		 	// display delete button if user owns the annotation
 		 	// TODO: more reliable equality check
-		 	if (currentUser.fname === user.fname){
+		 	if (currentUser != null && currentUser.name === userName){
 			 	var deleteButton = document.createElement("input");
 			 	deleteButton.type = "image";
-			 	deleteButton.src = "image/delete.png";
+			 	deleteButton.src = IMAGE_PATH + "delete.png";
 			 	deleteButton.id = "delete-button";
 			 	deleteButton.onclick = function () { deleteAnnotation(annotation); }
 		 		controlsDiv.appendChild(deleteButton);
 		 	}
-		 	
+
 		 	textDiv.appendChild(content);
 		 	textDiv.appendChild(info);
 
 		 	rowDiv.appendChild(textDiv);
 		 	rowDiv.appendChild(controlsDiv);
 
-			container.appendChild(rowDiv);			
-		});		
+			container.appendChild(rowDiv);
+		});
 		// TODO: load all annotations at once
-		document.getElementById("annotation-container")	
+		document.getElementById("annotation-container")
 			.appendChild(container);
-	}	
+	}
 }
 
 // makes an annotation text input element.
@@ -229,7 +233,7 @@ function makeAnnotationInput(container){
 function submitAnnotation(annotationText){
 
 	var annotation = {
-		user: currentUser,
+		userName: currentUser.name,
 		location: selectedLocation,
 		text: annotationText,
 		timestamp: new Date()
@@ -241,8 +245,9 @@ function submitAnnotation(annotationText){
 		data: JSON.stringify(annotation),
 		contentType: "application/json",
 		complete: refreshLocationInfo
-	});	
+	});
 }
+
 
 // refresh the location info bar
 function refreshLocationInfo(){
@@ -297,7 +302,7 @@ function move(city, cb) {
 		return function(t) { return transform(i(t)); };
 	})
 	.each("end.cb", callback)
-	.each("end.update", function(){ 
+	.each("end.update", function(){
 		updateScaleAndTrans(); // updates global scale and transition variables});
 	});
 
@@ -315,7 +320,7 @@ function move(city, cb) {
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
 	var scale = getScale(g.attr("transform"));
-	var translate = getTranslate(g.attr("transform"));	
+	var translate = getTranslate(g.attr("transform"));
 	zoom.scale(scale);
 	zoom.translate(translate);
 }
@@ -428,7 +433,6 @@ function ping(index) {
 
 	var endR = startR + screenvars[1][1] * PING_SIZE;
 
-	//TODO render circles
 	g.append("circle")
 	.attr("class", "ping")
 	.attr("cx", center[0])

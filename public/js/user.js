@@ -1,82 +1,208 @@
-var currentUser = new User("obama","http://localhost:3000/image/userImage/obama.jpeg" );
+function User(name, explorations, newExpl){
+	this.name = name;
+	this.explorations = explorations; //all explorations
+	this.newExplorations = newExpl; // subset of explorations (shared)
+	this.currentExpl = null; // a recording in progress (none at start)
 
-function User(fname, image){
-	this.fname = fname;
-	this.userImage = image;
-	this.sharedFileTimeStamp = [];
-	this.sharedEventsFromOther = [];
-	this.reset = function(){
-		this.sharedFileTimeStamp = [];
-		this.sharedEventsFromOther = [];
+	// add an exploration
+	this.addExploration = function (expl){
+		this.exploration.push(expl);
+	};
+
+	this.getNewExplorations = function(){
+		return this.newExplorations;
+	};
+
+	this.setExplorations = function(expls){
+		this.explorations = expls;
+	};
+
+	this.setNewExplorations = function(expls){
+		this.newExplorations = expls;
+	}
+	this.setCurrentExploration = function(expl){
+		this.currentExpl = expl;
+	};
+
+	this.resetCurrentExploration = function(){
+		this.currentExpl = null;
+	};
+	// gets an exploration (given a timestamp) from the user's collection of explorations
+	this.getExploration = function(timeStamp){
+		var userExpl;
+		this.explorations.forEach(function(expl){
+			if (expl.timeStamp.localeCompare(timeStamp)==0){
+				console.log("returning exploration");
+				userExpl = expl;
+			}
+		});
+		return userExpl;
+	};
+
+	this.getExplorationByIndex = function(index){
+		return explorations[index];
+	};
+
+
+	this.getCurrentExpl = function(){
+		return this.currentExpl;
 	}
 }
-//function saveFileToSharedUser(name){
-////sharedRecord.user.fname = name;
-//$.ajax({
-//type: 'POST',
-//url: "/shareExploration",//url of receiver file on server
-//data: JSON.stringify({
-//"file": record,
-//"to": name,
-//"from": currentUser.fname
-//}),
-//success: function(response){ console.log(response); }, //callback when ajax request finishes
-//contentType: "application/json"
-//});
-//}
+
+var selectedExploration = null; // currently selected exploration
+var currentUser = null; // the user who is currently logged in
 
 function loadFileButtonFunction(){
 	handleFileUpload(document.getElementById("load-file-button").files[0]);
 }
 
-function userAndSharedEvents(user, events){
-	this.user = user;
-	this.events = events;
-	function getName (){
-		return this.user.fname;
+//logs on a user
+function attemptLogon(name, pw){
+
+	// TODO: check if user exists
+	// TODO: login box, request password
+
+	// returns whether logon is approved
+	$.ajax({
+		type: 'POST',
+		url: "/checkAuthentication",
+		data : JSON.stringify({userName: name, password: pw}),
+		success: gotApprovalResponse,
+		contentType: "application/json"
+	});
+	//
+	function gotApprovalResponse(approved){
+		if(JSON.parse(approved)){
+			logon(name);
+		}
 	}
 }
 
-function setButtonAndSetUser(fname){
-	refreshLocationInfo();
-	//removeLabels();
-	setButtonBorderColorOff(fname);
-	document.getElementById(fname).style.borderColor = "red";
-	var srcAdd = document.getElementById(fname).src;
-	currentUser = new User(fname,srcAdd);
-	record.user = currentUser;
+function logon(name){
+	//document.getElementById("submitUser").value = "LOGOFF";
+
+	loadAllExplorations(name, gotExplorations);
+	currentUser = new User(name, null,null);
+	function gotExplorations(allExplorations, newExplorations){
+		currentUser.setExplorations(allExplorations); //all explorations
+		currentUser.setNewExplorations(newExplorations);
+		updateUserButtons(currentUser);
+		updateSideBar(allExplorations);
+		updateNotifications(newExplorations);
+		updateExplorationControls();
+	}
+}
+
+function loadAllExplorations(name, cb){
 	$.ajax({
 		type: 'GET',
-		url: "/getNotification",
-		data: fname,
-		success: notification,
-		dataType: "json",
-		complete: function(){ console.log("get complete"); }
+		url: "/getAllFiles",
+		data: name,
+		success: function(data) { dealWithExplorations(data, cb); },
+		dataType: "json"
+	});
+
+	function dealWithExplorations(explorations, cb){
+		// input arrays contain objects with exploration data, but no methods.
+		var allExplorationsData = explorations[0];
+		var newExplorationsData = explorations[1];
+		var explorationCount = allExplorationsData.length;
+
+		if (explorationCount == 0){
+			$("#noOfFilesLoaded").html("no files in your folders");
+		}
+		else {
+			$("#noOfFilesLoaded").html("have "+ explorationCount + " files in shared folder");
+		}
+
+		// transfer all data into new Exploration objects (so that methods can be used on them).
+		var allExplorations = [];
+		var newExplorations = [];
+
+		allExplorationsData.forEach(function(expl){
+			var exploration = new Exploration();
+			exploration.transferPropertiesFrom(expl);
+			allExplorations.push(exploration);
+		});
+
+		newExplorationsData.forEach(function(expl){
+			var exploration = new Exploration();
+			exploration.transferPropertiesFrom(expl);
+			newExplorations.push(exploration);
+			console.log(exploration.timeStamp);
+		});
+
+		// send back explorations
+		cb(allExplorations, newExplorations);
+	}
+}
+
+// updates elements in the side bar
+function updateSideBar(explorations){
+	updateExplorationChooser(explorations);
+	refreshLocationInfo();
+}
+
+// updates the exploration chooser (drop down box)
+function updateExplorationChooser(explorations){
+	// remove old
+	var chooser= document.getElementById("exploration-selector");
+	while(chooser.firstChild){//remove old labels
+		chooser.removeChild(chooser.firstChild);
+	}
+
+	explorations.forEach(function(exploration, index){
+		var explOption = document.createElement('option');
+		explOption.setAttribute("id", exploration.timeStamp);
+		var explorationName = exploration.name +" - "+ exploration.timeStamp;
+		explOption.innerHTML = explorationName;
+		explOption.value = index;
+		chooser.appendChild(explOption);
+		var linebreak = document.createElement("br");
+		chooser.appendChild(linebreak);
 	});
 }
 
-var noOfSharedFiles = 0;
+//updates the user buttons to show who is logged in
+function updateUserButtons(currentUser){
+	var userButtons = document.getElementsByClassName("user-button");
+	Array.prototype.forEach.call(userButtons, function(userButton){
+		if (userButton.id === currentUser.name){
+			userButton.classList.remove("other-user-button");
+			userButton.classList.add("current-user-button");
+		} else {
+			userButton.classList.remove("current-user-button");
+			userButton.classList.add("other-user-button");
+		}
+	});
+}
 
-function notification(data){
-	if (data == "no_notifications"){
+//updates the notification GUI elements
+function updateNotifications(){
+//	var notificationBox = $("#notification-files");
+//	notificationBox.style.display = "none";
+	document.getElementById("notification-files").style.display = "none";
+
+
+	// adds notifications to the notif box
+
+	var sharedExpl = currentUser.getNewExplorations();
+	var lengthOfShared = sharedExpl.length;
+	if (lengthOfShared == 0){
 		$("#notification").html("no files in shared folder");
+		return; // no shared files
 	}
 	else {
-		noOfSharedFiles = data.length;
-		$("#notification").html("have "+ data.length + " files in shared folder");
-		addAllSharedFilesTimeStamp(data);
+		$("#notification").html("have "+ lengthOfShared + " files in shared folder");
 
-	}
-}
-function addAllSharedFilesTimeStamp(files){
-	if(files.length!=0){
-		for (var i = 0; i < files.length; i++){
-			var temp = files[i];
-			var from = temp.user.sharedFileTimeStamp;
+
+		for (var i = 0; i < lengthOfShared; i++){
+			var expl = sharedExpl[i];
+			var from = expl.timeStamp;
 			if(from.length!=0){
-				currentUser.sharedEventsFromOther.push(new UserAndSharedEvents(temp.user,temp.events) );
+				currentUser.addSharedExploration(expl);
 				for(var j = 0; j<from.length; j++){
-					var to = currentUser.sharedFileTimeStamp;
+					var to = currentUser.currentExpl.timeStamp;
 					if(!contains(from[j], to )){
 						to.push(from[j]);
 					}
@@ -86,7 +212,12 @@ function addAllSharedFilesTimeStamp(files){
 	}
 }
 
-function contains( a, obj){
+function updateExplorationControls(){
+	reset();
+	enableAction("reset"); // enables the reset button
+}
+
+function contains(a, obj){
 	for(var i = 0; i<obj.length; i++){
 		if(typeof(a)==String){
 			if(obj[i].localeCompare(a)==0){
@@ -100,25 +231,21 @@ function contains( a, obj){
 	return false;
 }
 
-function setButtonBorderColorOff(name){
-	var userNames = ['obama','john','lorde','will'];
-	for(var i = 0; i< userNames.length; i++){
-
-		if(name != userNames[i])
-			document.getElementById(userNames[i]).style.borderColor = "black";
-	}
-}
-
 function saveFileToSharedUser(name){
+	if(name==currentUser.name) return;
 	console.log("save file to "+name+"'s shared folder");
+	console.log("select time: "+selectedExploration.timeStamp);
 
 	$.ajax({
 		type: 'POST',
 		url: "/shareExploration",//url of receiver file on server
-		data: {"file":JSON.stringify(record, null, 4),"to":name, "from":currentUser.fname, "timestamp": record.startTimeStamp},
+		data: JSON.stringify({"exploration":selectedExploration,"to":name, "from":currentUser.name}),
 		//data: JSON.stringify(record),
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
-		dataType: "json" //text/json...
+		success: function(response){
+			if(!JSON.parse(response))
+				alert("user does not exist!");
+		}, //callback when ajax request finishes
+		contentType: "application/json" //text/json...
 	});
 }
 function saveFileToPlayedShared(file){
@@ -126,7 +253,7 @@ function saveFileToPlayedShared(file){
 	$.ajax({
 		type: 'POST',
 		url: "/saveSharedPlayed",//url of receiver file on server
-		data: {"filePlayed":JSON.stringify(file, null, 4),"from": currentUser.fname,"to":file.user.fname,"timestamp": sharedRecordFrom.startTimeStamp},
+		data: {"filePlayed":JSON.stringify(file),"from": currentUser.fname,"to":file.user.fname,"timestamp": sharedExplorationFrom.startTimeStamp},
 		success: function(response){ console.log(response) }, //callback when ajax request finishes
 		dataType: "json" //text/json...
 
@@ -159,29 +286,13 @@ function showListNotifications(){
 	var idDiv = "notification-files";
 	var idLabel = "notification-file";
 	var div = document.getElementById(idDiv);
-	removeLabels("notification-files");
+	var notificationChooser= document.getElementById(idDiv);
+	while(notificationChooser.firstChild){//remove old labels
+		notificationChooser.removeChild(notificationChooser.firstChild);
+	}
+
+	divHideShow(div);
 	if(temp2.length!=0){
-		divHideShow(div);
-
-		var delDiv = document.createElement("div");
-		delDiv.className = "delDivClass";
-		var deleteButton = addDeleteButton();
-		deleteButton.onclick = function () {
-			if(checkMatchedTimeStamp()==0){
-				noOfSharedFiles-=1;
-				$("#notification").html("have "+ noOfSharedFiles + " files in shared folder");
-				saveFileToPlayedShared(sharedRecordFrom);
-				sharedRecordFrom.reset();
-				deletePlayedFromSharedFolder(record);
-				removeFromSharedFileTimeStamp(record);
-				removeSharedEventsFromOther(record);
-				showListNotifications();
-
-			}else{console.log(" equals false");}
-		}
-		delDiv.appendChild(deleteButton);
-		div.appendChild(delDiv);
-
 		var quickPlayDiv = document.createElement("div");
 		quickPlayDiv.className = "quickPlayDivClass";
 		var qButton = document.createElement('input');
@@ -193,32 +304,56 @@ function showListNotifications(){
 		qButton.style.width = '15px';
 		qButton.style.height = '15px';
 		qButton.onclick = function(){
-			playRecording();
+			playExploration();
 		}
 		quickPlayDiv.appendChild(qButton);
 		div.appendChild(quickPlayDiv);
-		//addLabelListener(i,qButtonId);
+		var nLabels = [];
+		var clicked = false;
 		for(var i = 0; i<temp2.length; i++){
+			var currentFileName = null;
+
 			var newLabel = document.createElement('label');
 			newLabel.setAttribute("for", idLabel +i);
 			newLabel.setAttribute("id", currentUser.fname+i);
-			newLabel.innerHTML ="From: "+temp1[i].user.fname +"  "+ temp2[i].substring(5,20);
+			fileName = temp1[i].user.fname +"  "+ temp2[i].substring(5,20);
+			newLabel.innerHTML = fileName;
 			//newLabel.appendChild(delDiv);
 			div.appendChild(newLabel);
 			var linebreak = document.createElement("br");
 			div.appendChild(linebreak);
-			//div.className = "fileChoose";
-			addLabelListener(i,currentUser.fname+i);
+			nLabels.push(newLabel);
+			addLabelListener(i, currentUser.fname, clicked, nLabels, null);
 		}
+
+		var delDiv = document.createElement("div");
+		delDiv.className = "delDivClass";
+		var deleteButton = addDeleteButton();
+		deleteButton.onclick = function () {delFunction();}
+		delDiv.appendChild(deleteButton);
+		div.appendChild(delDiv);
+
 	}
+}
+function delFunction(){
+	if(checkMatchedTimeStamp()==0){
+		noOfSharedFiles-=1;
+		$("#notification").html("have "+ noOfSharedFiles + " files in shared folder");
+		saveFileToPlayedShared(sharedExplorationFrom);
+		sharedExplorationFrom.reset();
+		deletePlayedFromSharedFolder(record);
+		removeFromSharedFileTimeStamp(record);
+		removeSharedEventsFromOther(record);
+		showListNotifications();
+	}else{console.log(" equals false");}
 }
 function addDeleteButton(){
 	var deleteButton = document.createElement("input");
 	deleteButton.id = "delButton";
 	deleteButton.type = "image";
 	deleteButton.src = "image/delete.png";
-	deleteButton.style.width = "20px";
-	deleteButton.style.height = "20px";
+	deleteButton.style.width = "15px";
+	deleteButton.style.height = "15px";
 	return deleteButton;
 }
 function removeSharedEventsFromOther(record){
@@ -242,44 +377,35 @@ function checkMatchedTimeStamp(){
 	return 1;
 }
 
-function addLabelListener(index,id){
-	console.log(index +"  "+id);
+function addLabelListener(index,id2,click,nLabels, file){
+
+	var id = id2+index;
 	document.getElementById(id).addEventListener('click',function(){
-		addListener(index);
+		addListener(index, file);
+
+		backgroundColorStateChange(id2,index,click,nLabels);
 	});
 }
 
-var sharedRecordFrom = {
-		user: null,
-		fromuser: null,
-		events : [], // events that took place over the course of the exploration
-		firstEventTime : null,
+function addListener(index, file){
+	buttonImageConvert("play-exploration-button","play_green.jpg");
 
-		startTimeStamp : null,
-		reset : function(){
-			this.user = null;
-			this.fromuser = null;
-			this.firstEventTime = null;
-			this.startTimeStamp = null;
-		}
-}
-function addListener(index){
-	console.log("clicked2");
-	record.events = [];
-	record.events = currentUser.sharedEventsFromOther[index].events;
-	record.startTimeStamp = currentUser.sharedFileTimeStamp[index];
-	sharedRecordFrom.user = currentUser.sharedEventsFromOther[index].user,
-	sharedRecordFrom.event = currentUser.sharedEventsFromOther[index].events,
-	sharedRecordFrom.startTimeStamp = currentUser.sharedFileTimeStamp[index];
-	sharedRecordFrom.firstEventTime = currentUser.sharedEventsFromOther[index].firstEventTime;
-	sharedRecordFrom.fromuser = currentUser.sharedEventsFromOther[index].fromuser;
+	//record.reset();
+	if(file==null){
+		record.events = currentUser.sharedEventsFromOther[index].events;
+		record.startTimeStamp = currentUser.sharedFileTimeStamp[index];
+		sharedExplorationFrom = new Exploration();
+		sharedExplorationFrom.setExploration(currentUser.sharedEventsFromOther[index]);
+	}
+	else{
+		record.setExploration(file);
 
-	//playRecording();
+	}
+
 }
 function divHideShow(div){
 
 	if (div.style.display.localeCompare("inline")==0){
-		console.log("haa");
 		div.style.display = "none";
 		//setTimeout(function(){div.style.display = "none";},3000);
 	}

@@ -13,35 +13,61 @@ document.getElementById("upload-path").addEventListener('change', function () {
 }, false);*/
 
 //explorations
-var resetExplButton = document.getElementById("reset-button");
-resetExplButton.onclick = resetExplButtonFunction;
-
-document.getElementById("load-exploration-button").addEventListener('change', loadExplButtonFunction, false);
-
-var recordExplButton = document.getElementById("record-button");
-recordExplButton.addEventListener("click", startRecording);
-
-var stopExplButton = document.getElementById("stop-button")
-stopExplButton.addEventListener('click', stopRecording);
+var recordExplButton = document.getElementById("record-exploration-button");
+recordExplButton.addEventListener("click", function(){
+	if (recording)
+		stopRecording();
+	else
+		startRecording();
+});
 
 var playExplButton = document.getElementById("play-exploration-button");
 playExplButton.addEventListener('click', function () {
-	if(record.isEmpty()) { alert("Record before replay!"); }
-	removeRecordingGraphics();
-	playRecording();
+	playBackExploration(selectedExploration);
 });
+
+var stopExplButton = document.getElementById("stop-exploration-button");
+stopExplButton.addEventListener('click', function(){ stopPlayBack(selectedExploration); });
 
 var saveExplButton = document.getElementById('save-exploration-button');
-saveExplButton.onclick = saveExplButtonFunction;
+saveExplButton.onclick = saveExploration;
+
+var resetExplButton = document.getElementById("reset-exploration-button");
+resetExplButton.onclick = reset;
+
+var explChooser = document.getElementById("exploration-selector");
+explChooser.onclick = function(){
+	var explTimeStamp = explChooser.options[explChooser .selectedIndex].id;
+	var userExpl = currentUser.getExploration(explTimeStamp);
+	selectExploration(userExpl);
+
+};
 
 //users
-//set event handlers a for each user button.
+var users = ["obama", "john", "lorde", "will"];
 
-(function(userName){
-	document.getElementById(userName).onclick = function() {setButtonAndSetUser(userName);}
+users.forEach(function(userName){
+	document.getElementById(userName).onclick= function() {
+		document.getElementById("userName-input").value = userName;
+	};
 });
 
-document.getElementById("submit-message").addEventListener('click',function(){
+
+//submit button
+document.getElementById("submit-userandpassword").onclick = function(){
+	var userName = document.getElementById("userName-input").value;
+	var password = document.getElementById("passwrod-input").value;
+	if(!password){
+		alert("password can not be null");
+	}
+	else{
+
+		attemptLogon(userName,password);
+		//loadAllFiles();
+	}
+};
+// share button
+document.getElementById("submit-shareFile").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("userId").value;
 	console.log("userID: "+userLabelValue);
@@ -49,6 +75,7 @@ document.getElementById("submit-message").addEventListener('click',function(){
 		saveFileToSharedUser(userLabelValue);
 	}
 });
+// notifications
 document.getElementById("notification").addEventListener('click',function(){
 	showListNotifications();
 });
