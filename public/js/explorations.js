@@ -360,7 +360,7 @@ function recordMovement(){
 	currentUser.getCurrentExpl().addEvent("movement", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
-(function (){
+var disableAllButtons = (function (){
 	// disable all buttons before any user has logged in
 	disableAction("record");
 	disableAction("play");

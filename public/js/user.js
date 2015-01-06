@@ -38,6 +38,7 @@ function User(name, explorations){
 		return explorations[index];
 	};
 
+
 	this.getCurrentExpl = function(){
 		return this.currentExpl;
 	}
@@ -76,6 +77,15 @@ function attemptLogon(name, pw){
 	function gotApprovalResponse(approved){
 		if(JSON.parse(approved)){
 			logon(name);
+
+			if(logonButton.value=="Logon"){
+				logonButton.value="Logoff";
+				document.getElementById("userName-input").disabled = true;
+				document.getElementById("password-input").disabled = true;
+			}
+		}
+		else{
+			alert("username/password are invalid");
 		}
 	}
 }
@@ -91,6 +101,25 @@ function logon(name){
 		updateSideBar(allExplorations);
 	}
 }
+function attemptCreateAccount(name, pw){
+
+	$.ajax({
+		type: 'POST',
+		url: "/checkUsersFile",
+		data : JSON.stringify({userName: name}),
+		success: gotApproval,
+		contentType: "application/json"
+	});
+	//
+	function gotApproval(approved){
+		if(!JSON.parse(approved)){
+			createAccount(name, pw);
+		}
+		else{
+			alert("user name already been used, please choose another name");
+		}
+	}
+}
 
 function loadAllExplorations(userName, cb){
 	$.ajax({
@@ -98,11 +127,11 @@ function loadAllExplorations(userName, cb){
 		url: "/getUserExplorations",
 		data: userName,
 		success: function(data) { dealWithExplorations(data, cb); },
-		dataType: "json"
+		dataType: "json",
+		complete: function(){ console.log("get all files complete"); }
 	});
 
 	function dealWithExplorations(explorations, cb){
-
 		// input arrays contain objects with exploration data, but no methods.
 		var allExplorationsData = explorations;
 		var explorationCount = allExplorationsData.length;
@@ -175,33 +204,17 @@ function updateUserButtons(currentUser){
 function updateNotifications(currentUser){
 //	var notificationBox = $("#notification-files");
 //	notificationBox.style.display = "none";
-	document.getElementById("notification-files").style.display = "none";
+	var newExplorations = currentUser.getNewExplorations();
+	console.log(newExplorations.length);
 
-	// adds notifications to the notif box
-
-	var sharedExpl = currentUser.getNewExplorations();
-	var lengthOfShared = sharedExpl.length;
-	if (lengthOfShared == 0){
-		$("#notification").html("no files in shared folder");
-		return; // no shared files
+	if(newExplorations.length>0){
+		console.log(">0");
+		$("#notification").html("have "+ newExplorations.length + " files in shared folder");
+		//showListNotifications();
+		document.getElementById("notification-files").style.display = "block";
 	}
-	else {
-		$("#notification").html("have "+ lengthOfShared + " files in shared folder");
-
-
-		for (var i = 0; i < lengthOfShared; i++){
-			var expl = sharedExpl[i];
-			var from = expl.timeStamp;
-			if(from.length!=0){
-				//currentUser.addSharedExploration(expl); // not supported now
-				for(var j = 0; j<from.length; j++){
-					//var to = currentUser.currentExpl.timeStamp;
-					//if(!contains(from[j], to )){
-					//	to.push(from[j]);
-					//}
-				}
-			}
-		}
+	else{
+		$("#notification").html("have no files in shared folder");
 	}
 }
 
@@ -248,7 +261,7 @@ function saveFileToPlayedShared(file){
 		type: 'POST',
 		url: "/saveSharedPlayed",//url of receiver file on server
 		data: {"filePlayed":JSON.stringify(file),"from": currentUser.fname,"to":file.user.fname,"timestamp": sharedExplorationFrom.startTimeStamp},
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
+		success: function(response){ console.log(response); }, //callback when ajax request finishes
 		dataType: "json" //text/json...
 
 	});
@@ -260,8 +273,8 @@ function deleteExplorationFile(file){
 		url: "deleteExplorationFile",
 		data: { "explorationFile": JSON.stringify(file, null, 4) },
 		dataType: "json",
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
-	})
+		success: function(response){ console.log(response); } //callback when ajax request finishes
+	});
 }
 function deletePlayedFromSharedFolder(playedFile){
 	console.log("delete shared Played File");
@@ -270,9 +283,25 @@ function deletePlayedFromSharedFolder(playedFile){
 		url: "deletePlayed",
 		data: { "playedFile": JSON.stringify(playedFile, null, 4) },
 		dataType: "json",
-		success: function(response){ console.log(response) }, //callback when ajax request finishes
-	})
+		success: function(response){ console.log(response); }, //callback when ajax request finishes
+	});
 }
+
+function createAccount(name, pw){
+	console.log("add new user's name and pw to logonInfo file");
+
+	$.ajax({
+		type: 'POST',
+		url: "createAccount",
+		data: JSON.stringify({userName: name, password: pw}),
+		contentType: "application/json",
+		success: function(response){ console.log(response); }, //callback when ajax request finishes
+	});
+	window.document.write("new account created!");
+	window.close();
+
+}
+
 
 function showListNotifications(){
 	var temp1 = currentUser.sharedEventsFromOther;
@@ -298,21 +327,19 @@ function showListNotifications(){
 		qButton.style.width = '15px';
 		qButton.style.height = '15px';
 		qButton.onclick = function(){
-			playExploration();
-		}
+			playExplorationing();
+		};
 		quickPlayDiv.appendChild(qButton);
 		div.appendChild(quickPlayDiv);
 		var nLabels = [];
 		var clicked = false;
 		for(var i = 0; i<temp2.length; i++){
 			var currentFileName = null;
-
 			var newLabel = document.createElement('label');
 			newLabel.setAttribute("for", idLabel +i);
 			newLabel.setAttribute("id", currentUser.fname+i);
 			fileName = temp1[i].user.fname +"  "+ temp2[i].substring(5,20);
 			newLabel.innerHTML = fileName;
-			//newLabel.appendChild(delDiv);
 			div.appendChild(newLabel);
 			var linebreak = document.createElement("br");
 			div.appendChild(linebreak);
@@ -323,12 +350,13 @@ function showListNotifications(){
 		var delDiv = document.createElement("div");
 		delDiv.className = "delDivClass";
 		var deleteButton = addDeleteButton();
-		deleteButton.onclick = function () {delFunction();}
+		deleteButton.onclick = function () {delFunction();};
 		delDiv.appendChild(deleteButton);
 		div.appendChild(delDiv);
 
 	}
 }
+
 function delFunction(){
 	if(checkMatchedTimeStamp()==0){
 		noOfSharedFiles-=1;
@@ -341,6 +369,7 @@ function delFunction(){
 		showListNotifications();
 	}else{console.log(" equals false");}
 }
+
 function addDeleteButton(){
 	var deleteButton = document.createElement("input");
 	deleteButton.id = "delButton";
@@ -350,18 +379,21 @@ function addDeleteButton(){
 	deleteButton.style.height = "15px";
 	return deleteButton;
 }
+
 function removeSharedEventsFromOther(record){
 	var index = currentUser.sharedEventsFromOther.indexOf(record);
 	if(index>-1){
 		currentUser.sharedEventsFromOther.splice(index,1);
 	}
 }
+
 function removeFromSharedFileTimeStamp(record){
 	var index = currentUser.sharedFileTimeStamp.indexOf(record.startTimeStamp);
 	if(index>-1){
 		currentUser.sharedFileTimeStamp.splice(index,1);
 	}
 }
+
 function checkMatchedTimeStamp(){
 	for(var i = 0; i<currentUser.sharedFileTimeStamp.length; i++){
 		if(currentUser.sharedFileTimeStamp[i].localeCompare(record.startTimeStamp)==0){
@@ -382,8 +414,6 @@ function addLabelListener(index,id2,click,nLabels, file){
 }
 
 function addListener(index, file){
-	buttonImageConvert("play-exploration-button","play_green.jpg");
-
 	//record.reset();
 	if(file==null){
 		record.events = currentUser.sharedEventsFromOther[index].events;
@@ -395,8 +425,8 @@ function addListener(index, file){
 		record.setExploration(file);
 
 	}
-
 }
+
 function divHideShow(div){
 
 	if (div.style.display.localeCompare("inline")==0){
@@ -406,12 +436,5 @@ function divHideShow(div){
 	else{
 		div.style.display = "inline";
 		//setTimeout(function () {div.style.display = "none";}, 5000);
-	}
-}
-
-function removeLabels(idName){
-	var parent = document.getElementById(idName);
-	while(parent.firstChild){//remove old labels
-		parent.removeChild(parent.firstChild);
 	}
 }

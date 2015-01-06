@@ -36,7 +36,7 @@ var server = app.listen(3000, function() {
 app.use(express.static(__dirname + '/public'));
 
 var USER_PATH = "public/data/user/",
-	INFO_FILE_NAME = "info.json"; // all user information is store in here
+	USER_INFO_FILE_NAME = "usersInfo.json"; // all user information is store in here
 
 app.post("/checkAuthentication", function(req, res){
 	console.log("checking authentication");
@@ -51,16 +51,35 @@ app.post("/checkAuthentication", function(req, res){
 	// check if user dir exists
 	doesUserExist(userName);
 
-	var info = JSON.parse(fs.readFileSync(path + "info.json"));
+	var users = JSON.parse(fs.readFileSync(USER_PATH + USER_INFO_FILE_NAME));
 	// check if uname and pw match
 
-	console.log("un: " + info.userName + "\npw: " + info.password);
+	var authenticated = false;
 
-	if (info.userName === userName
-			&& info.password === pw)
-		res.send(JSON.stringify(true));
-	else
+	users.forEach(function(user){
+		if (user.userName === userName
+				&& user.password === pw){
+			authenticated = true;
+			console.log("logged in with un: " + user.userName + "\npw: " + user.password);
+		}
+	});
+
+	res.send(JSON.stringify(authenticated));
+
+	/*var json = fs.readFileSync(USER_PATH + "logonInfo.json");
+	eval("var info = "+json);
+	// check if uname and pw match
+	var log = 1;
+	info.forEach(function(user){
+		if (user.userName === userName
+				&& user.password === pw){
+			log = 0;
+			res.send(JSON.stringify(true));
+		}
+	});
+	if(log===1){
 		res.send(JSON.stringify(false));
+	}*/
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -153,6 +172,42 @@ app.post('/shareExploration', function(req, res){
 	console.log("shared exploration to: "+ to + " from: "+ from);
 });
 
+//check userName if match return true, if not return false
+app.post("/checkUsersFile", function(req, res){
+	console.log("checking matching user name");
+	var fields = req.body;
+	var userName = fields.userName;
+	var json = fs.readFileSync(USER_PATH + USER_INFO_FILE_NAME);
+	eval("var info = "+json);
+
+	// check if uname and pw match
+	var send = 1;
+	info.forEach(function(user){
+		if (user.userName === userName){
+			console.log("matched");
+			send = 0;
+			res.send(JSON.stringify(true));
+		}
+	});
+	if(send===1){
+		console.log("not matched");
+		res.send(JSON.stringify(false));
+	}
+});
+
+//add new user's userName and password into logonInfo.json file
+app.post("/createAccount", function(req, res){
+	var fields = req.body;
+	var userName = fields.userName;
+	var password = fields.password;
+	console.log("adding new user name and password to logonInfo file: "+ userName +"  "+ password);
+	var json = fs.readFileSync(USER_PATH + USER_INFO_FILE_NAME);
+	eval("var info = "+json);
+	var newUser = {"userName":userName, "password":password};
+	info.push(newUser);
+	fs.writeFileSync(USER_PATH + USER_INFO_FILE_NAME, JSON.stringify(info, null, 4)+"\n");
+});
+
 app.post('/postAnnotation', function(req, res){
 
 	var annotation = req.body;
@@ -201,6 +256,7 @@ app.get("/getAnnotations", function(req, res){
 	});
 
 	res.send(JSON.stringify(annotations));
+
 });
 
 app.post("/deleteAnnotation", function(req, res){
@@ -217,7 +273,7 @@ app.post("/deleteAnnotation", function(req, res){
 		//console.log(JSON.stringify(annotation) + "\n" + JSON.stringify(inputAnnotation) + "\n\n");
 		// if annotations are equal, delete the file
 		if (annotation.userName === inputAnnotation.userName
-				&& annotation.timeStamp === inputAnnotation.timeStamp
+				&&annotation.timestamp === inputAnnotation.timestamp
 				&& annotation.text === inputAnnotation.text){
 			fs.unlink(path + filename);
 			res.sendStatus(200); // success code
@@ -287,11 +343,13 @@ app.post("/deletePlayed", function(req, res){
 		console.log("inputSharedFile.startTimeStamp: "+inputSharedFile.startTimeStamp);
 
 		if (playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0){
+
 			fs.unlink(path + filename);
 			res.send(200); // success code
 		}
 	});
 });
+
 
 //returns whether the dir existed
 function ensureDirExists(path){
@@ -299,8 +357,16 @@ function ensureDirExists(path){
 		fs.mkdirSync(path);
 	}
 }
-//return userName has a dir
+//return if there exists a user with input userName
 function doesUserExist(userName){
-	var path = USER_PATH+ userName +"/";
-	return fs.existsSync(path);
+	var logonFile = fs.readFileSync(USER_PATH + USER_INFO_FILE_NAME);
+	var users = JSON.parse(logonFile);
+	var exist = false;
+
+	users.forEach(function(user){
+		if (user.userName.localeCompare(userName) === 0){
+			exist = true;
+		}
+	});
+	return exist;
 }
