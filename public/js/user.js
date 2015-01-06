@@ -1,7 +1,6 @@
-function User(name, explorations, newExpl){
+function User(name, explorations){
 	this.name = name;
 	this.explorations = explorations; //all explorations
-	this.newExplorations = newExpl; // subset of explorations (shared)
 	this.currentExpl = null; // a recording in progress (none at start)
 
 	// add an exploration
@@ -9,16 +8,8 @@ function User(name, explorations, newExpl){
 		this.exploration.push(expl);
 	};
 
-	this.getNewExplorations = function(){
-		return this.newExplorations;
-	};
-
-	this.setExplorations = function(expls){
-		this.explorations = expls;
-	};
-
-	this.setNewExplorations = function(expls){
-		this.newExplorations = expls;
+	this.getCurrentExploration = function(){
+		return this.currentExpl;
 	}
 	this.setCurrentExploration = function(expl){
 		this.currentExpl = expl;
@@ -43,7 +34,6 @@ function User(name, explorations, newExpl){
 		return explorations[index];
 	};
 
-
 	this.getCurrentExpl = function(){
 		return this.currentExpl;
 	}
@@ -59,9 +49,6 @@ function loadFileButtonFunction(){
 //logs on a user
 function attemptLogon(name, pw){
 
-	// TODO: check if user exists
-	// TODO: login box, request password
-
 	// returns whether logon is approved
 	$.ajax({
 		type: 'POST',
@@ -70,7 +57,7 @@ function attemptLogon(name, pw){
 		success: gotApprovalResponse,
 		contentType: "application/json"
 	});
-	//
+	
 	function gotApprovalResponse(approved){
 		if(JSON.parse(approved)){
 			logon(name);
@@ -79,17 +66,14 @@ function attemptLogon(name, pw){
 }
 
 function logon(name){
-	//document.getElementById("submitUser").value = "LOGOFF";
 
+	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
-	currentUser = new User(name, null,null);
-	function gotExplorations(allExplorations, newExplorations){
-		currentUser.setExplorations(allExplorations); //all explorations
-		currentUser.setNewExplorations(newExplorations);
-		updateUserButtons(currentUser);
-		updateSideBar(allExplorations);
-		updateNotifications(newExplorations);
-		updateExplorationControls();
+//	loadUserInfo(name, gotUserInfo);
+
+	function gotExplorations(allExplorations){		
+		currentUser.setExplorations(allExplorations);
+		updateSideBar(currentUser, allExplorations);
 	}
 }
 
@@ -104,8 +88,7 @@ function loadAllExplorations(name, cb){
 
 	function dealWithExplorations(explorations, cb){
 		// input arrays contain objects with exploration data, but no methods.
-		var allExplorationsData = explorations[0];
-		var newExplorationsData = explorations[1];
+		var allExplorationsData = explorations;
 		var explorationCount = allExplorationsData.length;
 
 		if (explorationCount == 0){
@@ -117,30 +100,24 @@ function loadAllExplorations(name, cb){
 
 		// transfer all data into new Exploration objects (so that methods can be used on them).
 		var allExplorations = [];
-		var newExplorations = [];
 
-		allExplorationsData.forEach(function(expl){
+		allExplorationsData.forEach(function(data){
 			var exploration = new Exploration();
-			exploration.transferPropertiesFrom(expl);
+			exploration.transferPropertiesFrom(data);
 			allExplorations.push(exploration);
 		});
-
-		newExplorationsData.forEach(function(expl){
-			var exploration = new Exploration();
-			exploration.transferPropertiesFrom(expl);
-			newExplorations.push(exploration);
-			console.log(exploration.timeStamp);
-		});
-
 		// send back explorations
-		cb(allExplorations, newExplorations);
+		cb(allExplorations);
 	}
 }
 
 // updates elements in the side bar
 function updateSideBar(explorations){
+	updateUserButtons(currentUser);
 	updateExplorationChooser(explorations);
 	refreshLocationInfo();
+	updateExplorationControls();
+	updateNotifications(currentUser);
 }
 
 // updates the exploration chooser (drop down box)
@@ -178,11 +155,11 @@ function updateUserButtons(currentUser){
 }
 
 //updates the notification GUI elements
-function updateNotifications(){
+// TODO: 
+function updateNotifications(currentUser){
 //	var notificationBox = $("#notification-files");
 //	notificationBox.style.display = "none";
 	document.getElementById("notification-files").style.display = "none";
-
 
 	// adds notifications to the notif box
 
@@ -216,6 +193,7 @@ function updateExplorationControls(){
 	reset();
 	enableAction("reset"); // enables the reset button
 }
+
 
 function contains(a, obj){
 	for(var i = 0; i<obj.length; i++){

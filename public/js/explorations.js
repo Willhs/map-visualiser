@@ -1,3 +1,9 @@
+
+// TODO: don't use global variable for this
+var recording = false,
+	playing = false,
+	requestStop = false;
+
 //constructor for Event objects
 function Event(type, body, time){
 	this.type = type;
@@ -12,8 +18,9 @@ function Exploration() {
 	this.userName = (currentUser ? currentUser.name : null);
 	this.events = []; // events that took place over the course of the exploration
 	this.firstEventTime = null;
-
 	this.timeStamp = null;//time saving at save button pressed
+	this.audio = null; // blob/string representing audio
+	this.isNew = true;
 
 	this.setTimeStamp = function(timestamp){
 		this.timeStamp = timestamp;
@@ -31,6 +38,14 @@ function Exploration() {
 	this.getEvent = function (i){
 		return this.events[i];
 	};
+
+	this.getAudio = function(){
+		return this.audio;
+	}
+
+	this.setAudio = function(audio){
+		this.audio = audio;
+	}
 
 	this.hasNextEvent = function (event){
 		if (this.events.indexOf(event) >= this.events.length-1){
@@ -78,11 +93,6 @@ var generateDefaultExplName = function(){
 	};
 }();
 
-// TODO: don't use global variable for this
-var recording = false;
-// TODO same ^
-var requestStop = false;
-
 //beings recording of certain user navigation actions
 function startRecording() {
 	reset();
@@ -98,9 +108,11 @@ function startRecording() {
 
 	currentUser.currentExpl = new Exploration();
 	selectExploration(currentUser.currentExpl); // the current recording
+
+	// starts recording audio
+	startAudioRecording();
 	// shows that recording is in progess
 	addRecordingGraphics();
-
 
 	recording = true;
 
@@ -128,11 +140,12 @@ function stopRecording() {
 		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
 	}
 
-	changeButtonColour("record", false);
+	stopAudioRecording();
 
 	enableAction("save");
 	enableAction("play");
 	disableAction("stop");
+	changeButtonColour("record", false);
 
 	removeRecordingGraphics();
 
@@ -143,7 +156,7 @@ function stopRecording() {
 
 //plays an exploration
 // assumes no other exploration is being played
-function playBackExploration(exploration){
+function startPlayBack(exploration){
 
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
@@ -173,7 +186,8 @@ function playBackExploration(exploration){
 			disableAction("stop");
 			disableAction("pause");
 
-			requestStop = false; // reset this variable (sigh)
+			requestStop = false, // reset this variable (sigh)
+			playing = false;
 
 			console.log("Played " + exploration.numEvents() + " events");
 		}
@@ -191,14 +205,29 @@ function playBackExploration(exploration){
 	disableAction("play");
 
 	launchEvent(0); // launch the first event.
+	playAudio(exploration.getAudio());
+
+	exploration.isNew = false;
+	playing = true;
+}
+
+function playAudio(audio){
+	console.log("audio: ");
+	console.log(audio);
+	var audioElem = document.getElementById("exploration-audio");
+	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audio);
+	audioElem.play();
 }
 
 //stops the playback of an exploration
 function stopPlayBack(exploration) {
+	if (!playing)
+		return;
 
-	// request that playback stops.
-	if (recording)
-		requestStop = true;
+	requestStop = true;
+	var audio = document.getElementById("exploration-audio");
+	audio.pause();
+	audio.currentTime = 0; // in seconds
 }
 
 // makes an exploration selected
@@ -235,13 +264,23 @@ function saveExploration() {
 	var expl = currentUser.getCurrentExpl();
 	expl.setTimeStamp(new Date());
 
-	$.ajax({
-		type: 'POST',
-		url: "/postExploration",//url of receiver file on server
-		data: JSON.stringify(expl),
-		success: function(response){ console.log("Saved successful") }, //callback when ajax request finishes
-		contentType: "application/json"
-	});
+	// convert audio from blob to string so it can be sent
+	var reader = new FileReader();
+    reader.addEventListener("loadend", sendAudio);
+    reader.readAsBinaryString(expl.getAudio());
+
+    function sendAudio(){
+        var audioString = reader.result;
+        expl.setAudio(audioString);
+
+		$.ajax({
+			type: 'POST',
+			url: "/postExploration",//url of receiver file on server
+			data: JSON.stringify(expl),
+			success: function(response){ console.log("Saved successful") }, //callback when ajax request finishes
+			contentType: "application/json"
+		});
+	}
 }
 
 // disables an action (currently button)

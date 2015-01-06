@@ -10,6 +10,7 @@ navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var audioContext = new AudioContext();
+var audioRecorder = null;
 
 function saveAudio() {
     audioRecorder.exportWAV( doneEncoding );
@@ -18,42 +19,51 @@ function saveAudio() {
 }
 
 function gotBuffers( buffers ) {
-    var canvas = document.getElementById( "wavedisplay" );
-
-    drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffers[0] );
-
     // the ONLY time gotBuffers is called is right after a new recording is completed - 
     // so here's where we should set up the download.
     audioRecorder.exportWAV( doneEncoding );
 }
 
 function doneEncoding( blob ) {
-    var reader = new FileReader();
-    reader.addEventListener("loadend", sendAudio);
-    reader.readAsBinaryString(blob);
-
-    function sendAudio(){
-        var audioString = reader.result;
-        // add to current recording
-    }
+    // sets the audio of the current user's current exploration
+    currentUser.getCurrentExploration().setAudio(blob);
 }
 
-function toggleRecording( e ) {
-    if (e.classList.contains("recording")) {
-        // stop recording
-        audioRecorder.stop();
-        e.classList.remove("recording");
-        audioRecorder.getBuffers( gotBuffers );
-    } else {
-        // start recording
-        if (!audioRecorder)
-            return;
-        e.classList.add("recording");
-        audioRecorder.clear();
-        audioRecorder.record();
-    }
+function startAudioRecording() {
+    // start recording
+    if (!audioRecorder)
+        return;
+    audioRecorder.clear();
+    audioRecorder.record();
+    displayAudioGraphic();
 }
 
+function stopAudioRecording(){
+    // stop recording
+    if (!audioRecorder)
+        return;
+    audioRecorder.stop();
+    audioRecorder.getBuffers( gotBuffers );
+    removeAudioGraphic();
+}
+
+// displays an image of a microphone
+function displayAudioGraphic(){    
+    svg.append("image")
+        .attr({
+            x: width*0.9,
+            y: 20,
+            width: 50,
+            height: 50, 
+            "xlink:href": "data/image/microphone-128.png",
+            id: "microphone-graphic"
+        });
+}
+
+function removeAudioGraphic(){
+    svg.select("#microphone-graphic")
+        .remove();    
+}
 // called when sources are confirmed 
 function gotSources(sourceInfos) {
     for (var i = 0; i != sourceInfos.length; ++i) {

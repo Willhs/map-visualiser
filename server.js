@@ -35,15 +35,16 @@ var server = app.listen(3000, function() {
 
 app.use(express.static(__dirname + '/public'));
 
-var USER_PATH = "public/data/user/"; // all user information is store in here
+var USER_PATH = "public/data/user/",
+	INFO_FILE_NAME = "info.json"; // all user information is store in here
 
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 
 	var exploration = req.body;
 	var userName = exploration.userName;
-	//var timestamp = new Date();
-	var timestamp = exploration.timeStamp;
+	//var timeStamp = new Date();
+	var timeStamp = exploration.timeStamp;
 	// makes directory for files if none exist.
 	var path = USER_PATH;
 	ensureDirExists(path);
@@ -51,24 +52,28 @@ app.post('/postExploration', function(req, res){
 	ensureDirExists(path);
 	path += "Exploration/";
 	ensureDirExists(path);
-	fs.writeFile(path + userName + timestamp + ".json", JSON.stringify(exploration, null, 4), function(err){
-		if(err){ console.log(err); }
-	});
+
+	fs.writeFileSync(path + userName + timeStamp + ".json", JSON.stringify(exploration, null, 4));	
 	console.log("wrote exploration file");
+	// save audio to different 
+	saveAudio(exploration.audio, path + timeStamp);
+	res.send(200);
 });
+
+
+function saveAudio(audioString, filename){
+	filename += ".wav";
+	fs.writeFileSync(filename, new Buffer(audioString, "binary"));
+
+	console.log("wrote audio file");	
+}
 
 //post file to shared user folder
 app.post('/shareExploration', function(req, res){
 	var body = req.body;
-
-
-
 	var exploration = req.body.exploration;
-
-
 	var to = req.body.to;
 	var from = req.body.from;
-	console.log("shared exploration to: "+ to + " from: "+ from);
 
 	var timeStamp = exploration.timeStamp;
 
@@ -78,6 +83,8 @@ app.post('/shareExploration', function(req, res){
 		return;
 	}
 
+	exploration.isNew = true; // the exploration will be new to the person recieving it
+
 	var path = USER_PATH + to+"/";
 	ensureDirExists(path);
 	ensureDirExists(path +"Shared/");
@@ -86,13 +93,14 @@ app.post('/shareExploration', function(req, res){
 			console.log(err);
 		}
 	});
-	res.send(true);
+	res.send(true);	
+	console.log("shared exploration to: "+ to + " from: "+ from);
 });
 
 app.post('/postAnnotation', function(req, res){
 
 	var annotation = req.body;
-	var timestamp = new Date(annotation.timestamp); // apparently timestamp is now a string...
+	var timeStamp = new Date(annotation.timeStamp); // apparently timeStamp is now a string...
 	var location = annotation.location;
 	var userName = annotation.userName; // string
 	var text = annotation.text;
@@ -105,8 +113,8 @@ app.post('/postAnnotation', function(req, res){
 	path += location.properties.NAME + "/";
 	ensureDirExists(path);
 
-	var fileName = path + userName + " " + timestamp.getHours() + ":"
-	+ timestamp.getMinutes() + ":" + timestamp.getSeconds() + ".json";
+	var fileName = path + userName + " " + timeStamp.getHours() + ":"
+	+ timeStamp.getMinutes() + ":" + timeStamp.getSeconds() + ".json";
 	fs.writeFile(fileName, JSON.stringify(annotation, 4, null), function(err) {
 		if (err){ console.log("errooor: "+err); }
 	});
@@ -133,12 +141,12 @@ app.get("/getAnnotations", function(req, res){
 	});
 
 	annotations.sort(function(a, b){ // by date
-		return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+		return new Date(a.timeStamp).getTime() - new Date(b.timeStamp).getTime();
 	});
 
 	res.send(JSON.stringify(annotations));
-
 });
+
 app.get("/getSharedExploration", function(req, res){
 	console.log("get notification");
 	var userName = req._parsedUrl.query; // data is appended to the URL
@@ -158,9 +166,7 @@ app.get("/getSharedExploration", function(req, res){
 	});
 
 	res.send(JSON.stringify(files));
-
 });
-
 
 app.post("/checkAuthentication", function(req, res){
 	console.log("checking authentication");
@@ -189,40 +195,28 @@ app.post("/checkAuthentication", function(req, res){
 
 app.get("/getAllFiles", function(req, res){
 	var userName = req._parsedUrl.query; // data is appended to the URL
-	var path = USER_PATH;
 
 	console.log("get all files for " + userName);
 
-	// ensure all dirs exist.
-	ensureDirExists(path);
-	path = path +userName+"/";
-	ensureDirExists(path);
+	var userPath = USER_PATH + userName + "/",
+		explPath = userPath + "explorations/";
 
-	var path1 = path + "Exploration/";
-	ensureDirExists(path1);
-	var path2 = path + "PlayedShared/";
-	ensureDirExists(path2);
-	var path3 = path + "Shared/";
-	ensureDirExists(path3);
+	// ensure all dirs exist.	
+	ensureDirExists(userPath);
+	ensureDirExists(explPath);	
 
-	var explorationFiles = fs.readdirSync(path1);
-	var playedSharedFiles = fs.readdirSync(path2);
-	var sharedFiles = fs.readdirSync(path3);
+	// get user info
+	var info = JSON.parse(fs.readFileSync(userPath + INFO_FILE_NAME));
 
     var allExplorations = [];
-    var newExplorations = [];
-    explorationFiles.forEach(function(filename){
-    	allExplorations.push(JSON.parse(fs.readFileSync(path1 + filename)));
-	});
-	playedSharedFiles.forEach(function(filename){
-		var shared = JSON.parse(fs.readFileSync(path2 + filename));
-		allExplorations.push(shared);
-		newExplorations.push(shared);
-	});
 
-	sharedFiles.forEach(function(filename){
-		allExplorations.push(JSON.parse(fs.readFileSync(path3 + filename)));
-	});
+    fs.readdirSync(explPath).forEach(filename){
+    	var filePath = explPath + filename;
+    	if (fs.lstatSync(filePath).isDirectory())
+    		continue;
+    	var explorationJSON = fs.readFileSync(filePath);
+    	allExplorations.push(explorationJSON);
+    }
 
 	// sends all and new explorations as separate arrays
 	res.send(JSON.stringify([allExplorations, newExplorations]));
@@ -242,7 +236,7 @@ app.post("/deleteAnnotation", function(req, res){
 		//console.log(JSON.stringify(annotation) + "\n" + JSON.stringify(inputAnnotation) + "\n\n");
 		// if annotations are equal, delete the file
 		if (annotation.userName === inputAnnotation.userName
-				&&annotation.timestamp === inputAnnotation.timestamp
+				&& annotation.timeStamp === inputAnnotation.timeStamp
 				&& annotation.text === inputAnnotation.text){
 			fs.unlink(path + filename);
 			res.sendStatus(200); // success code
@@ -252,7 +246,7 @@ app.post("/deleteAnnotation", function(req, res){
 
 app.post('/saveSharedPlayed', function(req, res){
 	console.log("save Played file from shared folder to playedShared");
-	var timestamp = req.body.timestamp;
+	var timeStamp = req.body.timeStamp;
 	var exploration = req.body.filePlayed;
 	var from = req.body.from;
 	var to = req.body.to;
@@ -263,10 +257,11 @@ app.post('/saveSharedPlayed', function(req, res){
 	ensureDirExists(path);
 	path +="PlayedShared/";
 	ensureDirExists(path)
-	fs.writeFile(path +to+ timestamp + ".json", exploration+"\n", function(err){
+	fs.writeFile(path +to+ timeStamp + ".json", exploration+"\n", function(err){
 		if(err){ console.log(err); }
 	});
 });
+
 app.post("/deletePlayed", function(req, res){
 	console.log("delete Played file from shared folder");
 	var playedFile = JSON.parse(req.body.playedFile);
@@ -288,14 +283,13 @@ app.post("/deletePlayed", function(req, res){
 		console.log(playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0);
 		console.log("playedFile.startTimeStamp: "+playedFile.startTimeStamp);
 		console.log("inputSharedFile.startTimeStamp: "+inputSharedFile.startTimeStamp);
-		if (playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0){
 
+		if (playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0){
 			fs.unlink(path + filename);
 			res.send(200); // success code
 		}
 	});
 });
-
 
 //returns whether the dir existed
 function ensureDirExists(path){

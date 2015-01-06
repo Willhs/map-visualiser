@@ -23,7 +23,7 @@ recordExplButton.addEventListener("click", function(){
 
 var playExplButton = document.getElementById("play-exploration-button");
 playExplButton.addEventListener('click', function () {
-	playBackExploration(selectedExploration);
+	startPlayBack(selectedExploration);
 });
 
 var stopExplButton = document.getElementById("stop-exploration-button");
