@@ -146,6 +146,7 @@ function stopRecording() {
 	enableAction("play");
 	disableAction("stop");
 	changeButtonColour("record", false);
+	enableAction("reset");
 
 	removeRecordingGraphics();
 
@@ -205,13 +206,14 @@ function startPlayBack(exploration){
 	disableAction("play");
 
 	launchEvent(0); // launch the first event.
-	//playAudio(exploration.getAudio());
+	playAudio(exploration.getAudio());
 
 	exploration.isNew = false;
 	playing = true;
 }
 
 function playAudio(audioBlob){
+	//console.log(audioBlob);
 	var audioElem = document.getElementById("exploration-audio");
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
@@ -250,8 +252,11 @@ function deselectExploration(){
 function reset() {
 	if (playing)
 		stopPlayBack(selectedExploration);
-	stopRecording();
-	currentUser.resetCurrentExploration();
+	if (recording)
+		stopRecording();
+	if (currentUser)
+		currentUser.resetCurrentExploration();
+
 	deselectExploration();
 	disableAction("save");
 	disableAction("play");
@@ -268,20 +273,29 @@ function saveExploration() {
 	var expl = currentUser.getCurrentExpl();
 	expl.setTimeStamp(new Date());
 
-	// convert audio from blob to string so it can be sent
-	var reader = new FileReader();
-    reader.addEventListener("loadend", sendAudio);
-    reader.readAsBinaryString(expl.getAudio());
+	// if the exploration has no audio, go ahead and send
+	if (!expl.audio){
+		sendExploration(expl);
+	}
+	else { // if the exploration contains audio
+		// convert audio from blob to string so it can be sent
+		var reader = new FileReader();
+	    reader.addEventListener("loadend", audioConverted);
+	    reader.readAsBinaryString(expl.getAudio());
 
-    function sendAudio(){
-        var audioString = reader.result;
-        expl.setAudio(audioString);
+	    function audioConverted(){
+	        var audioString = reader.result;
+	        expl.setAudio(audioString);		
+	        sendExploration(expl);
+		}
+	}    
 
+	function sendExploration(exploration){
 		$.ajax({
 			type: 'POST',
-			url: "/postExploration",//url of receiver file on server
-			data: JSON.stringify(expl),
-			success: function(response){ console.log("Saved successful") }, //callback when ajax request finishes
+			url: "/postExploration",
+			data: JSON.stringify(exploration),
+			success: function(response){ console.log("Saved successful") },
 			contentType: "application/json"
 		});
 	}
@@ -357,7 +371,7 @@ function recordTravel(cityIndex){
 
 //records a user pan or zoom
 function recordMovement(){
-	currentUser.getCurrentExpl().addEvent("movement", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+	currentUser.getCurrentExploration().addEvent("movement", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
 var disableAllButtons = (function (){

@@ -41,28 +41,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 	<div class="sideBar">
 
 		<div class="users">
-			<div id="users1">
-				<table border="0" id="userTable">
-					<div><button id="createNewAccount">Create Account</div>
 
-					<input type="text" id="userName-input" value='user-name'>
-					<input type="text" id="password-input" value='password'>
-					<input type="submit" id="submit-userandpassword" value="Logon">
-
-					<h3>
-						<b>Select User:</b>
-
-					</h3>
-					<td><input type="image" id='obama' class="user-button"
-						src="data/image/userImage/obama.jpeg" alt="javascript button"></td>
-					<td><input type="image" id='john' class="user-button"
-						src="data/image/userImage/john.jpeg" alt="javascript button"></td>
-					<td><input type="image" id='lorde' class="user-button"
-						src="data/image/userImage/lorde.jpeg" alt="javascript button"></td>
-					<td><input type="image" id='will' class="user-button"
-						src="data/image/userImage/will.jpeg" alt="javascript button"></td>
-				</table>
-
+			<table border="0" id="userTable">
+				<h3>
+					<b>Select Guest User:</b>
+				</h3>
+				<td><input type="image" id='obama' class="user-button"
+					src="data/image/userImage/obama.jpeg" alt="javascript button"></td>
+				<td><input type="image" id='john' class="user-button"
+					src="data/image/userImage/john.jpeg" alt="javascript button"></td>
+				<td><input type="image" id='lorde' class="user-button"
+					src="data/image/userImage/lorde.jpeg" alt="javascript button"></td>
+				<td><input type="image" id='will' class="user-button"
+					src="data/image/userImage/will.jpeg" alt="javascript button"></td>
+			</table>
+			<h3>Or...</h3>
+			<div>
+				<input type="text" id="userName-input" placeholder='user-name'>
+				<input type="password" id="password-input" placeholder='password'>
+				<div>
+					<input type="submit" id="submit-userandpassword" class="account-submit" value="Logon">
+					<button id="createNewAccount" class="account-submit">Create Account</button>
+				</div>
 			</div>
 		</div>
 		<div class="exploration-controls">

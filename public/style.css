@@ -79,6 +79,10 @@ input,label {
 	border-color: black;
 }
 
+.account-submit {
+	display: inline-block;	
+}
+
 .exploration-button {
 	width: 40px;
 	height: 40px;
@@ -127,10 +131,6 @@ input,label {
 
 .annotation-info {
 	color: black;
-}
-
-#obama {
-	color: red;
 }
 
 /* Mini-map */
@@ -225,3 +225,4 @@ input,label {
 	background-color: #ccc;
 	border: 3px solid black;
 }
+

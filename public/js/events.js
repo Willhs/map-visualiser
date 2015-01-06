@@ -1,7 +1,18 @@
 //-------------- event handling for DOM elements ----------------
 
+var recordExplButton = document.getElementById("record-exploration-button"),
+	playExplButton = document.getElementById("play-exploration-button"),
+	stopExplButton = document.getElementById("stop-exploration-button"),
+	saveExplButton = document.getElementById('save-exploration-button'),
+	resetExplButton = document.getElementById("reset-exploration-button"),
+	explChooser = document.getElementById("exploration-selector"),
+	userNameInput = document.getElementById("userName-input"),
+	passwordInput = document.getElementById("password-input"),
+	logonButton = document.getElementById("submit-userandpassword");
+
+
 //explorations
-var recordExplButton = document.getElementById("record-exploration-button");
+
 recordExplButton.addEventListener("click", function(){
 	if (recording)
 		stopRecording();
@@ -9,21 +20,16 @@ recordExplButton.addEventListener("click", function(){
 		startRecording();
 });
 
-var playExplButton = document.getElementById("play-exploration-button");
 playExplButton.addEventListener('click', function () {
 	startPlayBack(selectedExploration);
 });
 
-var stopExplButton = document.getElementById("stop-exploration-button");
 stopExplButton.addEventListener('click', function(){ stopPlayBack(selectedExploration); });
 
-var saveExplButton = document.getElementById('save-exploration-button');
 saveExplButton.onclick = saveExploration;
 
-var resetExplButton = document.getElementById("reset-exploration-button");
 resetExplButton.onclick = reset;
 
-var explChooser = document.getElementById("exploration-selector");
 explChooser.onclick = function(){
 	if (explChooser.selectedIndex === -1)
 		return;
@@ -34,49 +40,24 @@ explChooser.onclick = function(){
 };
 
 //users
-var users = ["obama", "john", "lorde", "will"];
+var guestUsers = ["obama", "john", "lorde", "will"];
 
-users.forEach(function(userName){
+guestUsers.forEach(function(userName){
 	document.getElementById(userName).onclick= function() {
-		document.getElementById("userName-input").value = userName;
+		userNameInput.value = userName;
+		passwordInput.value = "password";
 	};
 });
 
 //submit button
-var logonButton = document.getElementById("submit-userandpassword");
 logonButton.onclick = function(){
-	var userName = document.getElementById("userName-input");
-	var password = document.getElementById("password-input");
 
-	if(logonButton.value=="Logoff"){
-		logonButton.value="Logon";
-		document.getElementById("userName-input").disabled = false;
-		document.getElementById("password-input").disabled = false;
-
-
-		var userButtons = document.getElementsByClassName("user-button");
-		Array.prototype.forEach.call(userButtons, function(userButton){
-			if (userButton.id === userName.value){
-				userButton.classList.add("other-user-button");
-			}
-		});
-		currentUser = null;
-		userName.value = "username";
-		password.value = "password";
-		disableAllButtons;
-		disableAction("record");
-		disableAction("reset");
-
-
+	// if noone is logged on
+	if(currentUser){		
+		logout(currentUser);
 	}
 	else{
-		if(!password.value){
-			alert("password can not be null");
-		}
-		else{
-
-			attemptLogon(userName.value,password.value);
-		}
+		attemptLogon(userNameInput.value, passwordInput.value);
 	}
 };
 // share button

@@ -38,9 +38,8 @@ function User(name, explorations){
 		return explorations[index];
 	};
 
-
-	this.getCurrentExpl = function(){
-		return this.currentExpl;
+	this.getExplorations = function(){
+		return this.explorations;
 	}
 
 	// gets all the explorations which are considered new
@@ -98,8 +97,16 @@ function logon(name){
 
 	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
-		updateSideBar(allExplorations);
+		updateSideBar();
 	}
+}
+function logout(){
+	currentUser = null;
+	logonButton.value="Logon";
+	userNameInput.disabled = false;
+	passwordInput.disabled = false;
+
+	updateSideBar();
 }
 function attemptCreateAccount(name, pw){
 
@@ -157,21 +164,24 @@ function loadAllExplorations(userName, cb){
 }
 
 // updates elements in the side bar
-function updateSideBar(explorations){
+function updateSideBar(){
 	updateUserButtons(currentUser);
-	updateExplorationChooser(explorations);
+	updateExplorationChooser();
 	refreshLocationInfo();
 	updateExplorationControls();
 	updateNotifications(currentUser);
 }
 
 // updates the exploration chooser (drop down box)
-function updateExplorationChooser(explorations){
+function updateExplorationChooser(){
 	// remove old
 	var chooser= document.getElementById("exploration-selector");
+
 	while(chooser.firstChild){//remove old labels
 		chooser.removeChild(chooser.firstChild);
 	}
+
+	var explorations = currentUser ? currentUser.getExplorations() : [];
 
 	explorations.forEach(function(exploration, index){
 		var explOption = document.createElement('option');
@@ -189,7 +199,7 @@ function updateExplorationChooser(explorations){
 function updateUserButtons(currentUser){
 	var userButtons = document.getElementsByClassName("user-button");
 	Array.prototype.forEach.call(userButtons, function(userButton){
-		if (userButton.id === currentUser.name){
+		if (currentUser && userButton.id === currentUser.name){
 			userButton.classList.remove("other-user-button");
 			userButton.classList.add("current-user-button");
 		} else {
@@ -204,6 +214,9 @@ function updateUserButtons(currentUser){
 function updateNotifications(currentUser){
 //	var notificationBox = $("#notification-files");
 //	notificationBox.style.display = "none";
+	if (!currentUser)
+		return;
+
 	var newExplorations = currentUser.getNewExplorations();
 	console.log(newExplorations.length);
 
@@ -220,7 +233,6 @@ function updateNotifications(currentUser){
 
 function updateExplorationControls(){
 	reset();
-	enableAction("reset"); // enables the reset button
 }
 
 

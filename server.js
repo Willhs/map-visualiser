@@ -64,22 +64,7 @@ app.post("/checkAuthentication", function(req, res){
 		}
 	});
 
-	res.send(JSON.stringify(authenticated));
-
-	/*var json = fs.readFileSync(USER_PATH + "logonInfo.json");
-	eval("var info = "+json);
-	// check if uname and pw match
-	var log = 1;
-	info.forEach(function(user){
-		if (user.userName === userName
-				&& user.password === pw){
-			log = 0;
-			res.send(JSON.stringify(true));
-		}
-	});
-	if(log===1){
-		res.send(JSON.stringify(false));
-	}*/
+	res.send(JSON.stringify(authenticated));	
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -128,19 +113,22 @@ app.post('/postExploration', function(req, res){
 	path += "explorations/";
 	ensureDirExists(path);
 
-	fs.writeFileSync(path + userName + timeStamp + ".json", JSON.stringify(exploration, null, 4));	
-	console.log("wrote exploration file");
+	var fileName = userName + timeStamp + ".json";
+	var filePath = path + fileName;
+
+	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));	
+	console.log("wrote exploration file \"" + fileName + "\"");
 	// save audio to different 
-	saveAudio(exploration.audio, path + timeStamp);
-	res.send(200);
+	saveAudio(exploration.audio, path + "audio/", timeStamp);
+	res.sendStatus(200);
 });
 
 
-function saveAudio(audioString, filename){
-	filename += ".wav";
+function saveAudio(audioString, path, timeStamp){
+	var filename = path + timeStamp + ".wav";
 	fs.writeFileSync(filename, new Buffer(audioString, "binary"));
 
-	console.log("wrote audio file");	
+	console.log("wrote audio file "+filename);
 }
 
 //post file to shared user folder
@@ -345,7 +333,7 @@ app.post("/deletePlayed", function(req, res){
 		if (playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0){
 
 			fs.unlink(path + filename);
-			res.send(200); // success code
+			res.sendStatus(200); // success code
 		}
 	});
 });
