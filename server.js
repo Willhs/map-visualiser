@@ -38,6 +38,62 @@ app.use(express.static(__dirname + '/public'));
 var USER_PATH = "public/data/user/",
 	INFO_FILE_NAME = "info.json"; // all user information is store in here
 
+app.post("/checkAuthentication", function(req, res){
+	console.log("checking authentication");
+	var fields = req.body;
+	var userName = fields.userName;
+	var pw = fields.password;
+
+	//console.log(userName+  " " + pw);
+
+	ensureDirExists(USER_PATH);
+	var path = USER_PATH + userName + "/";
+	// check if user dir exists
+	doesUserExist(userName);
+
+	var info = JSON.parse(fs.readFileSync(path + "info.json"));
+	// check if uname and pw match
+
+	console.log("un: " + info.userName + "\npw: " + info.password);
+
+	if (info.userName === userName
+			&& info.password === pw)
+		res.send(JSON.stringify(true));
+	else
+		res.send(JSON.stringify(false));
+});
+
+app.get("/getUserExplorations", function(req, res){
+	var userName = req._parsedUrl.query; // data is appended to the URL
+
+	console.log("get all explorations for " + userName);
+
+	var userPath = USER_PATH + userName + "/",
+		explPath = userPath + "explorations/";
+
+	console.log("in " + explPath);
+
+	// ensure all dirs exist.	
+	ensureDirExists(userPath);
+	ensureDirExists(explPath);	
+
+	// get user info
+	//var info = JSON.parse(fs.readFileSync(userPath + INFO_FILE_NAME));
+
+    var allExplorations = [];
+
+    fs.readdirSync(explPath).forEach(function(filename){
+    	var filePath = explPath + filename;
+    	if (fs.lstatSync(filePath).isDirectory())
+    		return;
+    	var exploration = JSON.parse(fs.readFileSync(filePath));
+    	allExplorations.push(exploration);
+    });
+
+	// sends all and new explorations as separate arrays
+	res.send(JSON.stringify(allExplorations));
+});
+
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 
@@ -50,7 +106,7 @@ app.post('/postExploration', function(req, res){
 	ensureDirExists(path);
 	path += userName + "/";
 	ensureDirExists(path);
-	path += "Exploration/";
+	path += "explorations/";
 	ensureDirExists(path);
 
 	fs.writeFileSync(path + userName + timeStamp + ".json", JSON.stringify(exploration, null, 4));	
@@ -87,8 +143,8 @@ app.post('/shareExploration', function(req, res){
 
 	var path = USER_PATH + to+"/";
 	ensureDirExists(path);
-	ensureDirExists(path +"Shared/");
-	fs.writeFile(path +"/Shared/" + from  +"-"+ timeStamp + ".json", JSON.stringify(exploration) +"\n", function(err){
+	ensureDirExists(path +"explorations/");
+	fs.writeFile(path +"/explorations/" + from  +"-"+ timeStamp + ".json", JSON.stringify(exploration) +"\n", function(err){
 		if(err){
 			console.log(err);
 		}
@@ -147,81 +203,6 @@ app.get("/getAnnotations", function(req, res){
 	res.send(JSON.stringify(annotations));
 });
 
-app.get("/getSharedExploration", function(req, res){
-	console.log("get notification");
-	var userName = req._parsedUrl.query; // data is appended to the URL
-	var path = USER_PATH;
-	// ensure both dirs exist.
-	ensureDirExists(path);
-	ensureDirExists(path + userName);
-	path += userName + "/Shared/";
-	ensureDirExists(path);
-
-	var sharedFiles = fs.readdirSync(path);
-	// if none, return '0'
-
-	var files = [];
-	sharedFiles.forEach(function(filename, index){
-		files[index] = JSON.parse(fs.readFileSync(path + filename));
-	});
-
-	res.send(JSON.stringify(files));
-});
-
-app.post("/checkAuthentication", function(req, res){
-	console.log("checking authentication");
-	var fields = req.body;
-	var userName = fields.userName;
-	var pw = fields.password;
-
-	//console.log(userName+  " " + pw);
-
-	ensureDirExists(USER_PATH);
-	var path = USER_PATH + userName + "/";
-	// check if user dir exists
-	doesUserExist(userName);
-
-	var info = JSON.parse(fs.readFileSync(path + "info.json"));
-	// check if uname and pw match
-
-	console.log("un: " + info.userName + "\npw: " + info.password);
-
-	if (info.userName === userName
-			&& info.password === pw)
-		res.send(JSON.stringify(true));
-	else
-		res.send(JSON.stringify(false));
-});
-
-app.get("/getAllFiles", function(req, res){
-	var userName = req._parsedUrl.query; // data is appended to the URL
-
-	console.log("get all files for " + userName);
-
-	var userPath = USER_PATH + userName + "/",
-		explPath = userPath + "explorations/";
-
-	// ensure all dirs exist.	
-	ensureDirExists(userPath);
-	ensureDirExists(explPath);	
-
-	// get user info
-	var info = JSON.parse(fs.readFileSync(userPath + INFO_FILE_NAME));
-
-    var allExplorations = [];
-
-    fs.readdirSync(explPath).forEach(filename){
-    	var filePath = explPath + filename;
-    	if (fs.lstatSync(filePath).isDirectory())
-    		continue;
-    	var explorationJSON = fs.readFileSync(filePath);
-    	allExplorations.push(explorationJSON);
-    }
-
-	// sends all and new explorations as separate arrays
-	res.send(JSON.stringify([allExplorations, newExplorations]));
-});
-
 app.post("/deleteAnnotation", function(req, res){
 	console.log("delete annotation");
 	var annotation = req.body;
@@ -244,6 +225,27 @@ app.post("/deleteAnnotation", function(req, res){
 	});
 });
 
+app.get("/getSharedExploration", function(req, res){
+	console.log("get notification");
+	var userName = req._parsedUrl.query; // data is appended to the URL
+	var path = USER_PATH;
+	// ensure both dirs exist.
+	ensureDirExists(path);
+	ensureDirExists(path + userName);
+	path += userName + "/explorations/";
+	ensureDirExists(path);
+
+	var sharedFiles = fs.readdirSync(path);
+	// if none, return '0'
+
+	var files = [];
+	sharedFiles.forEach(function(filename, index){
+		files[index] = JSON.parse(fs.readFileSync(path + filename));
+	});
+
+	res.send(JSON.stringify(files));
+});
+
 app.post('/saveSharedPlayed', function(req, res){
 	console.log("save Played file from shared folder to playedShared");
 	var timeStamp = req.body.timeStamp;
@@ -255,7 +257,7 @@ app.post('/saveSharedPlayed', function(req, res){
 	ensureDirExists(path);
 	path += from+"/";
 	ensureDirExists(path);
-	path +="PlayedShared/";
+	path +="explorations/";
 	ensureDirExists(path)
 	fs.writeFile(path +to+ timeStamp + ".json", exploration+"\n", function(err){
 		if(err){ console.log(err); }
@@ -269,9 +271,9 @@ app.post("/deletePlayed", function(req, res){
 
 	var path = USER_PATH;
 	ensureDirExists(path);
-	path +="User-" + userName+ "/";
+	path += userName + "/";
 	ensureDirExists(path);
-	path += "Shared/";
+	path += "explorations/";
 	ensureDirExists(path);
 	var sharedFiles = fs.readdirSync(path);
 

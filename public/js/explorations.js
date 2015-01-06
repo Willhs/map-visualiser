@@ -205,17 +205,15 @@ function startPlayBack(exploration){
 	disableAction("play");
 
 	launchEvent(0); // launch the first event.
-	playAudio(exploration.getAudio());
+	//playAudio(exploration.getAudio());
 
 	exploration.isNew = false;
 	playing = true;
 }
 
-function playAudio(audio){
-	console.log("audio: ");
-	console.log(audio);
+function playAudio(audioBlob){
 	var audioElem = document.getElementById("exploration-audio");
-	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audio);
+	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
 }
 
@@ -224,7 +222,13 @@ function stopPlayBack(exploration) {
 	if (!playing)
 		return;
 
+	if (audioRecorder)
+		stopAudio();
+
 	requestStop = true;
+}
+
+function stopAudio(){
 	var audio = document.getElementById("exploration-audio");
 	audio.pause();
 	audio.currentTime = 0; // in seconds
@@ -244,7 +248,7 @@ function deselectExploration(){
 
 // resets to original state (no explorations selected and no recordings in progress)
 function reset() {
-	if (selectedExploration)
+	if (playing)
 		stopPlayBack(selectedExploration);
 	stopRecording();
 	currentUser.resetCurrentExploration();

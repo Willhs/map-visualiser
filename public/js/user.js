@@ -8,6 +8,10 @@ function User(name, explorations){
 		this.exploration.push(expl);
 	};
 
+	this.setExplorations = function(explorations){
+		this.explorations = explorations;
+	}
+
 	this.getCurrentExploration = function(){
 		return this.currentExpl;
 	}
@@ -36,6 +40,17 @@ function User(name, explorations){
 
 	this.getCurrentExpl = function(){
 		return this.currentExpl;
+	}
+
+	// gets all the explorations which are considered new
+	this.getNewExplorations = function(){
+		var newExplorations = [];
+		this.explorations.forEach(function(exploration){
+			if (exploration.isNew){
+				newExplorations.push(exploration);
+			}
+		});
+		return newExplorations;
 	}
 }
 
@@ -71,22 +86,23 @@ function logon(name){
 	loadAllExplorations(name, gotExplorations);
 //	loadUserInfo(name, gotUserInfo);
 
-	function gotExplorations(allExplorations){		
+	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
-		updateSideBar(currentUser, allExplorations);
+		updateSideBar(allExplorations);
 	}
 }
 
-function loadAllExplorations(name, cb){
+function loadAllExplorations(userName, cb){
 	$.ajax({
 		type: 'GET',
-		url: "/getAllFiles",
-		data: name,
+		url: "/getUserExplorations",
+		data: userName,
 		success: function(data) { dealWithExplorations(data, cb); },
 		dataType: "json"
 	});
 
 	function dealWithExplorations(explorations, cb){
+
 		// input arrays contain objects with exploration data, but no methods.
 		var allExplorationsData = explorations;
 		var explorationCount = allExplorationsData.length;
@@ -155,7 +171,7 @@ function updateUserButtons(currentUser){
 }
 
 //updates the notification GUI elements
-// TODO: 
+// TODO: RE-WRITE
 function updateNotifications(currentUser){
 //	var notificationBox = $("#notification-files");
 //	notificationBox.style.display = "none";
@@ -177,12 +193,12 @@ function updateNotifications(currentUser){
 			var expl = sharedExpl[i];
 			var from = expl.timeStamp;
 			if(from.length!=0){
-				currentUser.addSharedExploration(expl);
+				//currentUser.addSharedExploration(expl); // not supported now
 				for(var j = 0; j<from.length; j++){
-					var to = currentUser.currentExpl.timeStamp;
-					if(!contains(from[j], to )){
-						to.push(from[j]);
-					}
+					//var to = currentUser.currentExpl.timeStamp;
+					//if(!contains(from[j], to )){
+					//	to.push(from[j]);
+					//}
 				}
 			}
 		}

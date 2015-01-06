@@ -37,7 +37,9 @@ resetExplButton.onclick = reset;
 
 var explChooser = document.getElementById("exploration-selector");
 explChooser.onclick = function(){
-	var explTimeStamp = explChooser.options[explChooser .selectedIndex].id;
+	if (explChooser.selectedIndex === -1)
+		return;
+	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
 	var userExpl = currentUser.getExploration(explTimeStamp);
 	selectExploration(userExpl);
 
