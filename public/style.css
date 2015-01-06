@@ -211,3 +211,12 @@ input,label {
 	height: 5px;
 
 }
+#newAccount{
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 255px;
+	height: 130px;
+	background-color: #ccc;
+	border: 3px solid black;
+}

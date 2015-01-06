@@ -59,13 +59,7 @@ app.post('/postExploration', function(req, res){
 
 //post file to shared user folder
 app.post('/shareExploration', function(req, res){
-	var body = req.body;
-
-
-
 	var exploration = req.body.exploration;
-
-
 	var to = req.body.to;
 	var from = req.body.from;
 	console.log("shared exploration to: "+ to + " from: "+ from);
@@ -168,24 +162,63 @@ app.post("/checkAuthentication", function(req, res){
 	var userName = fields.userName;
 	var pw = fields.password;
 
-	//console.log(userName+  " " + pw);
-
 	ensureDirExists(USER_PATH);
-	var path = USER_PATH + userName + "/";
 	// check if user dir exists
 	doesUserExist(userName);
-
-	var info = JSON.parse(fs.readFileSync(path + "info.json"));
+	var json = fs.readFileSync(USER_PATH + "logonInfo.json");
+	eval("var info = "+json);
 	// check if uname and pw match
-
-	console.log("un: " + info.userName + "\npw: " + info.password);
-
-	if (info.userName === userName
-			&& info.password === pw)
-		res.send(JSON.stringify(true));
-	else
+	var log = 1;
+	info.forEach(function(user){
+		if (user.userName === userName
+				&& user.password === pw){
+			log = 0;
+			res.send(JSON.stringify(true));
+		}
+	});
+	if(log===1){
 		res.send(JSON.stringify(false));
+	}
 });
+//check userName if match return true, if not return false
+app.post("/checkUsersFile", function(req, res){
+	console.log("checking matching user name");
+	var fields = req.body;
+	var userName = fields.userName;
+	var json = fs.readFileSync(USER_PATH + "logonInfo.json");
+	eval("var info = "+json);
+
+	// check if uname and pw match
+	var send = 1;
+	info.forEach(function(user){
+		if (user.userName === userName){
+			console.log("matched");
+			send = 0;
+			res.send(JSON.stringify(true));
+		}
+	});
+	if(send===1){
+		console.log("not matched");
+		res.send(JSON.stringify(false));
+	}
+
+});
+//add new user's userName and password into logonInfo.json file
+app.post("/addNewUserToLogon", function(req, res){
+	var fields = req.body;
+	var userName = fields.userName;
+	var password = fields.password;
+	console.log("add new user name and password to logonInfo file: "+ userName +"  "+ password);
+	var json = fs.readFileSync(USER_PATH + "logonInfo.json");
+	eval("var info = "+json);
+	var newUser = [];
+	newUser[0] ={"userName":userName, "password":password};
+	info.push(newUser[0]);
+	fs.writeFile(USER_PATH +"logonInfo.json", JSON.stringify(info, null, 4)+"\n", function(err){
+		if(err){ console.log(err); }
+	});
+});
+
 
 app.get("/getAllFiles", function(req, res){
 	var userName = req._parsedUrl.query; // data is appended to the URL
@@ -209,10 +242,10 @@ app.get("/getAllFiles", function(req, res){
 	var playedSharedFiles = fs.readdirSync(path2);
 	var sharedFiles = fs.readdirSync(path3);
 
-    var allExplorations = [];
-    var newExplorations = [];
-    explorationFiles.forEach(function(filename){
-    	allExplorations.push(JSON.parse(fs.readFileSync(path1 + filename)));
+	var allExplorations = [];
+	var newExplorations = [];
+	explorationFiles.forEach(function(filename){
+		allExplorations.push(JSON.parse(fs.readFileSync(path1 + filename)));
 	});
 	playedSharedFiles.forEach(function(filename){
 		var shared = JSON.parse(fs.readFileSync(path2 + filename));
@@ -262,7 +295,7 @@ app.post('/saveSharedPlayed', function(req, res){
 	path += from+"/";
 	ensureDirExists(path);
 	path +="PlayedShared/";
-	ensureDirExists(path)
+	ensureDirExists(path);
 	fs.writeFile(path +to+ timestamp + ".json", exploration+"\n", function(err){
 		if(err){ console.log(err); }
 	});

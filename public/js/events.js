@@ -42,31 +42,47 @@ users.forEach(function(userName){
 	};
 });
 
-// logging on
-document.getElementById("logon").onclick = function(){
-
-	if(document.getElementById("logon").value=="LOGON"){
-
-	}
-	else if(document.getElementById("logon").value=="LOGOFF"){
-		document.getElementById("logon").value=="LOGON";
-		currentUser = null;
-	}
-};
 //submit button
-document.getElementById("submit-userandpassword").onclick = function(){
-	var userName = document.getElementById("userName-input").value;
-	var password = document.getElementById("passwrod-input").value;
-	if(!password){
-		alert("password can not be null");
+var logonButton = document.getElementById("submit-userandpassword");
+logonButton.onclick = function(){
+	var userName = document.getElementById("userName-input");
+	var password = document.getElementById("password-input");
+
+	if(logonButton.value=="Logoff"){
+		logonButton.value="Logon";
+		document.getElementById("userName-input").disabled = false;
+		document.getElementById("password-input").disabled = false;
+
+
+		var userButtons = document.getElementsByClassName("user-button");
+		Array.prototype.forEach.call(userButtons, function(userButton){
+			if (userButton.id === userName.value){
+				userButton.classList.add("other-user-button");
+			}
+		});
+		currentUser = null;
+		userName.value = "username";
+		password.value = "password";
+		disableAllButtons;
+		disableAction("record");
+		disableAction("reset");
+
+
 	}
 	else{
+		if(!password.value){
+			alert("password can not be null");
+		}
+		else{
 
-		attemptLogon(userName,password);
-		//loadAllFiles();
+			attemptLogon(userName.value,password.value);
+			//loadAllFiles();
+		}
 	}
+
+
 };
-// share button
+//share button
 document.getElementById("submit-shareFile").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("userId").value;
@@ -75,7 +91,14 @@ document.getElementById("submit-shareFile").addEventListener('click',function(){
 		saveFileToSharedUser(userLabelValue);
 	}
 });
-// notifications
+//notifications
 document.getElementById("notification").addEventListener('click',function(){
 	showListNotifications();
 });
+
+//new account
+var myWindow;
+var newAccount = document.getElementById("createNewAccount");
+newAccount.onclick = function(){
+	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=150");
+};
