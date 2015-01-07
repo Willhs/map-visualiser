@@ -95,7 +95,7 @@ var generateDefaultExplName = function(){
 
 //beings recording of certain user navigation actions
 function startRecording() {
-	reset();
+	resetExplorations();
 
 	// adds event listeners which record user navigation actions
 	zoom.on("zoom.record", recordMovement);
@@ -110,7 +110,8 @@ function startRecording() {
 	selectExploration(currentUser.currentExpl); // the current recording
 
 	// starts recording audio
-	startAudioRecording();
+	if (audioRecorder)
+		startAudioRecording();
 	// shows that recording is in progess
 	addRecordingGraphics();
 
@@ -213,20 +214,22 @@ function startPlayBack(exploration){
 }
 
 function playAudio(audioBlob){
-	//console.log(audioBlob);
+	console.log("playing: ");
+	console.log(audioBlob);
 	var audioElem = document.getElementById("exploration-audio");
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
-	audioElem.play();
+	audioElem.play(); 
 }
 
 //stops the playback of an exploration
 function stopPlayBack(exploration) {
+	console.log("trying stop");
 	if (!playing)
 		return;
 
-	if (audioRecorder)
-		stopAudio();
+	stopAudio();
 
+	console.log("stopped");
 	requestStop = true;
 }
 
@@ -241,6 +244,8 @@ function selectExploration(exploration){
 	// TODO test using closure for this
 	selectedExploration = exploration;
 	enableAction("play");
+
+	Recorder.setupDownload(selectedExploration.audio, "audio.wav");
 }
 
 // deselects current exploration
@@ -249,7 +254,7 @@ function deselectExploration(){
 }
 
 // resets to original state (no explorations selected and no recordings in progress)
-function reset() {
+function resetExplorations() {
 	if (playing)
 		stopPlayBack(selectedExploration);
 	if (recording)
@@ -270,7 +275,7 @@ function saveExploration() {
 	disableAction("save"); // disables until the current recording changes
 
 	// sets the time that this exploration was finished recording
-	var expl = currentUser.getCurrentExpl();
+	var expl = currentUser.getCurrentExploration();
 	expl.setTimeStamp(new Date());
 
 	// if the exploration has no audio, go ahead and send

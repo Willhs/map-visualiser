@@ -27,7 +27,6 @@ function User(name, explorations){
 		var userExpl;
 		this.explorations.forEach(function(expl){
 			if (expl.timeStamp.localeCompare(timeStamp)==0){
-				console.log("returning exploration");
 				userExpl = expl;
 			}
 		});
@@ -100,14 +99,7 @@ function logon(name){
 		updateSideBar();
 	}
 }
-function logout(){
-	currentUser = null;
-	logonButton.value="Logon";
-	userNameInput.disabled = false;
-	passwordInput.disabled = false;
 
-	updateSideBar();
-}
 function attemptCreateAccount(name, pw){
 
 	$.ajax({
@@ -134,8 +126,7 @@ function loadAllExplorations(userName, cb){
 		url: "/getUserExplorations",
 		data: userName,
 		success: function(data) { dealWithExplorations(data, cb); },
-		dataType: "json",
-		complete: function(){ console.log("get all files complete"); }
+		dataType: "json"
 	});
 
 	function dealWithExplorations(explorations, cb){
@@ -155,8 +146,22 @@ function loadAllExplorations(userName, cb){
 
 		allExplorationsData.forEach(function(data){
 			var exploration = new Exploration();
+
+			// if expl has audio, convert audio arraybuffer to blob
+			if (data.audio){
+				var audioASCII = data.audio;
+				var byteCharacters = atob(audioASCII);
+				var byteNumbers = new Array(byteCharacters.length);
+				for (var i = 0; i < byteCharacters.length; i++) {
+				    byteNumbers[i] = byteCharacters.charCodeAt(i);
+				}
+				var byteArray = new Uint8Array(byteNumbers);
+				data.audio = new Blob([byteArray], {type: "audio/wav"});
+			}
+
 			exploration.transferPropertiesFrom(data);
 			allExplorations.push(exploration);
+
 		});
 		// send back explorations
 		cb(allExplorations);
@@ -218,10 +223,8 @@ function updateNotifications(currentUser){
 		return;
 
 	var newExplorations = currentUser.getNewExplorations();
-	console.log(newExplorations.length);
 
 	if(newExplorations.length>0){
-		console.log(">0");
 		$("#notification").html("have "+ newExplorations.length + " files in shared folder");
 		//showListNotifications();
 		document.getElementById("notification-files").style.display = "block";
@@ -232,9 +235,17 @@ function updateNotifications(currentUser){
 }
 
 function updateExplorationControls(){
-	reset();
+	resetExplorations();
 }
 
+function logout(){
+	currentUser = null;
+	logonButton.value="Logon";
+	userNameInput.disabled = false;
+	passwordInput.disabled = false;
+
+	updateSideBar();
+}
 
 function contains(a, obj){
 	for(var i = 0; i<obj.length; i++){

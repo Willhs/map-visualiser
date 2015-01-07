@@ -28,7 +28,7 @@ stopExplButton.addEventListener('click', function(){ stopPlayBack(selectedExplor
 
 saveExplButton.onclick = saveExploration;
 
-resetExplButton.onclick = reset;
+resetExplButton.onclick = resetExplorations;
 
 explChooser.onclick = function(){
 	if (explChooser.selectedIndex === -1)
