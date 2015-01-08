@@ -1,5 +1,5 @@
 
-//TODO: don't use global variable for this
+// TODO: don't use global variable for this
 var recording = false,
 playing = false,
 requestStop = false;
@@ -84,7 +84,7 @@ function Exploration() {
 	}
 }
 
-//makes a default name for an exploration
+// makes a default name for an exploration
 var generateDefaultExplName = function(){
 	var index = 0;
 	return function(){
@@ -96,7 +96,7 @@ var generateDefaultExplName = function(){
 
 //beings recording of certain user navigation actions
 function startRecording() {
-	reset();
+	resetExplorations();
 
 	// adds event listeners which record user navigation actions
 	zoom.on("zoom.record", recordMovement);
@@ -111,7 +111,8 @@ function startRecording() {
 	selectExploration(currentUser.currentExpl); // the current recording
 
 	// starts recording audio
-	startAudioRecording();
+	if (audioRecorder)
+		startAudioRecording();
 	// shows that recording is in progess
 	addRecordingGraphics();
 
@@ -185,7 +186,6 @@ function startPlayBack(exploration){
 		// TODO: find better stop solution
 		// stop button has been pushed or playback has been ended
 		if (requestStop || !exploration.hasNextEvent(currentEvent)){
-			console.log("request stop: "+requestStop);
 			// stop playback
 			enableAction("play");
 			enableAction("record");
@@ -232,20 +232,22 @@ function startPlayBack(exploration){
 }
 
 function playAudio(audioBlob){
-	//console.log(audioBlob);
+	console.log("playing: ");
+	console.log(audioBlob);
 	var audioElem = document.getElementById("exploration-audio");
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
-	audioElem.play();
+	audioElem.play(); 
 }
 
 //stops the playback of an exploration
 function stopPlayBack(exploration) {
+	console.log("trying stop");
 	if (!playing)
 		return;
 
-	if (audioRecorder)
-		stopAudio();
+	stopAudio();
 
+	console.log("stopped");
 	requestStop = true;
 }
 
@@ -261,6 +263,7 @@ function selectExploration(exploration){
 	enableAction("play");
 	document.getElementById("delExplButton").value = "delete selected exploration";
 
+	Recorder.setupDownload(selectedExploration.audio, "audio.wav");
 }
 
 //deselects current exploration
@@ -269,8 +272,8 @@ function deselectExploration(){
 	document.getElementById("delExplButton").value = "no exploration selected";
 }
 
-//resets to original state (no explorations selected and no recordings in progress)
-function reset() {
+// resets to original state (no explorations selected and no recordings in progress)
+function resetExplorations() {
 	if (playing)
 		stopPlayBack(selectedExploration);
 	if (recording)
@@ -301,15 +304,15 @@ function saveExploration() {
 	else { // if the exploration contains audio
 		// convert audio from blob to string so it can be sent
 		var reader = new FileReader();
-		reader.addEventListener("loadend", audioConverted);
-		reader.readAsBinaryString(expl.getAudio());
+	    reader.addEventListener("loadend", audioConverted);
+	    reader.readAsBinaryString(expl.getAudio());
 
-		function audioConverted(){
-			var audioString = reader.result;
-			expl.setAudio(audioString);
-			sendExploration(expl);
+	    function audioConverted(){
+	        var audioString = reader.result;
+	        expl.setAudio(audioString);		
+	        sendExploration(expl);
 		}
-	}
+	}    
 
 	function sendExploration(exploration){
 		$.ajax({
@@ -328,14 +331,14 @@ function saveExploration() {
 	}
 }
 
-//disables an action (currently button)
+// disables an action (currently button)
 function disableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = true;
 	changeButtonColour(name, false);
 }
 
-//enable an action
+// enable an action
 function enableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = false;

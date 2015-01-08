@@ -41,7 +41,7 @@ var EASE_FUNCTION = "cubic-in-out";
 var FROM_TEXT_FILE = [];
 //The constants for the animation delay function to be used in the set easing function
 var FAST = 0.4;
-var SLOW = 2.4;
+var SLOW = 2.4;	
 //The path to the easing function text file
 var PATH_TO_FILE = "data/functions/easingFunctions20.txt"
 

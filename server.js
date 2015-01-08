@@ -24,6 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 var express = require('express');
 var bodyParser = require('body-parser');
+var btoa = require("btoa");
 var fs = require('fs');
 var app = express();
 
@@ -64,7 +65,7 @@ app.post("/checkAuthentication", function(req, res){
 		}
 	});
 
-	res.send(JSON.stringify(authenticated));
+	res.send(JSON.stringify(authenticated));	
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -77,13 +78,11 @@ app.get("/getUserExplorations", function(req, res){
 
 	console.log("in " + explPath);
 
-	// ensure all dirs exist.
+	// ensure all dirs exist.	
 	ensureDirExists(userPath);
-	ensureDirExists(explPath);
+	ensureDirExists(explPath);	
 
 	// get user info
-	//var info = JSON.parse(fs.readFileSync(userPath + INFO_FILE_NAME));
-
     var allExplorations = [];
 
     fs.readdirSync(explPath).forEach(function(filename){
@@ -91,6 +90,34 @@ app.get("/getUserExplorations", function(req, res){
     	if (fs.lstatSync(filePath).isDirectory())
     		return;
     	var exploration = JSON.parse(fs.readFileSync(filePath));
+
+    	// if exploration has audio, grab audio and attach to the exploration
+    	if (exploration.audio){
+    		var audioPath = exploration.audio;
+    		var fd = fs.readFileSync(audioPath, "binary");
+    		var ascii = btoa(fd);
+	    	// expl.audio contains the path of the audio file
+	    	/*var stats = fs.statSync(audioPath);
+ 			var fileSizeInBytes = stats["size"];
+	    	var buffer = new Buffer(fileSizeInBytes);
+	    	var fd = fs.openSync(audioPath, "r");
+	    	var length = fs.readSync(fd, buffer, 0, fileSizeInBytes, 0);
+	    	var audioArrayBuffer = toArrayBuffer(buffer);
+
+	    	function toArrayBuffer(buffer) {
+			    var view = [];
+			    for (var i = 0; i < buffer.length; ++i) {
+			        view.push(buffer[i]);
+			    }
+			    return view;
+			}
+
+	    	console.log("audio file length: " + audioArrayBuffer.length);
+				*/
+	    	// set expl.audio to the audio data
+	    	exploration.audio = ascii;	    	
+    	}
+
     	allExplorations.push(exploration);
     });
 
@@ -114,13 +141,28 @@ app.post('/postExploration', function(req, res){
 	path += "explorations/";
 	ensureDirExists(path);
 
+	// save audio to different file
+	if (exploration.audio){
+		var audioPath = saveAudio(exploration.audio, path + "audio/", timeStamp);
+		// replace audio data with audio file location.
+		exploration.audio = audioPath;
+	}
+
+	function saveAudio(audioString, path, timeStamp){
+		ensureDirExists(path);
+		var filename = path + timeStamp + ".wav";
+		fs.writeFileSync(filename, new Buffer(audioString, "binary"));
+
+		console.log("wrote audio file "+filename);
+		return filename;
+	}
+
 	var fileName = userName + timeStamp + ".json";
 	var filePath = path + fileName;
 
-	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
+	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));	
 	console.log("wrote exploration file \"" + fileName + "\"");
-	// save audio to different
-	//saveAudio(exploration.audio, path + "audio/", timeStamp);
+
 	res.sendStatus(200);
 });
 
@@ -183,7 +225,7 @@ app.post('/shareExploration', function(req, res){
 			console.log(err);
 		}
 	});
-	res.send(true);
+	res.send(true);	
 	console.log("shared exploration to: "+ to + " from: "+ from);
 });
 
