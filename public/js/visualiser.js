@@ -69,6 +69,7 @@ var svg = d3.select("body").append("svg")
 .attr("width", width)
 .attr("height", height)
 .attr("class", "svg_map")
+.attr("id", "svg_map")
 .call(zoom) // attach zoom listener
 .on("dblclick.zoom", null); // disable double-click zoom
 

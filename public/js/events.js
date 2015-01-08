@@ -1,15 +1,16 @@
 //-------------- event handling for DOM elements ----------------
 
 var recordExplButton = document.getElementById("record-exploration-button"),
-	playExplButton = document.getElementById("play-exploration-button"),
-	stopExplButton = document.getElementById("stop-exploration-button"),
-	saveExplButton = document.getElementById('save-exploration-button'),
-	resetExplButton = document.getElementById("reset-exploration-button"),
-	explChooser = document.getElementById("exploration-selector"),
-	userNameInput = document.getElementById("userName-input"),
-	passwordInput = document.getElementById("password-input"),
-	logonButton = document.getElementById("submit-userandpassword");
-
+playExplButton = document.getElementById("play-exploration-button"),
+pauseExplButton = document.getElementById("pause-exploration-button"),
+stopExplButton = document.getElementById("stop-exploration-button"),
+saveExplButton = document.getElementById('save-exploration-button'),
+resetExplButton = document.getElementById("reset-exploration-button"),
+explChooser = document.getElementById("exploration-selector"),
+userNameInput = document.getElementById("userName-input"),
+passwordInput = document.getElementById("password-input"),
+logonButton = document.getElementById("submit-userandpassword"),
+delButton = document.getElementById("delExplButton");
 
 //explorations
 
@@ -24,6 +25,10 @@ playExplButton.addEventListener('click', function () {
 	startPlayBack(selectedExploration);
 });
 
+pauseExplButton.addEventListener('click', function(){
+	requestPause = true;
+});
+
 stopExplButton.addEventListener('click', function(){ stopPlayBack(selectedExploration); });
 
 saveExplButton.onclick = saveExploration;
@@ -33,8 +38,10 @@ resetExplButton.onclick = reset;
 explChooser.onclick = function(){
 	if (explChooser.selectedIndex === -1)
 		return;
+
 	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
 	var userExpl = currentUser.getExploration(explTimeStamp);
+	stopRecording();
 	selectExploration(userExpl);
 
 };
@@ -53,23 +60,28 @@ guestUsers.forEach(function(userName){
 logonButton.onclick = function(){
 
 	// if noone is logged on
-	if(currentUser){		
+	if(currentUser){
 		logout(currentUser);
 	}
 	else{
 		attemptLogon(userNameInput.value, passwordInput.value);
 	}
 };
-// share button
+//share button
 document.getElementById("submit-shareFile").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("userId").value;
 	console.log("userID: "+userLabelValue);
 	if(userLabelValue!=null){
-		saveFileToSharedUser(userLabelValue);
+		if(selectedExploration!=null){
+			saveFileToSharedUser(userLabelValue);
+			document.getElementById("to").innerHTML = "To: exploration sent to " +userLabelValue;
+
+		}
+
 	}
 });
-// notifications
+//notifications
 document.getElementById("notification").addEventListener('click',function(){
 	showListNotifications();
 });
@@ -78,5 +90,19 @@ document.getElementById("notification").addEventListener('click',function(){
 var myWindow;
 var newAccount = document.getElementById("createNewAccount");
 newAccount.onclick = function(){
-	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=150");
+	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
+
+//remove current choice exploration
+delButton.onclick = function(){
+	if(selectedExploration==null){
+		return;
+	}
+	if(currentUser.explorations.indexOf(selectedExploration)<0){
+		return;
+	}
+		deleteExploration(selectedExploration);
+		deselectExploration();
+	};
+
+

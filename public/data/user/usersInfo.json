@@ -14,5 +14,13 @@
     {
         "userName": "UserName",
         "password": "password"
+    },
+    {
+        "userName": "john",
+        "password": "password"
+    },
+    {
+        "userName": "lorde",
+        "password": "password"
     }
 ]

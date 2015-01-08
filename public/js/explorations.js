@@ -1,8 +1,9 @@
 
-// TODO: don't use global variable for this
+//TODO: don't use global variable for this
 var recording = false,
-	playing = false,
-	requestStop = false;
+playing = false,
+requestStop = false;
+requestPause = false;
 
 //constructor for Event objects
 function Event(type, body, time){
@@ -77,13 +78,13 @@ function Exploration() {
 	// transfers all properties from another exploration
 	this.transferPropertiesFrom = function(exploration){
 		var that = this;
-		Object.getOwnPropertyNames(exploration).forEach(function(property){			
+		Object.getOwnPropertyNames(exploration).forEach(function(property){
 			that[property] = exploration[property];
 		});
 	}
 }
 
-// makes a default name for an exploration
+//makes a default name for an exploration
 var generateDefaultExplName = function(){
 	var index = 0;
 	return function(){
@@ -156,31 +157,35 @@ function stopRecording() {
 }
 
 //plays an exploration
-// assumes no other exploration is being played
+//assumes no other exploration is being played
+var index = 0;
 function startPlayBack(exploration){
 
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
 	}
-	function launchEvent(i){
 
+	function launchEvent(i){
+		index = i;
 		var currentEvent = exploration.getEvent(i);
 		switch (currentEvent.type){
 		case ("travel"):
 			var cityIndex = currentEvent.body;
-			goToLoc(parseInt(cityIndex));
-		break;
+		    goToLoc(parseInt(cityIndex));
+		    break;
 		case ("movement"):
 			var transform = currentEvent.body;
+
 			g.attr("transform", transform);
 			updateScaleAndTrans();
-		break;
+			break;
 		}
 
 		// TODO: find better stop solution
 		// stop button has been pushed or playback has been ended
 		if (requestStop || !exploration.hasNextEvent(currentEvent)){
+			console.log("request stop: "+requestStop);
 			// stop playback
 			enableAction("play");
 			enableAction("record");
@@ -188,14 +193,22 @@ function startPlayBack(exploration){
 			disableAction("pause");
 
 			requestStop = false, // reset this variable (sigh)
+			requestPause = false;
 			playing = false;
-
+			index = 0;
 			console.log("Played " + exploration.numEvents() + " events");
+			return;
+		}
+		if(requestPause){
+			index++;
+			requestPause = false;
+			playing = false;
+			enableAction("play");
+
 		}
 		else { // continue playing events
 			var nextEvent = exploration.getEvent(i+1);
 			var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
-
 			setTimeout(launchEvent, delay, i + 1);
 		}
 	}
@@ -205,11 +218,17 @@ function startPlayBack(exploration){
 	disableAction("record");
 	disableAction("play");
 
-	launchEvent(0); // launch the first event.
+	launchEvent(index);
+
 	playAudio(exploration.getAudio());
 
 	exploration.isNew = false;
+	updateExplorationState(selectedExploration);
+	updateNotifications(currentUser);
 	playing = true;
+	var notificationChooser= document.getElementById("notification-selector");
+	notificationChooser.style.display = "none";
+
 }
 
 function playAudio(audioBlob){
@@ -236,19 +255,21 @@ function stopAudio(){
 	audio.currentTime = 0; // in seconds
 }
 
-// makes an exploration selected
+//makes an exploration selected
 function selectExploration(exploration){
-	// TODO test using closure for this
 	selectedExploration = exploration;
 	enableAction("play");
+	document.getElementById("delExplButton").value = "delete selected exploration";
+
 }
 
-// deselects current exploration
+//deselects current exploration
 function deselectExploration(){
 	selectedExploration = null;
+	document.getElementById("delExplButton").value = "no exploration selected";
 }
 
-// resets to original state (no explorations selected and no recordings in progress)
+//resets to original state (no explorations selected and no recordings in progress)
 function reset() {
 	if (playing)
 		stopPlayBack(selectedExploration);
@@ -264,14 +285,14 @@ function reset() {
 	changeButtonColour("record", false);
 }
 
-// PRE: current exploration can't be null
+//PRE: current exploration can't be null
 function saveExploration() {
 	stopRecording();
 	disableAction("save"); // disables until the current recording changes
 
 	// sets the time that this exploration was finished recording
-	var expl = currentUser.getCurrentExpl();
-	expl.setTimeStamp(new Date());
+	var expl = currentUser.getCurrentExploration();
+	expl.setTimeStamp(""+new Date());
 
 	// if the exploration has no audio, go ahead and send
 	if (!expl.audio){
@@ -280,35 +301,41 @@ function saveExploration() {
 	else { // if the exploration contains audio
 		// convert audio from blob to string so it can be sent
 		var reader = new FileReader();
-	    reader.addEventListener("loadend", audioConverted);
-	    reader.readAsBinaryString(expl.getAudio());
+		reader.addEventListener("loadend", audioConverted);
+		reader.readAsBinaryString(expl.getAudio());
 
-	    function audioConverted(){
-	        var audioString = reader.result;
-	        expl.setAudio(audioString);		
-	        sendExploration(expl);
+		function audioConverted(){
+			var audioString = reader.result;
+			expl.setAudio(audioString);
+			sendExploration(expl);
 		}
-	}    
+	}
 
 	function sendExploration(exploration){
 		$.ajax({
 			type: 'POST',
 			url: "/postExploration",
-			data: JSON.stringify(exploration),
-			success: function(response){ console.log("Saved successful") },
+			data: JSON.stringify({expl: exploration, timeStamp: ""+exploration.timeStamp}),
+			success: function(response){
+				console.log("Saved successful"+ exploration.timeStamp);
+				selectExploration(exploration);
+				currentUser.explorations.push(selectedExploration);
+				updateExplorationChooser();
+
+			},
 			contentType: "application/json"
 		});
 	}
 }
 
-// disables an action (currently button)
+//disables an action (currently button)
 function disableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = true;
 	changeButtonColour(name, false);
 }
 
-// enable an action
+//enable an action
 function enableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = false;
@@ -356,7 +383,7 @@ function addRecordingGraphics(){
 	.transition().duration();
 }
 
-// remove recording related graphics
+//remove recording related graphics
 function removeRecordingGraphics(){
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();

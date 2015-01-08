@@ -33,6 +33,15 @@ function User(name, explorations){
 		});
 		return userExpl;
 	};
+	this.getSharedExploration = function(){
+		var sharedExpl = [];
+		this.explorations.forEach(function(expl){
+			if(expl.userName.localeCompare(name)!=0){
+				sharedExpl.push(expl);
+			}
+		});
+		return sharedExpl;
+	};
 
 	this.getExplorationByIndex = function(index){
 		return explorations[index];
@@ -72,7 +81,7 @@ function attemptLogon(name, pw){
 		success: gotApprovalResponse,
 		contentType: "application/json"
 	});
-	
+
 	function gotApprovalResponse(approved){
 		if(JSON.parse(approved)){
 			logon(name);
@@ -105,8 +114,15 @@ function logout(){
 	logonButton.value="Logon";
 	userNameInput.disabled = false;
 	passwordInput.disabled = false;
-
+	userNameInput.value = "";
+	passwordInput.value = "";
 	updateSideBar();
+	resetNotificationLable("none");
+	deselectExploration();
+	document.getElementById("notification-selector").style.display = "none";
+	document.getElementById("userId").value = "";
+
+
 }
 function attemptCreateAccount(name, pw){
 
@@ -144,10 +160,10 @@ function loadAllExplorations(userName, cb){
 		var explorationCount = allExplorationsData.length;
 
 		if (explorationCount == 0){
-			$("#noOfFilesLoaded").html("no files in your folders");
+			$("#noOfFilesLoaded").html("no files loaded");
 		}
 		else {
-			$("#noOfFilesLoaded").html("have "+ explorationCount + " files in shared folder");
+			$("#noOfFilesLoaded").html("have "+ explorationCount + " files loaded");
 		}
 
 		// transfer all data into new Exploration objects (so that methods can be used on them).
@@ -163,7 +179,7 @@ function loadAllExplorations(userName, cb){
 	}
 }
 
-// updates elements in the side bar
+//updates elements in the side bar
 function updateSideBar(){
 	updateUserButtons(currentUser);
 	updateExplorationChooser();
@@ -172,8 +188,9 @@ function updateSideBar(){
 	updateNotifications(currentUser);
 }
 
-// updates the exploration chooser (drop down box)
+//updates the exploration chooser (drop down box)
 function updateExplorationChooser(){
+	console.log("update chooser");
 	// remove old
 	var chooser= document.getElementById("exploration-selector");
 
@@ -183,16 +200,23 @@ function updateExplorationChooser(){
 
 	var explorations = currentUser ? currentUser.getExplorations() : [];
 
+	if(explorations.length==0){
+		$("#noOfFilesLoaded").html("no explorations loaded");
+		return;
+	}
 	explorations.forEach(function(exploration, index){
 		var explOption = document.createElement('option');
 		explOption.setAttribute("id", exploration.timeStamp);
-		var explorationName = exploration.name +" - "+ exploration.timeStamp;
+		var explorationName = exploration.name +" - "+ exploration.timeStamp.substr(0,24)+" "+exploration.timeStamp.substr(34,40);
 		explOption.innerHTML = explorationName;
 		explOption.value = index;
 		chooser.appendChild(explOption);
 		var linebreak = document.createElement("br");
 		chooser.appendChild(linebreak);
+
 	});
+
+
 }
 
 //updates the user buttons to show who is logged in
@@ -210,24 +234,23 @@ function updateUserButtons(currentUser){
 }
 
 //updates the notification GUI elements
-// TODO: RE-WRITE
 function updateNotifications(currentUser){
-//	var notificationBox = $("#notification-files");
-//	notificationBox.style.display = "none";
 	if (!currentUser)
 		return;
 
-	var newExplorations = currentUser.getNewExplorations();
-	console.log(newExplorations.length);
+	var sharedExpl = currentUser.getSharedExploration();
+	console.log(sharedExpl.length);
+	var newCount = 0;
+	sharedExpl.forEach(function(expl){
+		if(expl.isNew) newCount++;
+	});
+	if(newCount!=0){
 
-	if(newExplorations.length>0){
-		console.log(">0");
-		$("#notification").html("have "+ newExplorations.length + " files in shared folder");
-		//showListNotifications();
-		document.getElementById("notification-files").style.display = "block";
+		$("#notification").html("have "+ newCount + " new explorations.");
+		resetNotificationLable("block");
 	}
 	else{
-		$("#notification").html("have no files in shared folder");
+		$("#notification").html("have no new explorations.");
 	}
 }
 
@@ -235,24 +258,10 @@ function updateExplorationControls(){
 	reset();
 }
 
-
-function contains(a, obj){
-	for(var i = 0; i<obj.length; i++){
-		if(typeof(a)==String){
-			if(obj[i].localeCompare(a)==0){
-				return true;
-			}
-		}
-		else if(obj[i]===a){
-			return true;
-		}
-	}
-	return false;
-}
-
 function saveFileToSharedUser(name){
 	if(name==currentUser.name) return;
-	console.log("save file to "+name+"'s shared folder");
+	if(selectedExploration==null) return;
+	console.log("save file to "+name+"'s folder");
 	console.log("select time: "+selectedExploration.timeStamp);
 
 	$.ajax({
@@ -267,35 +276,24 @@ function saveFileToSharedUser(name){
 		contentType: "application/json" //text/json...
 	});
 }
-function saveFileToPlayedShared(file){
-	console.log("save file to played shared folder");
-	$.ajax({
-		type: 'POST',
-		url: "/saveSharedPlayed",//url of receiver file on server
-		data: {"filePlayed":JSON.stringify(file),"from": currentUser.fname,"to":file.user.fname,"timestamp": sharedExplorationFrom.startTimeStamp},
-		success: function(response){ console.log(response); }, //callback when ajax request finishes
-		dataType: "json" //text/json...
 
-	});
-}
-function deleteExplorationFile(file){
-	console.log("delete shared Played File");
+function deleteExploration(expl){
+	console.log("delete exploration");
 	$.ajax({
 		type: 'POST',
-		url: "deleteExplorationFile",
-		data: { "explorationFile": JSON.stringify(file, null, 4) },
-		dataType: "json",
-		success: function(response){ console.log(response); } //callback when ajax request finishes
-	});
-}
-function deletePlayedFromSharedFolder(playedFile){
-	console.log("delete shared Played File");
-	$.ajax({
-		type: 'POST',
-		url: "deletePlayed",
-		data: { "playedFile": JSON.stringify(playedFile, null, 4) },
-		dataType: "json",
-		success: function(response){ console.log(response); }, //callback when ajax request finishes
+		url: "deleteExploration",
+		data: JSON.stringify({expl: expl, userName: currentUser.name}),
+		contentType: "application/json",
+		success: function(response){
+			console.log("del expl: "+response);
+			if(response==="OK"){
+				var index = currentUser.explorations.indexOf(selectedExploration);
+				if(index<0) return;
+				currentUser.explorations.splice(index,1);
+				updateExplorationChooser();
+			}
+
+		}, //callback when ajax request finishes
 	});
 }
 
@@ -316,137 +314,69 @@ function createAccount(name, pw){
 
 
 function showListNotifications(){
-	var temp1 = currentUser.sharedEventsFromOther;
-	var temp2 = currentUser.sharedFileTimeStamp;
-	var idDiv = "notification-files";
-	var idLabel = "notification-file";
-	var div = document.getElementById(idDiv);
-	var notificationChooser= document.getElementById(idDiv);
+	var notificationChooser= document.getElementById("notification-selector");
 	while(notificationChooser.firstChild){//remove old labels
 		notificationChooser.removeChild(notificationChooser.firstChild);
 	}
+	var newSharedExpls = currentUser.getSharedExploration();
+	divHideShow(notificationChooser);
+	if(newSharedExpls.length>0){
+		newSharedExpls.forEach(function(expl, index){
+			if(expl.isNew){
+				var newOption = document.createElement('option');
+				newOption.setAttribute("id", currentUser.name+index);
+				newOption.value = index;
 
-	divHideShow(div);
-	if(temp2.length!=0){
-		var quickPlayDiv = document.createElement("div");
-		quickPlayDiv.className = "quickPlayDivClass";
-		var qButton = document.createElement('input');
-		var qButtonId = 'qButton';
-		qButton.setAttribute("type",'image');
-		qButton.setAttribute("src",'image/play.jpeg');
-		qButton.setAttribute("alt", 'javascript button');
-		qButton.setAttribute("id", qButtonId);
-		qButton.style.width = '15px';
-		qButton.style.height = '15px';
-		qButton.onclick = function(){
-			playExplorationing();
-		};
-		quickPlayDiv.appendChild(qButton);
-		div.appendChild(quickPlayDiv);
-		var nLabels = [];
-		var clicked = false;
-		for(var i = 0; i<temp2.length; i++){
-			var currentFileName = null;
-			var newLabel = document.createElement('label');
-			newLabel.setAttribute("for", idLabel +i);
-			newLabel.setAttribute("id", currentUser.fname+i);
-			fileName = temp1[i].user.fname +"  "+ temp2[i].substring(5,20);
-			newLabel.innerHTML = fileName;
-			div.appendChild(newLabel);
-			var linebreak = document.createElement("br");
-			div.appendChild(linebreak);
-			nLabels.push(newLabel);
-			addLabelListener(i, currentUser.fname, clicked, nLabels, null);
-		}
+				explorationName = expl.userName +" "+ expl.timeStamp.substr(0,24)+" "+expl.timeStamp.substr(34,40);
+				newOption.innerHTML = explorationName;
+				newOption.onclick  = function(){
+					selectExploration(newSharedExpls[index]);
+					stopRecording();
+					enableAction("play");
+					enableAction("reset");
 
-		var delDiv = document.createElement("div");
-		delDiv.className = "delDivClass";
-		var deleteButton = addDeleteButton();
-		deleteButton.onclick = function () {delFunction();};
-		delDiv.appendChild(deleteButton);
-		div.appendChild(delDiv);
-
+				};
+				notificationChooser.appendChild(newOption);
+			}
+		});
 	}
 }
 
-function delFunction(){
-	if(checkMatchedTimeStamp()==0){
-		noOfSharedFiles-=1;
-		$("#notification").html("have "+ noOfSharedFiles + " files in shared folder");
-		saveFileToPlayedShared(sharedExplorationFrom);
-		sharedExplorationFrom.reset();
-		deletePlayedFromSharedFolder(record);
-		removeFromSharedFileTimeStamp(record);
-		removeSharedEventsFromOther(record);
-		showListNotifications();
-	}else{console.log(" equals false");}
+function updateExplorationState(expl){
+	if(expl!=null){
+		console.log("change state: expl not null");
+		$.ajax({
+			type: 'POST',
+			url: "updateExplState",
+			data: JSON.stringify({expl: expl, userName: currentUser.name}),
+			contentType: "application/json",
+			success: function(response){ console.log(response); }, //callback when ajax request finishes
+		});
+	}
 }
 
 function addDeleteButton(){
 	var deleteButton = document.createElement("input");
 	deleteButton.id = "delButton";
 	deleteButton.type = "image";
-	deleteButton.src = "image/delete.png";
+	deleteButton.src = "data/image/delete.png";
 	deleteButton.style.width = "15px";
 	deleteButton.style.height = "15px";
 	return deleteButton;
 }
 
-function removeSharedEventsFromOther(record){
-	var index = currentUser.sharedEventsFromOther.indexOf(record);
-	if(index>-1){
-		currentUser.sharedEventsFromOther.splice(index,1);
-	}
-}
-
-function removeFromSharedFileTimeStamp(record){
-	var index = currentUser.sharedFileTimeStamp.indexOf(record.startTimeStamp);
-	if(index>-1){
-		currentUser.sharedFileTimeStamp.splice(index,1);
-	}
-}
-
-function checkMatchedTimeStamp(){
-	for(var i = 0; i<currentUser.sharedFileTimeStamp.length; i++){
-		if(currentUser.sharedFileTimeStamp[i].localeCompare(record.startTimeStamp)==0){
-			return 0;
-		}
-	}
-	return 1;
-}
-
-function addLabelListener(index,id2,click,nLabels, file){
-
-	var id = id2+index;
-	document.getElementById(id).addEventListener('click',function(){
-		addListener(index, file);
-
-		backgroundColorStateChange(id2,index,click,nLabels);
-	});
-}
-
-function addListener(index, file){
-	//record.reset();
-	if(file==null){
-		record.events = currentUser.sharedEventsFromOther[index].events;
-		record.startTimeStamp = currentUser.sharedFileTimeStamp[index];
-		sharedExplorationFrom = new Exploration();
-		sharedExplorationFrom.setExploration(currentUser.sharedEventsFromOther[index]);
-	}
-	else{
-		record.setExploration(file);
-
-	}
-}
 
 function divHideShow(div){
 
-	if (div.style.display.localeCompare("inline")==0){
+	if (div.style.display.localeCompare("block")==0){
 		div.style.display = "none";
-		//setTimeout(function(){div.style.display = "none";},3000);
 	}
 	else{
-		div.style.display = "inline";
-		//setTimeout(function () {div.style.display = "none";}, 5000);
+		div.style.display = "block";
+		setTimeout(function () {div.style.display = "none";}, 3000);
 	}
+}
+//reset notificatoins lable when logoff
+function resetNotificationLable(state){
+	document.getElementById("notification").style.display = state;
 }

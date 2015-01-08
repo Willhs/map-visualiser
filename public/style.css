@@ -80,7 +80,7 @@ input,label {
 }
 
 .account-submit {
-	display: inline-block;	
+	display: inline-block;
 }
 
 .exploration-button {
@@ -158,7 +158,6 @@ input,label {
 	margin-top: -533px;
 	width: 926px;
 }
-
 .notificaiton-container {
 	position: fixed;
 	left: 63%;
@@ -169,18 +168,14 @@ input,label {
 	font-size: 150%;
 	background-color: #ccc;
 }
-
-.notificaitonfiles-container {
+.notification-selectors{
 	position: fixed;
 	left: 63%;
-	top: 80%;
-	width: 300px;
+	top: 85%;
+	width: 250px;
 	height: 70px;
-	border: 2px solid black;
-	font-size: 150%;
 	background-color: #fff;
 	display: none;
-	overflow: scroll;
 }
 
 #fileslist-container {

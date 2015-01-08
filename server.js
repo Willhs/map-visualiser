@@ -64,7 +64,7 @@ app.post("/checkAuthentication", function(req, res){
 		}
 	});
 
-	res.send(JSON.stringify(authenticated));	
+	res.send(JSON.stringify(authenticated));
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -77,9 +77,9 @@ app.get("/getUserExplorations", function(req, res){
 
 	console.log("in " + explPath);
 
-	// ensure all dirs exist.	
+	// ensure all dirs exist.
 	ensureDirExists(userPath);
-	ensureDirExists(explPath);	
+	ensureDirExists(explPath);
 
 	// get user info
 	//var info = JSON.parse(fs.readFileSync(userPath + INFO_FILE_NAME));
@@ -101,10 +101,11 @@ app.get("/getUserExplorations", function(req, res){
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 
-	var exploration = req.body;
+	var save = req.body;
+	var exploration = save.expl;
+	var timeStamp = save.timeStamp;
 	var userName = exploration.userName;
-	//var timeStamp = new Date();
-	var timeStamp = exploration.timeStamp;
+	console.log(timeStamp);
 	// makes directory for files if none exist.
 	var path = USER_PATH;
 	ensureDirExists(path);
@@ -116,13 +117,39 @@ app.post('/postExploration', function(req, res){
 	var fileName = userName + timeStamp + ".json";
 	var filePath = path + fileName;
 
-	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));	
+	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
 	console.log("wrote exploration file \"" + fileName + "\"");
-	// save audio to different 
-	saveAudio(exploration.audio, path + "audio/", timeStamp);
+	// save audio to different
+	//saveAudio(exploration.audio, path + "audio/", timeStamp);
 	res.sendStatus(200);
 });
 
+
+app.post("/deleteExploration", function(req, res){
+	console.log("delete exploration");
+
+	var delExpl = req.body;
+	var expl = delExpl.expl;
+	var userName = delExpl.userName;
+	var path = USER_PATH;
+	ensureDirExists(path);
+	path += userName + "/";
+	ensureDirExists(path);
+	path += "explorations/";
+	ensureDirExists(path);
+	var explFiles = fs.readdirSync(path);
+
+	// find and delete the file corresponding to the annotation specified.
+	explFiles.forEach(function(filename){
+		var exploration = JSON.parse(fs.readFileSync(path + filename));
+		if (expl.timeStamp.localeCompare(exploration.timeStamp)==0){
+			fs.unlink(path + filename);
+			res.sendStatus(200);
+			return;
+
+		}
+	});
+});
 
 function saveAudio(audioString, path, timeStamp){
 	var filename = path + timeStamp + ".wav";
@@ -156,7 +183,7 @@ app.post('/shareExploration', function(req, res){
 			console.log(err);
 		}
 	});
-	res.send(true);	
+	res.send(true);
 	console.log("shared exploration to: "+ to + " from: "+ from);
 });
 
@@ -269,71 +296,26 @@ app.post("/deleteAnnotation", function(req, res){
 	});
 });
 
-app.get("/getSharedExploration", function(req, res){
-	console.log("get notification");
-	var userName = req._parsedUrl.query; // data is appended to the URL
+app.post("/updateExplState", function(req, res){
+	console.log("update expl state");
+	var update = req.body;
+	var expl = update.expl;
+	var userName = update.userName;
 	var path = USER_PATH;
 	// ensure both dirs exist.
-	ensureDirExists(path);
-	ensureDirExists(path + userName);
-	path += userName + "/explorations/";
-	ensureDirExists(path);
-
-	var sharedFiles = fs.readdirSync(path);
-	// if none, return '0'
-
-	var files = [];
-	sharedFiles.forEach(function(filename, index){
-		files[index] = JSON.parse(fs.readFileSync(path + filename));
-	});
-
-	res.send(JSON.stringify(files));
-});
-
-app.post('/saveSharedPlayed', function(req, res){
-	console.log("save Played file from shared folder to playedShared");
-	var timeStamp = req.body.timeStamp;
-	var exploration = req.body.filePlayed;
-	var from = req.body.from;
-	var to = req.body.to;
-	// makes 'pathectory' for files if none exist.
-	var path = USER_PATH;
-	ensureDirExists(path);
-	path += from+"/";
-	ensureDirExists(path);
-	path +="explorations/";
-	ensureDirExists(path)
-	fs.writeFile(path +to+ timeStamp + ".json", exploration+"\n", function(err){
-		if(err){ console.log(err); }
-	});
-});
-
-app.post("/deletePlayed", function(req, res){
-	console.log("delete Played file from shared folder");
-	var playedFile = JSON.parse(req.body.playedFile);
-	var userName = playedFile.user.fname;
-
-	var path = USER_PATH;
-	ensureDirExists(path);
-	path += userName + "/";
-	ensureDirExists(path);
+	path += userName+"/";
 	path += "explorations/";
-	ensureDirExists(path);
-	var sharedFiles = fs.readdirSync(path);
 
-	// find and delete the file corresponding to the annotation specified.
-	sharedFiles.forEach(function(filename){
-
-		//console.log("aa: "+path + filename);
-		var inputSharedFile = JSON.parse(fs.readFileSync(path + filename));
-		console.log(playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0);
-		console.log("playedFile.startTimeStamp: "+playedFile.startTimeStamp);
-		console.log("inputSharedFile.startTimeStamp: "+inputSharedFile.startTimeStamp);
-
-		if (playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0){
-
+	var explFiles = fs.readdirSync(path);
+	var exploration;
+	explFiles.forEach(function(filename, index){
+		exploration = JSON.parse(fs.readFileSync(path + filename));
+		if(expl.userName===exploration.userName &&
+				expl.timeStamp===exploration.timeStamp){
+			console.log(expl.isNew + expl.timeStamp);
 			fs.unlink(path + filename);
-			res.sendStatus(200); // success code
+			fs.writeFileSync(path + filename, JSON.stringify(expl, null, 4)+"\n");
+			return;
 		}
 	});
 });
