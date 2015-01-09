@@ -26,10 +26,13 @@ playExplButton.addEventListener('click', function () {
 });
 
 pauseExplButton.addEventListener('click', function(){
-	requestPause = true;
+	//requestPause = true;
+	stopPlayBack(selectedExploration, "pause");
 });
 
-stopExplButton.addEventListener('click', function(){ stopPlayBack(selectedExploration); });
+stopExplButton.addEventListener('click', function(){
+	stopPlayBack(selectedExploration, "stop");
+	});
 
 saveExplButton.onclick = saveExploration;
 
@@ -101,6 +104,8 @@ delButton.onclick = function(){
 	if(currentUser.explorations.indexOf(selectedExploration)<0){
 		return;
 	}
+	console.log(selectedExploration);
 	deleteExploration(selectedExploration);
+
 	deselectExploration();
 };

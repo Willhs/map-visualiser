@@ -80,7 +80,7 @@ function attemptLogon(name, pw){
 		success: gotApprovalResponse,
 		contentType: "application/json"
 	});
-	
+
 	function gotApprovalResponse(approved){
 		if(JSON.parse(approved)){
 			logon(name);
@@ -107,7 +107,13 @@ function logon(name){
 		currentUser.setExplorations(allExplorations);
 		updateSideBar();
 	}
+}
 
+function logout(){
+	currentUser = null;
+	logonButton.value="Logon";
+	userNameInput.disabled = false;
+	passwordInput.disabled = false;
 	userNameInput.value = "";
 	passwordInput.value = "";
 	updateSideBar();
@@ -144,7 +150,9 @@ function loadAllExplorations(userName, cb){
 		url: "/getUserExplorations",
 		data: userName,
 		success: function(data) { dealWithExplorations(data, cb); },
-		dataType: "json"
+		dataType: "json",
+		complete: function(){ console.log("get all files complete"); }
+
 	});
 
 	function dealWithExplorations(explorations, cb){
@@ -153,10 +161,10 @@ function loadAllExplorations(userName, cb){
 		var explorationCount = allExplorationsData.length;
 
 		if (explorationCount == 0){
-			$("#noOfFilesLoaded").html("no files loaded");
+			$("#noOfFilesLoaded").html("no exploration loaded");
 		}
 		else {
-			$("#noOfFilesLoaded").html("have "+ explorationCount + " files loaded");
+			$("#noOfFilesLoaded").html("have "+ explorationCount + " explorations loaded");
 		}
 
 		// transfer all data into new Exploration objects (so that methods can be used on them).
@@ -171,7 +179,7 @@ function loadAllExplorations(userName, cb){
 				var byteCharacters = atob(audioASCII);
 				var byteNumbers = new Array(byteCharacters.length);
 				for (var i = 0; i < byteCharacters.length; i++) {
-				    byteNumbers[i] = byteCharacters.charCodeAt(i);
+					byteNumbers[i] = byteCharacters.charCodeAt(i);
 				}
 				var byteArray = new Uint8Array(byteNumbers);
 				data.audio = new Blob([byteArray], {type: "audio/wav"});
@@ -186,7 +194,7 @@ function loadAllExplorations(userName, cb){
 	}
 }
 
-// updates elements in the side bar
+//updates elements in the side bar
 function updateSideBar(){
 	updateUserButtons(currentUser);
 	updateExplorationChooser();
@@ -195,7 +203,7 @@ function updateSideBar(){
 	updateNotifications(currentUser);
 }
 
-// updates the exploration chooser (drop down box)
+//updates the exploration chooser (drop down box)
 function updateExplorationChooser(){
 	console.log("update chooser");
 	// remove old
@@ -206,8 +214,7 @@ function updateExplorationChooser(){
 	}
 
 	var explorations = currentUser ? currentUser.getExplorations() : [];
-
-	if(explorations.length==0){
+	if(explorations.length===0){
 		$("#noOfFilesLoaded").html("no explorations loaded");
 		return;
 	}
@@ -265,14 +272,6 @@ function updateExplorationControls(){
 	resetExplorations();
 }
 
-function logout(){
-	currentUser = null;
-	logonButton.value="Logon";
-	userNameInput.disabled = false;
-	passwordInput.disabled = false;
-
-	updateSideBar();
-}
 function saveFileToSharedUser(name){
 	if(name==currentUser.name) return;
 	if(selectedExploration==null) return;
@@ -294,6 +293,8 @@ function saveFileToSharedUser(name){
 
 function deleteExploration(expl){
 	console.log("delete exploration");
+	console.log(expl.timeStamp);
+
 	$.ajax({
 		type: 'POST',
 		url: "deleteExploration",
@@ -301,13 +302,13 @@ function deleteExploration(expl){
 		contentType: "application/json",
 		success: function(response){
 			console.log("del expl: "+response);
-			if(response==="OK"){
-				var index = currentUser.explorations.indexOf(selectedExploration);
-				if(index<0) return;
-				currentUser.explorations.splice(index,1);
-				updateExplorationChooser();
-			}
+			console.log(selectedExploration);
 
+			var index = currentUser.explorations.indexOf(expl);
+			if(index<0) return;
+			currentUser.explorations.splice(index,1);
+			updateExplorationChooser();
+			disableAction("play");
 		}, //callback when ajax request finishes
 	});
 }

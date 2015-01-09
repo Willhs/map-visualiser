@@ -65,7 +65,7 @@ app.post("/checkAuthentication", function(req, res){
 		}
 	});
 
-	res.send(JSON.stringify(authenticated));	
+	res.send(JSON.stringify(authenticated));
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -78,9 +78,9 @@ app.get("/getUserExplorations", function(req, res){
 
 	console.log("in " + explPath);
 
-	// ensure all dirs exist.	
+	// ensure all dirs exist.
 	ensureDirExists(userPath);
-	ensureDirExists(explPath);	
+	ensureDirExists(explPath);
 
 	// get user info
     var allExplorations = [];
@@ -115,7 +115,7 @@ app.get("/getUserExplorations", function(req, res){
 	    	console.log("audio file length: " + audioArrayBuffer.length);
 				*/
 	    	// set expl.audio to the audio data
-	    	exploration.audio = ascii;	    	
+	    	exploration.audio = ascii;
     	}
 
     	allExplorations.push(exploration);
@@ -160,7 +160,7 @@ app.post('/postExploration', function(req, res){
 	var fileName = userName + timeStamp + ".json";
 	var filePath = path + fileName;
 
-	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));	
+	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
 	console.log("wrote exploration file \"" + fileName + "\"");
 
 	res.sendStatus(200);
@@ -225,9 +225,36 @@ app.post('/shareExploration', function(req, res){
 			console.log(err);
 		}
 	});
-	res.send(true);	
+	res.send(true);
 	console.log("shared exploration to: "+ to + " from: "+ from);
 });
+
+
+app.post("/updateExplState", function(req, res){
+	console.log("update expl state");
+	var update = req.body;
+	var expl = update.expl;
+	var userName = update.userName;
+	var path = USER_PATH;
+	// ensure both dirs exist.
+	path += userName+"/";
+	path += "explorations/";
+
+	var explFiles = fs.readdirSync(path);
+	var exploration;
+	explFiles.forEach(function(filename, index){
+		exploration = JSON.parse(fs.readFileSync(path + filename));
+		if(expl.userName===exploration.userName &&
+				expl.timeStamp===exploration.timeStamp){
+			console.log(expl.isNew + expl.timeStamp);
+			fs.unlink(path + filename);
+			fs.writeFileSync(path + filename, JSON.stringify(expl, null, 4)+"\n");
+			return;
+		}
+	});
+});
+
+
 
 //check userName if match return true, if not return false
 app.post("/checkUsersFile", function(req, res){
@@ -337,31 +364,6 @@ app.post("/deleteAnnotation", function(req, res){
 		}
 	});
 });
-
-app.post("/updateExplState", function(req, res){
-	console.log("update expl state");
-	var update = req.body;
-	var expl = update.expl;
-	var userName = update.userName;
-	var path = USER_PATH;
-	// ensure both dirs exist.
-	path += userName+"/";
-	path += "explorations/";
-
-	var explFiles = fs.readdirSync(path);
-	var exploration;
-	explFiles.forEach(function(filename, index){
-		exploration = JSON.parse(fs.readFileSync(path + filename));
-		if(expl.userName===exploration.userName &&
-				expl.timeStamp===exploration.timeStamp){
-			console.log(expl.isNew + expl.timeStamp);
-			fs.unlink(path + filename);
-			fs.writeFileSync(path + filename, JSON.stringify(expl, null, 4)+"\n");
-			return;
-		}
-	});
-});
-
 
 //returns whether the dir existed
 function ensureDirExists(path){

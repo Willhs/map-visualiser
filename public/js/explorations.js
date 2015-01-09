@@ -187,15 +187,13 @@ function startPlayBack(exploration){
 		// stop button has been pushed or playback has been ended
 		if (requestStop || !exploration.hasNextEvent(currentEvent)){
 			// stop playback
-			enableAction("play");
+			index = 0;
 			enableAction("record");
 			disableAction("stop");
 			disableAction("pause");
-
+			enableAction("play");
 			requestStop = false, // reset this variable (sigh)
-			requestPause = false;
 			playing = false;
-			index = 0;
 			console.log("Played " + exploration.numEvents() + " events");
 			return;
 		}
@@ -204,6 +202,9 @@ function startPlayBack(exploration){
 			requestPause = false;
 			playing = false;
 			enableAction("play");
+			enableAction("reset");
+			disableAction("pause");
+			return;
 
 		}
 		else { // continue playing events
@@ -223,7 +224,9 @@ function startPlayBack(exploration){
 	playAudio(exploration.getAudio());
 
 	exploration.isNew = false;
-	updateExplorationState(selectedExploration);
+	if(currentUser.getExplorations().indexOf(selectedExploration)>=0){
+		updateExplorationState(selectedExploration);
+	}
 	updateNotifications(currentUser);
 	playing = true;
 	var notificationChooser= document.getElementById("notification-selector");
@@ -232,23 +235,26 @@ function startPlayBack(exploration){
 }
 
 function playAudio(audioBlob){
-	console.log("playing: ");
 	console.log(audioBlob);
 	var audioElem = document.getElementById("exploration-audio");
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
-	audioElem.play(); 
+	audioElem.play();
 }
 
 //stops the playback of an exploration
-function stopPlayBack(exploration) {
-	console.log("trying stop");
-	if (!playing)
-		return;
+function stopPlayBack(exploration, state) {
+	if(state.localeCompare("pause")===0){
+		requestPause = true;
+	}
+	else if(state.localeCompare("stop")===0){
+		console.log("stopped");
+    	requestStop = true;
+	}
 
-	stopAudio();
+//      if (!playing)
+//		return;
+	//stopAudio();
 
-	console.log("stopped");
-	requestStop = true;
 }
 
 function stopAudio(){
@@ -284,8 +290,11 @@ function resetExplorations() {
 	deselectExploration();
 	disableAction("save");
 	disableAction("play");
+	disableAction("stop");
+
 	enableAction("record");
 	changeButtonColour("record", false);
+	console.log("reset button clicked");
 }
 
 //PRE: current exploration can't be null
@@ -309,10 +318,10 @@ function saveExploration() {
 
 	    function audioConverted(){
 	        var audioString = reader.result;
-	        expl.setAudio(audioString);		
+	        expl.setAudio(audioString);
 	        sendExploration(expl);
 		}
-	}    
+	}
 
 	function sendExploration(exploration){
 		$.ajax({
