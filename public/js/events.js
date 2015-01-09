@@ -10,7 +10,8 @@ explChooser = document.getElementById("exploration-selector"),
 userNameInput = document.getElementById("userName-input"),
 passwordInput = document.getElementById("password-input"),
 logonButton = document.getElementById("submit-userandpassword"),
-delButton = document.getElementById("delExplButton");
+delButton = document.getElementById("delExplButton"),
+processBar = document.getElementById("process");
 
 //explorations
 
@@ -22,7 +23,13 @@ recordExplButton.addEventListener("click", function(){
 });
 
 playExplButton.addEventListener('click', function () {
+	var lastTime = selectedExploration.getEvent(selectedExploration.events.length-1).time;
+	var firstTime = selectedExploration.getEvent(0).time
+	var totalDruation = lastTime - firstTime;
+	processBar.max = totalDruation;
 	startPlayBack(selectedExploration);
+
+
 });
 
 pauseExplButton.addEventListener('click', function(){

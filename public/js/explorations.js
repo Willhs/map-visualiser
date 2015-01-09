@@ -188,6 +188,7 @@ function startPlayBack(exploration){
 		if (requestStop || !exploration.hasNextEvent(currentEvent)){
 			// stop playback
 			index = 0;
+			processBar.value = 0;
 			enableAction("record");
 			disableAction("stop");
 			disableAction("pause");
@@ -210,6 +211,8 @@ function startPlayBack(exploration){
 		else { // continue playing events
 			var nextEvent = exploration.getEvent(i+1);
 			var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
+			processBar.value = processBar.value +delay;
+			document.getElementById("processState").innerHTML = "State: "+ ((processBar.value/processBar.max)*100).toFixed(2) + "%";
 			setTimeout(launchEvent, delay, i + 1);
 		}
 	}
@@ -404,7 +407,7 @@ function removeRecordingGraphics(){
 //records an instance of a user action to travel to a place on the map
 function recordTravel(cityIndex){
 	return function (){
-		currentUser.getCurrentExpl().addEvent("travel", cityIndex);
+		currentUser.getCurrentExploration().addEvent("travel", cityIndex);
 	}
 }
 
