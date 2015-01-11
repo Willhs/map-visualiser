@@ -43,6 +43,10 @@ function Exploration() {
 		return this.audio;
 	}
 
+	this.hasAudio = function(){
+		return this.audio ? true : false;
+	}
+
 	this.setAudio = function(audio){
 		this.audio = audio;
 	}
@@ -222,14 +226,13 @@ function playAudio(audioBlob){
 }
 
 //stops the playback of an exploration
-function stopPlayBack(exploration) {
-	console.log("trying stop");
+function stopPlayBack() {
 	if (!playing)
 		return;
 
-	stopAudio();
+	if (selectExploration.hasAudio())
+		stopAudio();
 
-	console.log("stopped");
 	requestStop = true;
 }
 
@@ -244,8 +247,6 @@ function selectExploration(exploration){
 	// TODO test using closure for this
 	selectedExploration = exploration;
 	enableAction("play");
-
-	Recorder.setupDownload(selectedExploration.audio, "audio.wav");
 }
 
 // deselects current exploration
