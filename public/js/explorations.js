@@ -1,9 +1,9 @@
 
-// TODO: don't use global variable for this
+// TODO: don't use global variable for these?
 var recording = false,
 	playing = false,
-	requestStop = false;
-	requestPause = false,
+	requestStop = false,
+	requestPause = false;
 
 var audioElem = document.getElementById("exploration-audio");
 
@@ -176,9 +176,7 @@ var currentIndex = 0;
 
 // plays OR resumes an exploration
 // PRE: no other exploration is being played
-var startPlayBack = function(){
-
-
+function playExploration(){
 
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
