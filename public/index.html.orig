@@ -1,0 +1,188 @@
+
+<!-- Copyright (c) 2014, Sivan Fesherman
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>Map Visualisation by Jacky and Will</title>
+<meta charset="utf-8" name="viewport">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+<script src="js/lib/d3.v3.min.js"></script>
+<script src="js/lib/topojson.v1.min.js"></script>
+<script src="js/lib/jquery.min.js"></script>
+
+</head>
+
+<body>
+	<div class="sideBar" id="sideBar">
+
+		<div class="users">
+
+			<table border="0" id="userTable">
+				<h3>
+					<b>Select Guest User:</b>
+				</h3>
+				<td><input type="image" id='obama' class="user-button"
+					src="data/image/userImage/obama.jpeg" alt="javascript button"></td>
+				<td><input type="image" id='john' class="user-button"
+					src="data/image/userImage/john.jpeg" alt="javascript button"></td>
+				<td><input type="image" id='lorde' class="user-button"
+					src="data/image/userImage/lorde.jpeg" alt="javascript button"></td>
+				<td><input type="image" id='will' class="user-button"
+					src="data/image/userImage/will.jpeg" alt="javascript button"></td>
+			</table>
+			<h3>Or...</h3>
+			<div>
+				<input type="text" id="userName-input" placeholder='user-name'>
+				<input type="password" id="password-input" placeholder='password'>
+				<div>
+					<input type="submit" id="submit-userandpassword" class="account-submit" value="Logon">
+					<button id="createNewAccount" class="account-submit">Create Account</button>
+				</div>
+			</div>
+		</div>
+		<div class="exploration-controls">
+			<h2>Exploration recording controls</h2>
+			<table border="5">
+				<td><input type="image" id="record-exploration-button"
+					class="exploration-button" src="data/image/record_off.jpeg"
+					alt="javascript button"></td>
+				<td><input type="image" id="play-exploration-button"
+					class="exploration-button" src="data/image/play_off.jpeg"
+					alt="javascript button"></td>
+				<td><input type="image" id="pause-exploration-button"
+					class="exploration-button" src="data/image/pause_off.jpeg"
+					alt="javascript button"></td>
+				<td><input type="image" id="stop-exploration-button"
+					class="exploration-button" src="data/image/stop_off.jpeg"
+					alt="javascript button"></td>
+				<td><input type="image" id="save-exploration-button"
+					class="exploration-button" src="data/image/save_off.jpeg"
+					alt="javascript button"></td>
+				<td><input type="image" id="reset-exploration-button"
+					class="exploration-button" src="data/image/reset_on.jpeg"
+					alt="javascript button"></td>
+			</table>
+		</div>
+		<div>
+			<progress id="progress" value="0" max=""></progress>
+			<span id="percent"> </span> <span id="messageBar"></span>
+
+		</div>
+		<div>
+			<div class="selected-exploration">
+				<p id="selected-exploration-name"></p>
+			</div>
+
+			<div>
+				<input class="delButton" id="delExplButton" type="button"
+					runat="server" value="no exploration selected" />
+			</div>
+
+			<div id="exploration-container">
+				<select id="exploration-selector" size="0"></select>
+			</div>
+			<div>
+				<p id="noOfFilesLoaded">no exploration loaded</p>
+			</div>
+		</div>
+		<div>
+			<h3>
+				<label for="to" id="to">To:</label>
+			</h3>
+			<input type="text" id="userId" name="user" placeholder="UserName" />
+			<button type='button' id="submit-shareFile">Send</button>
+		</div>
+		<div class='select-device'>
+			<label for='audioSource'>Audio source: </label> <select id='audioSource'></select>
+		</div>
+
+		<div id="location-div" class="location-pane">
+			<h2 id="location-title"></h2>
+			<ul id="location-info">
+				<!-- script will insert elements here -->
+			</ul>
+			<div id="annotation-container" display="table">
+				<!-- will be populated by user annotations -->
+			</div>
+			<div id="annotation-input-container">
+				<!-- input will be added --></div>
+		</div>
+	</div>
+
+	<!--
+	<div id="minimap">
+		<div id="minimap-div">
+			<iframe id='minimap-iframe' scrolling="no"
+				src="http://localhost:3000/"> </iframe>
+		</div>
+	</div> -->
+	<div>
+		<div id="notification" class="notificaiton-container"
+			style="display: none"></div>
+		<div>
+			<select id="notification-selector" class="notification-selectors"
+				size="5"></select>
+		</div>
+<<<<<<< HEAD
+	</div>
+	<div id="play-progress">
+		<div id="play-control" class="play"></div>
+		<div id="scrubber"></div>
+	</div>
+
+	<div id="display-data"></div>
+
+	<!-- temporary audio download option -->
+	<a id="save-audio">DOWNLOAD AUDIO</a>
+
+	<audio id="exploration-audio">
+	</audio>
+=======
+ 	
+    <audio id="exploration-audio">
+    </audio>
+>>>>>>> ec05eb133c38f157b3141893de16eab908b8448b
+
+	<script src="js/visualiser.js"></script>
+	<script src="js/paths.js"></script>
+	<script src="js/user.js"></script>
+	<script src="js/explorations.js"></script>
+	<script src="js/events.js"></script>
+<<<<<<< HEAD
+	<script src="js/audio/audio.js"></script>
+	<script src="js/audio/recorder/recorder.js"></script>
+	<script src="js/audio/recorder/recorderWorker.js"></script>
+	<script src ="js/progressBar.js"></script>
+=======
+    <script src="js/audio/audio.js"></script>
+    <script src="js/audio/recorder/recorder.js"></script>
+    <script src="js/audio/recorder/recorderWorker.js"></script>
+>>>>>>> ec05eb133c38f157b3141893de16eab908b8448b
+
+</body>
+</html>
