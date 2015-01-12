@@ -179,24 +179,29 @@ function startPlayBack (exploration){
 		return; // if no events, do nothing.
 	}
 	function launchEvent(i){
-
 		var currentEvent = exploration.getEvent(i);
 		var nextEvent = exploration.getEvent(i+1);
 		//console.log("i " + currentIndex);
 		currentIndex = i;
-
 		// TODO: find better stop solution
 		// stop button has been pushed or playback has been ended
 		if (requestStop || !exploration.hasNextEvent(currentEvent)){
 			requestStop = false, // reset this variable (sigh)
 			updateThings();
 			currentIndex = 0;
+			console.log("stop1: " + currentIndex);
+			console.log("stop2: " + exploration.hasNextEvent(currentEvent));
+
+
 		}
 		else if (requestPause){
 			requestPause = false;
+			console.log("pause" + currentIndex);
+
 			updateThings();
 		}
 		else { // continue playing events
+			console.log("play" + currentIndex);
 			switch (currentEvent.type){
 			case ("travel"):
 				var location = currentEvent.body;
