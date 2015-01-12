@@ -10,10 +10,9 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	userNameInput = document.getElementById("userName-input"),
 	passwordInput = document.getElementById("password-input"),
 	logonButton = document.getElementById("submit-userandpassword"),
-	delButton = document.getElementById("delExplButton"),
-	processBar = document.getElementById("process"),
-	notificationSelector = document.getElementById("notification-selector"),
-	audioElem = document.getElementById("exploration-audio");
+	delButton = document.getElementById("del-explButton"),
+	messageBar = document.getElementById("percent"),
+	notificationSelector = document.getElementById("notification-selector");
 
 //explorations
 
@@ -28,7 +27,7 @@ playExplButton.addEventListener('click', function () {
 	var lastTime = selectedExploration.getEvent(selectedExploration.events.length-1).time;
 	var firstTime = selectedExploration.getEvent(0).time
 	var totalDruation = lastTime - firstTime;
-	processBar.max = totalDruation;
+//	progressBar.max = totalDruation;
 	startPlayBack(selectedExploration);
 });
 
@@ -39,7 +38,7 @@ pauseExplButton.addEventListener('click', function(){
 
 stopExplButton.addEventListener('click', function(){
 	stopPlayBack(selectedExploration, "stop");
-	});
+});
 
 saveExplButton.onclick = saveExploration;
 

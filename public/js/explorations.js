@@ -4,7 +4,8 @@ var recording = false,
 	playing = false,
 	requestStop = false;
 	requestPause = false,
-	audioElem = document.getElementById("exploration-audio");
+
+var audioElem = document.getElementById("exploration-audio");
 
 //constructor for Event objects
 function Event(type, body, time){
@@ -83,13 +84,17 @@ function Exploration() {
 	// transfers all properties from another exploration
 	this.transferPropertiesFrom = function(exploration){
 		var that = this;
-		Object.getOwnPropertyNames(exploration).forEach(function(property){			
+		Object.getOwnPropertyNames(exploration).forEach(function(property){
 			that[property] = exploration[property];
 		});
-	}	
+	}
 
 	this.equals = function(exploration){
 		return this.firstEventTime === exploration.firstEventTime;
+	}
+	this.getDuration = function(){
+		return  this.events[this.events.length-1].time;//return millisecond
+
 	}
 }
 
@@ -103,7 +108,7 @@ var generateDefaultExplName = function(){
 	};
 }();
 
-//beings recording of certain user navigation actions and audio
+// begins recording of certain user navigation actions and audio
 function startRecording() {
 	resetExplorations();
 
@@ -167,76 +172,89 @@ function stopRecording() {
 	console.log("Recorded " + currentUser.currentExpl.numEvents() + " events");
 }
 
+var currentIndex = 0;
+
 // plays OR resumes an exploration
 // PRE: no other exploration is being played
 var startPlayBack = function(){
 
-	var currentIndex = 0;
 
-	return function(exploration){
 
-		if (!exploration || exploration.numEvents() == 0) {
-			alert("nothing to play");
-			return; // if no events, do nothing.
-		}
-		function launchEvent(i){
-
-			var currentEvent = exploration.getEvent(i);
-			var nextEvent = exploration.getEvent(i+1);
-			currentIndex = i;
-
-			// TODO: find better stop solution
-			// stop button has been pushed or playback has been ended
-			if (requestStop || !exploration.hasNextEvent(currentEvent)){
-				stopPlayback(exploration);
-			}
-			else if (requestPause){
-				pausePlayback(exploration);
-			}
-			else { // continue playing events				
-				switch (currentEvent.type){
-				case ("travel"):
-					var location = currentEvent.body;
-				    goToLoc(location);
-				   	break;
-				case ("movement"):
-					var transform = currentEvent.body;
-					g.attr("transform", transform);
-					updateScaleAndTrans();
-					break;
-				}
-				
-				var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
-				processBar.value = processBar.value +delay;
-				document.getElementById("processState").innerHTML = "State: "+ ((processBar.value/processBar.max)*100).toFixed(2) + "%";
-				setTimeout(launchEvent, delay, i + 1);
-			}						
-		}
-
-		enableAction("stop");
-		enableAction("pause");
-		disableAction("record");
-		disableAction("play");
-
-		launchEvent(currentIndex); // launch the first event
-		if (exploration.hasAudio())
-			playAudio(exploration.getAudio());
-
-		// update to show exploration has been played
-		if (selectedExploration.isNew 
-			&& !selectedExploration.equals(currentUser.getCurrentExploration())){
-			setExplorationIsOld(selectedExploration);
-		}
-		// updates GUI
-		updateNotifications(currentUser);
-		notificationSelector.style.display = "none";
-
-		playing = true;
+	if (!exploration || exploration.numEvents() == 0) {
+		alert("nothing to play");
+		return; // if no events, do nothing.
 	}
-}();
+	function launchEvent(i){
+
+		var currentEvent = exploration.getEvent(i);
+		var nextEvent = exploration.getEvent(i+1);
+		//console.log("i " + currentIndex);
+		currentIndex = i;
+
+		// TODO: find better stop solution
+		// stop button has been pushed or playback has been ended
+		if (requestStop || !exploration.hasNextEvent(currentEvent)){
+			requestStop = false, // reset this variable (sigh)
+			updateThings();
+			currentIndex = 0;
+		}
+		else if (requestPause){
+			requestPause = false;
+			updateThings();
+		}
+		else { // continue playing events				
+			switch (currentEvent.type){
+			case ("travel"):
+				var location = currentEvent.body;
+			    goToLoc(location);
+			   	break;
+			case ("movement"):
+				var transform = currentEvent.body;
+				g.attr("transform", transform);
+				updateScaleAndTrans();
+				break;
+			}
+			
+			var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
+			processBar.value = processBar.value +delay;
+			document.getElementById("processState").innerHTML = "State: "+ ((processBar.value/processBar.max)*100).toFixed(2) + "%";
+			setTimeout(launchEvent, delay, i + 1);
+		}
+
+		function updateThings(){
+			enableAction("play");
+			enableAction("reset");
+			enableAction("record");
+			disableAction("pause");
+			disableAction("stop");
+			playing = false;
+		}			
+	}
+
+	enableAction("stop");
+	enableAction("pause");
+	disableAction("record");
+	disableAction("play");
+
+//	console.log("start index: " + currentIndex);
+	launchEvent(currentIndex); // launch the first event
+	playAudio(exploration.getAudio());
+
+	// update to show exploration has been played
+	if (selectedExploration.isNew 
+		&& !selectedExploration.equals(currentUser.getCurrentExploration())){
+		setExplorationIsOld(selectedExploration);
+	}
+	// updates GUI
+	updateNotifications(currentUser);
+	notificationSelector.style.display = "none";
+
+	playing = true;
+	
+}
 
 // plays audio from the last position it was left at (determined by audio element)
-function playAudio(audioBlob){
+function playAudio(audioBlob){	
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
 }

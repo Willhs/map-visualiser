@@ -83,7 +83,7 @@ function attemptLogon(name, pw){
 
 	function gotApprovalResponse(approved){
 		if(JSON.parse(approved)){
-			logon(name);						
+			logon(name);
 		}
 		else{
 			alert("username/password are invalid");

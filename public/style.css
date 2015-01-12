@@ -24,7 +24,7 @@ body {
 	border: 3px solid black;
 }
 
-.sideBar > * { /* all child elements of sidebar */
+.sideBar>* { /* all child elements of sidebar */
 	padding-left: 1em;
 }
 
@@ -64,11 +64,11 @@ input,label {
 	width: 50px;
 	height: 50px;
 	border-style: solid;
-    display: inline;
+	display: inline;
 }
 
 .authentication {
-    display: inline-block;
+	display: inline-block;
 }
 
 .current-user-button {
@@ -157,6 +157,7 @@ input,label {
 	margin-top: -533px;
 	width: 926px;
 }
+
 .notificaiton-container {
 	position: fixed;
 	left: 63%;
@@ -167,7 +168,8 @@ input,label {
 	font-size: 150%;
 	background-color: #ccc;
 }
-.notification-selectors{
+
+.notification-selectors {
 	position: fixed;
 	left: 63%;
 	top: 85%;
@@ -191,16 +193,17 @@ input,label {
 	float: right;
 	left: 78%;
 	top: 76.5%;
-
 }
-.delFileDivClass{
+
+.delFileDivClass {
 	position: fixed;
 	padding-right: 2px;
 	float: right;
 	left: 94%;
 	top: 40%;
 }
-.quickPlayDivClass{
+
+.quickPlayDivClass {
 	position: fixed;
 	padding-right: 2px;
 	float: left;
@@ -208,9 +211,9 @@ input,label {
 	top: 76.5%;
 	width: 5px;
 	height: 5px;
-
 }
-#newAccount{
+
+#newAccount {
 	position: fixed;
 	left: 0px;
 	top: 0px;
@@ -225,7 +228,86 @@ input,label {
 	left: 90%;
 	top: 70%;
 }
-#process{
-	width = 20%;
-	height = "10px";
-})
+
+#progress {
+	position: relative;
+	width: 288px;
+	height: 20px;
+	border: 1px solid black;
+	padding: 3px;
+}
+
+#bar {
+	height: 10px;
+	background-color: green;
+	width: 30%;
+}
+
+#percent {
+	position: absolute;
+	left: 30%;
+}
+
+/* play grogress bar */
+#play-progress {
+  position: fixed;
+  width: 910px;
+  margin-bottom: 20px;
+  background-color: #28AADE;
+  height: 36px;
+  border-radius: 20px;
+  left: 20%;
+  top:85%;'
+}
+
+#play-svg {
+  border-radius: 20px;
+}
+
+#progress-bar {
+  fill:#666;
+}
+
+#play-control {
+  width:37px;
+  height:36px;
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px 0px;
+  cursor: pointer;
+  position: absolute;
+}
+
+#play-control.play {
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px 0px;
+}
+#play-control.play:hover {
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px 0px;
+}
+#play-control.pause {
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px -36px;
+}
+#play-control.pause:hover {
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -36px;
+}
+#play-control.replay {
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px -72px;
+}
+#play-control.replay:hover {
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -72px;
+}
+
+#scrubber {
+  width:873px;
+  height:36px;
+  position:absolute;
+  top:0;
+  left:37px;
+}
+#display-data {
+  font-family: "arial","helvetica";
+  font-size: 30px;
+  color:#666;
+  left: 30%;
+  top:93%;
+  position: fixed;
+
+}

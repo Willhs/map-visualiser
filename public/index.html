@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 </head>
 
 <body>
-	<div class="sideBar">
+	<div class="sideBar" id="sideBar">
 
 		<div class="users">
 
@@ -88,21 +88,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 					alt="javascript button"></td>
 			</table>
 		</div>
-		<div>
-		<progress id = "process" value="0" max="" ></progress><p id = "processState">State: 0%</p>
-		</div>
+		<!-- <div>
+			<progress id="progress-bar" value="0" max=""></progress>
+			<span id="percent"> </span> <span id="messageBar"></span>
+
+		</div> -->
 		<div>
 			<div class="selected-exploration">
 				<p id="selected-exploration-name"></p>
 			</div>
 
 			<div>
-			  <input  class="delButton" id="delExplButton" type="button" runat="server"  value="no exploration selected" />
+				<input class="delButton" id="del-explButton" type="button" runat="server" value="no exploration selected" />
 			</div>
 
 			<div id="exploration-container">
 				<select id="exploration-selector" size="0"></select>
 			</div>
+
 			<div>
 				<p id="noOfFilesLoaded">no exploration loaded</p>
 			</div>
@@ -144,18 +147,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		<div>
 			<select id="notification-selector" class="notification-selectors" size="5"></select>
 		</div>
- 	
-    <audio id="exploration-audio">
-    </audio>
+</div>
+	<div id="play-progress">
+		<div id="play-control" class="play"></div>
+		<div id="scrubber"></div>
+	</div>
+
+	<div id="display-data"></div>
+
+	<audio id="exploration-audio">
+	</audio>
 
 	<script src="js/visualiser.js"></script>
 	<script src="js/paths.js"></script>
 	<script src="js/user.js"></script>
 	<script src="js/explorations.js"></script>
 	<script src="js/events.js"></script>
-    <script src="js/audio/audio.js"></script>
-    <script src="js/audio/recorder/recorder.js"></script>
-    <script src="js/audio/recorder/recorderWorker.js"></script>
+	<script src ="js/progressBar.js"></script>
+	<script src="js/audio/audio.js"></script>
+	<script src="js/audio/recorder/recorder.js"></script>
+	<script src="js/audio/recorder/recorderWorker.js"></script>
+
 
 </body>
 </html>
