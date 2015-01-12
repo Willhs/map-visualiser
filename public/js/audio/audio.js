@@ -40,8 +40,6 @@ function startAudioRecording() {
 
 function stopAudioRecording(){
     // stop recording
-    if (!audioRecorder)
-        return;
     audioRecorder.stop();
     audioRecorder.getBuffers( gotBuffers );
     removeAudioGraphic();

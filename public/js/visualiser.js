@@ -378,17 +378,13 @@ function cityClicked(d){
 // A function that takes you to a city
 // location can be number (city index) or string (city name)
 function goToLoc(location) {
-	if (typeof location === "number"){
+	if (typeof location === "number")
 		location = cities[index];
-		console.log("it is number");
-	}
 	if (typeof location === "string")
 		location = cities[getCityIndex(location)];
-	
+
 	selectLocation(location);
 	move(location);
-	//console.log("typeof location: " + typeof location);
-	//console.log("is it a number: " + (typeof location === "number"));
 }
 
 //Pings a country on the scren

@@ -12,7 +12,8 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	logonButton = document.getElementById("submit-userandpassword"),
 	delButton = document.getElementById("delExplButton"),
 	processBar = document.getElementById("process"),
-	notificationSelector = document.getElementById("notification-selector");
+	notificationSelector = document.getElementById("notification-selector"),
+	audioElem = document.getElementById("exploration-audio");
 
 //explorations
 
@@ -33,7 +34,7 @@ playExplButton.addEventListener('click', function () {
 
 pauseExplButton.addEventListener('click', function(){
 	//requestPause = true;
-	pausePlayBack(selectedExploration, "pause");
+	requestPause(selectedExploration, "pause");
 });
 
 stopExplButton.addEventListener('click', function(){
