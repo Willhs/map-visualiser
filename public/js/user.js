@@ -84,12 +84,6 @@ function attemptLogon(name, pw){
 	function gotApprovalResponse(approved){
 		if(JSON.parse(approved)){
 			logon(name);
-
-			if(logonButton.value=="Logon"){
-				logonButton.value="Logoff";
-				document.getElementById("userName-input").disabled = true;
-				document.getElementById("password-input").disabled = true;
-			}
 		}
 		else{
 			alert("username/password are invalid");
@@ -101,7 +95,6 @@ function logon(name){
 
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
-//	loadUserInfo(name, gotUserInfo);
 
 	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
@@ -111,19 +104,16 @@ function logon(name){
 
 function logout(){
 	currentUser = null;
-	logonButton.value="Logon";
-	userNameInput.disabled = false;
-	passwordInput.disabled = false;
-	userNameInput.value = "";
-	passwordInput.value = "";
-	updateSideBar();
-	resetNotificationLable("none");
 	deselectExploration();
+	updateSideBar();
+
+	disableAction("record");
+
+	resetNotificationLable("none");
 	document.getElementById("notification-selector").style.display = "none";
 	document.getElementById("userId").value = "";
-
-
 }
+
 function attemptCreateAccount(name, pw){
 
 	$.ajax({
@@ -200,12 +190,12 @@ function updateSideBar(){
 	updateExplorationChooser();
 	refreshLocationInfo();
 	updateExplorationControls();
-	updateNotifications(currentUser);
+	updateNotifications();
+	updateLogonElements();
 }
 
 //updates the exploration chooser (drop down box)
 function updateExplorationChooser(){
-	console.log("update chooser");
 	// remove old
 	var chooser= document.getElementById("exploration-selector");
 
@@ -213,7 +203,7 @@ function updateExplorationChooser(){
 		chooser.removeChild(chooser.firstChild);
 	}
 
-	var explorations = currentUser ? currentUser.getExplorations() : [];
+	var explorations = userLoggedOn() ? currentUser.getExplorations() : [];
 	if(explorations.length===0){
 		$("#noOfFilesLoaded").html("no explorations loaded");
 		return;
@@ -248,12 +238,11 @@ function updateUserButtons(currentUser){
 }
 
 //updates the notification GUI elements
-function updateNotifications(currentUser){
-	if (!currentUser)
+function updateNotifications(){
+	if (!userLoggedOn())
 		return;
 
 	var sharedExpl = currentUser.getSharedExploration();
-	console.log(sharedExpl.length);
 	var newCount = 0;
 	sharedExpl.forEach(function(expl){
 		if(expl.isNew) newCount++;
@@ -270,6 +259,24 @@ function updateNotifications(currentUser){
 
 function updateExplorationControls(){
 	resetExplorations();
+}
+
+function updateLogonElements(){
+	// if user is currently logged on
+	if (userLoggedOn()){
+		logonButton.value = "Log off";
+		userNameInput.disabled = true;
+		passwordInput.disabled = true;
+	}
+	// if no users logged on
+	else {
+		logonButton.value = "Log on";
+		userNameInput.disabled = false;
+		passwordInput.disabled = false;
+
+		userNameInput.value = "";
+		passwordInput.value = "";
+	}
 }
 
 function saveFileToSharedUser(name){
@@ -358,17 +365,15 @@ function showListNotifications(){
 	}
 }
 
-function updateExplorationState(expl){
-	if(expl!=null){
-		console.log("change state: expl not null");
-		$.ajax({
-			type: 'POST',
-			url: "updateExplState",
-			data: JSON.stringify({expl: expl, userName: currentUser.name}),
-			contentType: "application/json",
-			success: function(response){ console.log(response); }, //callback when ajax request finishes
-		});
-	}
+function setExplorationIsOld(expl){
+	expl.isNew = false;
+	$.ajax({
+		type: 'POST',
+		url: "setExplorationIsOld",
+		data: JSON.stringify({expl: expl, userName: currentUser.name}),
+		contentType: "application/json",
+		success: function(response){ console.log(response); }, //callback when ajax request finishes
+	});
 }
 
 function addDeleteButton(){
@@ -395,4 +400,8 @@ function divHideShow(div){
 //reset notificatoins lable when logoff
 function resetNotificationLable(state){
 	document.getElementById("notification").style.display = state;
+}
+
+function userLoggedOn(){
+	return currentUser;
 }

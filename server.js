@@ -128,9 +128,9 @@ app.get("/getUserExplorations", function(req, res){
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 
-	var save = req.body;
-	var exploration = save.expl;
-	var timeStamp = save.timeStamp;
+	var exploration = req.body;
+	var exploration = updateThings.expl;
+	var timeStamp = updateThings.timeStamp;
 	var userName = exploration.userName;
 	console.log(timeStamp);
 	// makes directory for files if none exist.
@@ -230,7 +230,7 @@ app.post('/shareExploration', function(req, res){
 });
 
 
-app.post("/updateExplState", function(req, res){
+app.post("/updateExplorationState", function(req, res){
 	console.log("update expl state");
 	var update = req.body;
 	var expl = update.expl;
@@ -244,14 +244,16 @@ app.post("/updateExplState", function(req, res){
 	var exploration;
 	explFiles.forEach(function(filename, index){
 		exploration = JSON.parse(fs.readFileSync(path + filename));
-		if(expl.userName===exploration.userName &&
-				expl.timeStamp===exploration.timeStamp){
-			console.log(expl.isNew + expl.timeStamp);
+		if(expl.userName === exploration.userName &&
+				expl.timeStamp === exploration.timeStamp){
 			fs.unlink(path + filename);
 			fs.writeFileSync(path + filename, JSON.stringify(expl, null, 4)+"\n");
+			res.sendStatus(200);
 			return;
 		}
 	});
+
+	res.sendStatus(404);
 });
 
 

@@ -60,10 +60,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<input type="text" id="userName-input" placeholder='user-name'>
 				<input type="password" id="password-input" placeholder='password'>
 				<div>
-					<input type="submit" id="submit-userandpassword"
-						class="account-submit" value="Logon">
-					<button id="createNewAccount" class="account-submit">Create
-						Account</button>
+					<input type="submit" id="submit-userandpassword" class="account-submit" value="Logon">
+					<button id="createNewAccount" class="account-submit">Create Account</button>
 				</div>
 			</div>
 		</div>
@@ -90,19 +88,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 					alt="javascript button"></td>
 			</table>
 		</div>
-		<div>
-			<progress id="progress" value="0" max=""></progress>
+		<!-- <div>
+			<progress id="progress-bar" value="0" max=""></progress>
 			<span id="percent"> </span> <span id="messageBar"></span>
 
-		</div>
+		</div> -->
 		<div>
 			<div class="selected-exploration">
 				<p id="selected-exploration-name"></p>
 			</div>
 
 			<div>
-				<input class="delButton" id="delExplButton" type="button"
-					runat="server" value="no exploration selected" />
+				<input class="delButton" id="del-explButton" type="button" runat="server" value="no exploration selected" />
 			</div>
 
 			<div id="exploration-container">
@@ -115,14 +112,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 		<div>
 			<h3>
-				<label for="to" id="to">To:</label>
+				<label for="to" id = "to">To:</label>
 			</h3>
 			<input type="text" id="userId" name="user" placeholder="UserName" />
 			<button type='button' id="submit-shareFile">Send</button>
 		</div>
 		<div class='select-device'>
-			<label for='audioSource'>Audio source: </label> <select
-				id='audioSource'></select>
+			<label for='audioSource'>Audio source: </label> <select id='audioSource'></select>
 		</div>
 
 		<div id="location-div" class="location-pane">
@@ -134,8 +130,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<!-- will be populated by user annotations -->
 			</div>
 			<div id="annotation-input-container">
-				<!-- input will be added -->
-			</div>
+				<!-- input will be added --></div>
 		</div>
 	</div>
 
@@ -150,19 +145,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		<div id="notification" class="notificaiton-container"
 			style="display: none"></div>
 		<div>
-			<select id="notification-selector" class="notification-selectors"
-				size="5"></select>
+			<select id="notification-selector" class="notification-selectors" size="5"></select>
 		</div>
-	</div>
+</div>
 	<div id="play-progress">
 		<div id="play-control" class="play"></div>
 		<div id="scrubber"></div>
 	</div>
 
 	<div id="display-data"></div>
-
-	<!-- temporary audio download option -->
-	<a id="save-audio">DOWNLOAD AUDIO</a>
 
 	<audio id="exploration-audio">
 	</audio>
@@ -172,10 +163,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 	<script src="js/user.js"></script>
 	<script src="js/explorations.js"></script>
 	<script src="js/events.js"></script>
+	<script src ="js/progressBar.js"></script>
 	<script src="js/audio/audio.js"></script>
 	<script src="js/audio/recorder/recorder.js"></script>
 	<script src="js/audio/recorder/recorderWorker.js"></script>
-	<script src ="js/progressBar.js"></script>
+
 
 </body>
 </html>

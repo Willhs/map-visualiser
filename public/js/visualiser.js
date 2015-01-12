@@ -81,7 +81,6 @@ d3.json("data/map/kaz.json", function(error, json) {
 	var subunits = topojson.feature(json, json.objects.kaz_subunits);
 
 	// make outline of land mass
-
 	g.insert("path",":first-child")
 	.datum(subunits)
 	.attr("d", path)
@@ -119,14 +118,6 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	g.selectAll(".place-label")
 	.attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
 	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
-
-	//Populate city selector
-	/*for (var i = 0; i < cities.length; i++) {
-		var entry = document.createElement("option");
-		entry.text = cities[i].properties.NAME;
-		entry.value = i;
-		document.getElementById("city-list").appendChild(entry);
-	}*/
 
 });
 
@@ -385,16 +376,19 @@ function cityClicked(d){
 }
 
 // A function that takes you to a city
-function goToLoc(index) {
-	var location = cities[index];
+// location can be number (city index) or string (city name)
+function goToLoc(location) {
+	if (typeof location === "number"){
+		location = cities[index];
+		console.log("it is number");
+	}
+	if (typeof location === "string")
+		location = cities[getCityIndex(location)];
+	
 	selectLocation(location);
 	move(location);
-}
-
-
-// A function that returns the selected city
-function getSelectedInPath(elem) {
-	return elem.options[elem.selectedIndex].value;
+	//console.log("typeof location: " + typeof location);
+	//console.log("is it a number: " + (typeof location === "number"));
 }
 
 //Pings a country on the scren

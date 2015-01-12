@@ -1,0 +1,25 @@
+{
+    "name": "obama exploration 1",
+    "userName": "obama",
+    "events": [
+        {
+            "type": "travel",
+            "body": "Zyryanovsk",
+            "time": 0
+        },
+        {
+            "type": "travel",
+            "body": "Semey",
+            "time": 2103
+        },
+        {
+            "type": "travel",
+            "body": "Qaraghandy",
+            "time": 3295
+        }
+    ],
+    "firstEventTime": 1421031262205,
+    "timeStamp": "Mon Jan 12 2015 15:54:28 GMT+1300 (NZDT)",
+    "audio": null,
+    "isNew": true
+}
