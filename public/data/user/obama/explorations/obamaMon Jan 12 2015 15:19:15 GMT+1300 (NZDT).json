@@ -1,0 +1,990 @@
+{
+    "name": "obama exploration 0",
+    "userName": "obama",
+    "events": [
+        {
+            "type": "movement",
+            "body": "translate(-1,-1)scale(1)",
+            "time": 0
+        },
+        {
+            "type": "movement",
+            "body": "translate(-2,-4)scale(1)",
+            "time": 7
+        },
+        {
+            "type": "movement",
+            "body": "translate(-2,-10)scale(1)",
+            "time": 15
+        },
+        {
+            "type": "movement",
+            "body": "translate(-5,-21)scale(1)",
+            "time": 23
+        },
+        {
+            "type": "movement",
+            "body": "translate(-7,-33)scale(1)",
+            "time": 31
+        },
+        {
+            "type": "movement",
+            "body": "translate(-7,-52)scale(1)",
+            "time": 39
+        },
+        {
+            "type": "movement",
+            "body": "translate(-12,-71)scale(1)",
+            "time": 47
+        },
+        {
+            "type": "movement",
+            "body": "translate(-15,-92)scale(1)",
+            "time": 55
+        },
+        {
+            "type": "movement",
+            "body": "translate(-17,-111)scale(1)",
+            "time": 63
+        },
+        {
+            "type": "movement",
+            "body": "translate(-22,-132)scale(1)",
+            "time": 71
+        },
+        {
+            "type": "movement",
+            "body": "translate(-30,-153)scale(1)",
+            "time": 79
+        },
+        {
+            "type": "movement",
+            "body": "translate(-36,-174)scale(1)",
+            "time": 87
+        },
+        {
+            "type": "movement",
+            "body": "translate(-41,-191)scale(1)",
+            "time": 95
+        },
+        {
+            "type": "movement",
+            "body": "translate(-44,-205)scale(1)",
+            "time": 103
+        },
+        {
+            "type": "movement",
+            "body": "translate(-46,-213)scale(1)",
+            "time": 111
+        },
+        {
+            "type": "movement",
+            "body": "translate(-51,-223)scale(1)",
+            "time": 119
+        },
+        {
+            "type": "movement",
+            "body": "translate(-54,-225)scale(1)",
+            "time": 127
+        },
+        {
+            "type": "movement",
+            "body": "translate(-55,-228)scale(1)",
+            "time": 135
+        },
+        {
+            "type": "movement",
+            "body": "translate(-56,-229)scale(1)",
+            "time": 151
+        },
+        {
+            "type": "movement",
+            "body": "translate(-58,-231)scale(1)",
+            "time": 167
+        },
+        {
+            "type": "movement",
+            "body": "translate(-60,-233)scale(1)",
+            "time": 175
+        },
+        {
+            "type": "movement",
+            "body": "translate(-62,-234)scale(1)",
+            "time": 183
+        },
+        {
+            "type": "movement",
+            "body": "translate(-66,-238)scale(1)",
+            "time": 191
+        },
+        {
+            "type": "movement",
+            "body": "translate(-71,-242)scale(1)",
+            "time": 199
+        },
+        {
+            "type": "movement",
+            "body": "translate(-80,-249)scale(1)",
+            "time": 207
+        },
+        {
+            "type": "movement",
+            "body": "translate(-88,-255)scale(1)",
+            "time": 215
+        },
+        {
+            "type": "movement",
+            "body": "translate(-97,-260)scale(1)",
+            "time": 223
+        },
+        {
+            "type": "movement",
+            "body": "translate(-106,-267)scale(1)",
+            "time": 231
+        },
+        {
+            "type": "movement",
+            "body": "translate(-116,-275)scale(1)",
+            "time": 239
+        },
+        {
+            "type": "movement",
+            "body": "translate(-132,-285)scale(1)",
+            "time": 248
+        },
+        {
+            "type": "movement",
+            "body": "translate(-148,-294)scale(1)",
+            "time": 256
+        },
+        {
+            "type": "movement",
+            "body": "translate(-167,-302)scale(1)",
+            "time": 264
+        },
+        {
+            "type": "movement",
+            "body": "translate(-186,-310)scale(1)",
+            "time": 272
+        },
+        {
+            "type": "movement",
+            "body": "translate(-207,-318)scale(1)",
+            "time": 280
+        },
+        {
+            "type": "movement",
+            "body": "translate(-235,-325)scale(1)",
+            "time": 288
+        },
+        {
+            "type": "movement",
+            "body": "translate(-262,-331)scale(1)",
+            "time": 296
+        },
+        {
+            "type": "movement",
+            "body": "translate(-290,-337)scale(1)",
+            "time": 304
+        },
+        {
+            "type": "movement",
+            "body": "translate(-318,-337)scale(1)",
+            "time": 312
+        },
+        {
+            "type": "movement",
+            "body": "translate(-344,-337)scale(1)",
+            "time": 320
+        },
+        {
+            "type": "movement",
+            "body": "translate(-371,-337)scale(1)",
+            "time": 328
+        },
+        {
+            "type": "movement",
+            "body": "translate(-397,-337)scale(1)",
+            "time": 337
+        },
+        {
+            "type": "movement",
+            "body": "translate(-425,-331)scale(1)",
+            "time": 344
+        },
+        {
+            "type": "movement",
+            "body": "translate(-452,-325)scale(1)",
+            "time": 352
+        },
+        {
+            "type": "movement",
+            "body": "translate(-474,-320)scale(1)",
+            "time": 360
+        },
+        {
+            "type": "movement",
+            "body": "translate(-497,-310)scale(1)",
+            "time": 368
+        },
+        {
+            "type": "movement",
+            "body": "translate(-514,-300)scale(1)",
+            "time": 376
+        },
+        {
+            "type": "movement",
+            "body": "translate(-530,-288)scale(1)",
+            "time": 384
+        },
+        {
+            "type": "movement",
+            "body": "translate(-547,-275)scale(1)",
+            "time": 392
+        },
+        {
+            "type": "movement",
+            "body": "translate(-559,-263)scale(1)",
+            "time": 399
+        },
+        {
+            "type": "movement",
+            "body": "translate(-569,-251)scale(1)",
+            "time": 407
+        },
+        {
+            "type": "movement",
+            "body": "translate(-579,-234)scale(1)",
+            "time": 415
+        },
+        {
+            "type": "movement",
+            "body": "translate(-585,-220)scale(1)",
+            "time": 423
+        },
+        {
+            "type": "movement",
+            "body": "translate(-587,-203)scale(1)",
+            "time": 431
+        },
+        {
+            "type": "movement",
+            "body": "translate(-590,-187)scale(1)",
+            "time": 439
+        },
+        {
+            "type": "movement",
+            "body": "translate(-590,-172)scale(1)",
+            "time": 447
+        },
+        {
+            "type": "movement",
+            "body": "translate(-590,-155)scale(1)",
+            "time": 455
+        },
+        {
+            "type": "movement",
+            "body": "translate(-590,-141)scale(1)",
+            "time": 463
+        },
+        {
+            "type": "movement",
+            "body": "translate(-590,-124)scale(1)",
+            "time": 471
+        },
+        {
+            "type": "movement",
+            "body": "translate(-588,-110)scale(1)",
+            "time": 479
+        },
+        {
+            "type": "movement",
+            "body": "translate(-580,-95)scale(1)",
+            "time": 487
+        },
+        {
+            "type": "movement",
+            "body": "translate(-572,-77)scale(1)",
+            "time": 495
+        },
+        {
+            "type": "movement",
+            "body": "translate(-565,-60)scale(1)",
+            "time": 503
+        },
+        {
+            "type": "movement",
+            "body": "translate(-557,-43)scale(1)",
+            "time": 511
+        },
+        {
+            "type": "movement",
+            "body": "translate(-547,-27)scale(1)",
+            "time": 519
+        },
+        {
+            "type": "movement",
+            "body": "translate(-532,-8)scale(1)",
+            "time": 527
+        },
+        {
+            "type": "movement",
+            "body": "translate(-516,11)scale(1)",
+            "time": 535
+        },
+        {
+            "type": "movement",
+            "body": "translate(-499,28)scale(1)",
+            "time": 543
+        },
+        {
+            "type": "movement",
+            "body": "translate(-478,47)scale(1)",
+            "time": 551
+        },
+        {
+            "type": "movement",
+            "body": "translate(-457,61.000030517578125)scale(1)",
+            "time": 559
+        },
+        {
+            "type": "movement",
+            "body": "translate(-436,76.00003051757812)scale(1)",
+            "time": 567
+        },
+        {
+            "type": "movement",
+            "body": "translate(-412,90.00003051757812)scale(1)",
+            "time": 575
+        },
+        {
+            "type": "movement",
+            "body": "translate(-389,105.00003051757812)scale(1)",
+            "time": 583
+        },
+        {
+            "type": "movement",
+            "body": "translate(-368,117.00003051757812)scale(1)",
+            "time": 591
+        },
+        {
+            "type": "movement",
+            "body": "translate(-347,127.00003051757812)scale(1)",
+            "time": 599
+        },
+        {
+            "type": "movement",
+            "body": "translate(-328,135.00003051757812)scale(1)",
+            "time": 607
+        },
+        {
+            "type": "movement",
+            "body": "translate(-309,142.00003051757812)scale(1)",
+            "time": 615
+        },
+        {
+            "type": "movement",
+            "body": "translate(-290,148.00003051757812)scale(1)",
+            "time": 623
+        },
+        {
+            "type": "movement",
+            "body": "translate(-274,153.00003051757812)scale(1)",
+            "time": 631
+        },
+        {
+            "type": "movement",
+            "body": "translate(-259,153.00003051757812)scale(1)",
+            "time": 639
+        },
+        {
+            "type": "movement",
+            "body": "translate(-247,153.00003051757812)scale(1)",
+            "time": 647
+        },
+        {
+            "type": "movement",
+            "body": "translate(-237,153.00003051757812)scale(1)",
+            "time": 655
+        },
+        {
+            "type": "movement",
+            "body": "translate(-227,153.00003051757812)scale(1)",
+            "time": 663
+        },
+        {
+            "type": "movement",
+            "body": "translate(-222,153.00003051757812)scale(1)",
+            "time": 671
+        },
+        {
+            "type": "movement",
+            "body": "translate(-218,153.00003051757812)scale(1)",
+            "time": 679
+        },
+        {
+            "type": "movement",
+            "body": "translate(-217,152.00003051757812)scale(1)",
+            "time": 687
+        },
+        {
+            "type": "movement",
+            "body": "translate(-216,151.00003051757812)scale(1)",
+            "time": 695
+        },
+        {
+            "type": "movement",
+            "body": "translate(-212,150.00003051757812)scale(1)",
+            "time": 703
+        },
+        {
+            "type": "movement",
+            "body": "translate(-209,148.00003051757812)scale(1)",
+            "time": 711
+        },
+        {
+            "type": "movement",
+            "body": "translate(-201,145.00003051757812)scale(1)",
+            "time": 719
+        },
+        {
+            "type": "movement",
+            "body": "translate(-200,143.00003051757812)scale(1)",
+            "time": 727
+        },
+        {
+            "type": "movement",
+            "body": "translate(-195,141.00003051757812)scale(1)",
+            "time": 735
+        },
+        {
+            "type": "movement",
+            "body": "translate(-187,139.00003051757812)scale(1)",
+            "time": 743
+        },
+        {
+            "type": "movement",
+            "body": "translate(-179,137.00003051757812)scale(1)",
+            "time": 751
+        },
+        {
+            "type": "movement",
+            "body": "translate(-169,136.00003051757812)scale(1)",
+            "time": 759
+        },
+        {
+            "type": "movement",
+            "body": "translate(-159,133.00003051757812)scale(1)",
+            "time": 767
+        },
+        {
+            "type": "movement",
+            "body": "translate(-147,129.00003051757812)scale(1)",
+            "time": 775
+        },
+        {
+            "type": "movement",
+            "body": "translate(-134,127.00003051757812)scale(1)",
+            "time": 783
+        },
+        {
+            "type": "movement",
+            "body": "translate(-121,125.00003051757812)scale(1)",
+            "time": 791
+        },
+        {
+            "type": "movement",
+            "body": "translate(-110,121.00003051757812)scale(1)",
+            "time": 799
+        },
+        {
+            "type": "movement",
+            "body": "translate(-96,118.00003051757812)scale(1)",
+            "time": 807
+        },
+        {
+            "type": "movement",
+            "body": "translate(-85,115.00003051757812)scale(1)",
+            "time": 815
+        },
+        {
+            "type": "movement",
+            "body": "translate(-71,110.00003051757812)scale(1)",
+            "time": 823
+        },
+        {
+            "type": "movement",
+            "body": "translate(-55,102.00003051757812)scale(1)",
+            "time": 831
+        },
+        {
+            "type": "movement",
+            "body": "translate(-36,95.00003051757812)scale(1)",
+            "time": 839
+        },
+        {
+            "type": "movement",
+            "body": "translate(-19,87.00003051757812)scale(1)",
+            "time": 847
+        },
+        {
+            "type": "movement",
+            "body": "translate(-2,79.00003051757812)scale(1)",
+            "time": 855
+        },
+        {
+            "type": "movement",
+            "body": "translate(12,71.00003051757812)scale(1)",
+            "time": 863
+        },
+        {
+            "type": "movement",
+            "body": "translate(26,59.000030517578125)scale(1)",
+            "time": 871
+        },
+        {
+            "type": "movement",
+            "body": "translate(39,47)scale(1)",
+            "time": 879
+        },
+        {
+            "type": "movement",
+            "body": "translate(51,35)scale(1)",
+            "time": 887
+        },
+        {
+            "type": "movement",
+            "body": "translate(61,22)scale(1)",
+            "time": 895
+        },
+        {
+            "type": "movement",
+            "body": "translate(71,10)scale(1)",
+            "time": 903
+        },
+        {
+            "type": "movement",
+            "body": "translate(76,-2)scale(1)",
+            "time": 911
+        },
+        {
+            "type": "movement",
+            "body": "translate(82,-17)scale(1)",
+            "time": 919
+        },
+        {
+            "type": "movement",
+            "body": "translate(88,-29)scale(1)",
+            "time": 927
+        },
+        {
+            "type": "movement",
+            "body": "translate(90,-41)scale(1)",
+            "time": 935
+        },
+        {
+            "type": "movement",
+            "body": "translate(90,-53)scale(1)",
+            "time": 943
+        },
+        {
+            "type": "movement",
+            "body": "translate(90,-65)scale(1)",
+            "time": 951
+        },
+        {
+            "type": "movement",
+            "body": "translate(90,-80)scale(1)",
+            "time": 959
+        },
+        {
+            "type": "movement",
+            "body": "translate(86,-94)scale(1)",
+            "time": 967
+        },
+        {
+            "type": "movement",
+            "body": "translate(74,-109)scale(1)",
+            "time": 975
+        },
+        {
+            "type": "movement",
+            "body": "translate(62,-123)scale(1)",
+            "time": 983
+        },
+        {
+            "type": "movement",
+            "body": "translate(50,-135)scale(1)",
+            "time": 991
+        },
+        {
+            "type": "movement",
+            "body": "translate(38,-148)scale(1)",
+            "time": 999
+        },
+        {
+            "type": "movement",
+            "body": "translate(25,-160)scale(1)",
+            "time": 1007
+        },
+        {
+            "type": "movement",
+            "body": "translate(11,-172)scale(1)",
+            "time": 1015
+        },
+        {
+            "type": "movement",
+            "body": "translate(-4,-184)scale(1)",
+            "time": 1023
+        },
+        {
+            "type": "movement",
+            "body": "translate(-18,-197)scale(1)",
+            "time": 1031
+        },
+        {
+            "type": "movement",
+            "body": "translate(-32,-209)scale(1)",
+            "time": 1039
+        },
+        {
+            "type": "movement",
+            "body": "translate(-49,-221)scale(1)",
+            "time": 1048
+        },
+        {
+            "type": "movement",
+            "body": "translate(-64,-229)scale(1)",
+            "time": 1055
+        },
+        {
+            "type": "movement",
+            "body": "translate(-78,-237)scale(1)",
+            "time": 1064
+        },
+        {
+            "type": "movement",
+            "body": "translate(-92,-244)scale(1)",
+            "time": 1072
+        },
+        {
+            "type": "movement",
+            "body": "translate(-107,-252)scale(1)",
+            "time": 1079
+        },
+        {
+            "type": "movement",
+            "body": "translate(-117,-254)scale(1)",
+            "time": 1087
+        },
+        {
+            "type": "movement",
+            "body": "translate(-131,-257)scale(1)",
+            "time": 1095
+        },
+        {
+            "type": "movement",
+            "body": "translate(-144,-260)scale(1)",
+            "time": 1103
+        },
+        {
+            "type": "movement",
+            "body": "translate(-154,-262)scale(1)",
+            "time": 1111
+        },
+        {
+            "type": "movement",
+            "body": "translate(-164,-262)scale(1)",
+            "time": 1119
+        },
+        {
+            "type": "movement",
+            "body": "translate(-176,-264)scale(1)",
+            "time": 1127
+        },
+        {
+            "type": "movement",
+            "body": "translate(-188,-264)scale(1)",
+            "time": 1135
+        },
+        {
+            "type": "movement",
+            "body": "translate(-198,-264)scale(1)",
+            "time": 1143
+        },
+        {
+            "type": "movement",
+            "body": "translate(-208,-264)scale(1)",
+            "time": 1151
+        },
+        {
+            "type": "movement",
+            "body": "translate(-218,-264)scale(1)",
+            "time": 1159
+        },
+        {
+            "type": "movement",
+            "body": "translate(-225,-264)scale(1)",
+            "time": 1167
+        },
+        {
+            "type": "movement",
+            "body": "translate(-232,-264)scale(1)",
+            "time": 1175
+        },
+        {
+            "type": "movement",
+            "body": "translate(-239,-264)scale(1)",
+            "time": 1183
+        },
+        {
+            "type": "movement",
+            "body": "translate(-249,-264)scale(1)",
+            "time": 1191
+        },
+        {
+            "type": "movement",
+            "body": "translate(-258,-264)scale(1)",
+            "time": 1199
+        },
+        {
+            "type": "movement",
+            "body": "translate(-267,-259)scale(1)",
+            "time": 1208
+        },
+        {
+            "type": "movement",
+            "body": "translate(-276,-254)scale(1)",
+            "time": 1215
+        },
+        {
+            "type": "movement",
+            "body": "translate(-282,-249)scale(1)",
+            "time": 1223
+        },
+        {
+            "type": "movement",
+            "body": "translate(-289,-244)scale(1)",
+            "time": 1231
+        },
+        {
+            "type": "movement",
+            "body": "translate(-297,-233)scale(1)",
+            "time": 1239
+        },
+        {
+            "type": "movement",
+            "body": "translate(-301,-223)scale(1)",
+            "time": 1247
+        },
+        {
+            "type": "movement",
+            "body": "translate(-307,-210)scale(1)",
+            "time": 1255
+        },
+        {
+            "type": "movement",
+            "body": "translate(-309,-194)scale(1)",
+            "time": 1263
+        },
+        {
+            "type": "movement",
+            "body": "translate(-311,-178)scale(1)",
+            "time": 1271
+        },
+        {
+            "type": "movement",
+            "body": "translate(-311,-161)scale(1)",
+            "time": 1279
+        },
+        {
+            "type": "movement",
+            "body": "translate(-311,-140)scale(1)",
+            "time": 1287
+        },
+        {
+            "type": "movement",
+            "body": "translate(-311,-119)scale(1)",
+            "time": 1295
+        },
+        {
+            "type": "movement",
+            "body": "translate(-306,-98)scale(1)",
+            "time": 1303
+        },
+        {
+            "type": "movement",
+            "body": "translate(-300,-74)scale(1)",
+            "time": 1311
+        },
+        {
+            "type": "movement",
+            "body": "translate(-286,-51)scale(1)",
+            "time": 1319
+        },
+        {
+            "type": "movement",
+            "body": "translate(-271,-30)scale(1)",
+            "time": 1327
+        },
+        {
+            "type": "movement",
+            "body": "translate(-257,-11)scale(1)",
+            "time": 1335
+        },
+        {
+            "type": "movement",
+            "body": "translate(-238,8)scale(1)",
+            "time": 1343
+        },
+        {
+            "type": "movement",
+            "body": "translate(-217,25)scale(1)",
+            "time": 1351
+        },
+        {
+            "type": "movement",
+            "body": "translate(-194,41)scale(1)",
+            "time": 1359
+        },
+        {
+            "type": "movement",
+            "body": "translate(-168,53)scale(1)",
+            "time": 1367
+        },
+        {
+            "type": "movement",
+            "body": "translate(-140,66.00003051757812)scale(1)",
+            "time": 1375
+        },
+        {
+            "type": "movement",
+            "body": "translate(-112,76.00003051757812)scale(1)",
+            "time": 1383
+        },
+        {
+            "type": "movement",
+            "body": "translate(-85,83.00003051757812)scale(1)",
+            "time": 1391
+        },
+        {
+            "type": "movement",
+            "body": "translate(-57,91.00003051757812)scale(1)",
+            "time": 1399
+        },
+        {
+            "type": "movement",
+            "body": "translate(-31,93.00003051757812)scale(1)",
+            "time": 1407
+        },
+        {
+            "type": "movement",
+            "body": "translate(-6,93.00003051757812)scale(1)",
+            "time": 1415
+        },
+        {
+            "type": "movement",
+            "body": "translate(22,93.00003051757812)scale(1)",
+            "time": 1423
+        },
+        {
+            "type": "movement",
+            "body": "translate(48,93.00003051757812)scale(1)",
+            "time": 1431
+        },
+        {
+            "type": "movement",
+            "body": "translate(69,90.00003051757812)scale(1)",
+            "time": 1439
+        },
+        {
+            "type": "movement",
+            "body": "translate(90,80.00003051757812)scale(1)",
+            "time": 1447
+        },
+        {
+            "type": "movement",
+            "body": "translate(106,72.00003051757812)scale(1)",
+            "time": 1455
+        },
+        {
+            "type": "movement",
+            "body": "translate(123,65.00003051757812)scale(1)",
+            "time": 1463
+        },
+        {
+            "type": "movement",
+            "body": "translate(138,57.000030517578125)scale(1)",
+            "time": 1471
+        },
+        {
+            "type": "movement",
+            "body": "translate(150,47)scale(1)",
+            "time": 1479
+        },
+        {
+            "type": "movement",
+            "body": "translate(155,41)scale(1)",
+            "time": 1487
+        },
+        {
+            "type": "movement",
+            "body": "translate(163,33)scale(1)",
+            "time": 1495
+        },
+        {
+            "type": "movement",
+            "body": "translate(169,26)scale(1)",
+            "time": 1503
+        },
+        {
+            "type": "movement",
+            "body": "translate(174,18)scale(1)",
+            "time": 1511
+        },
+        {
+            "type": "movement",
+            "body": "translate(180,10)scale(1)",
+            "time": 1519
+        },
+        {
+            "type": "movement",
+            "body": "translate(182,0)scale(1)",
+            "time": 1527
+        },
+        {
+            "type": "movement",
+            "body": "translate(185,-10)scale(1)",
+            "time": 1535
+        },
+        {
+            "type": "movement",
+            "body": "translate(185,-17)scale(1)",
+            "time": 1551
+        },
+        {
+            "type": "movement",
+            "body": "translate(184,-22)scale(1)",
+            "time": 1559
+        },
+        {
+            "type": "movement",
+            "body": "translate(182,-25)scale(1)",
+            "time": 1567
+        },
+        {
+            "type": "movement",
+            "body": "translate(179,-29)scale(1)",
+            "time": 1575
+        },
+        {
+            "type": "movement",
+            "body": "translate(176,-34)scale(1)",
+            "time": 1583
+        }
+    ],
+    "firstEventTime": 1421029139822,
+    "timeStamp": "Mon Jan 12 2015 15:19:15 GMT+1300 (NZDT)",
+    "audio": null,
+    "isNew": true
+}

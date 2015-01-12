@@ -65,7 +65,7 @@ app.post("/checkAuthentication", function(req, res){
 		}
 	});
 
-	res.send(JSON.stringify(authenticated));	
+	res.send(JSON.stringify(authenticated));
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -78,9 +78,9 @@ app.get("/getUserExplorations", function(req, res){
 
 	console.log("in " + explPath);
 
-	// ensure all dirs exist.	
+	// ensure all dirs exist.
 	ensureDirExists(userPath);
-	ensureDirExists(explPath);	
+	ensureDirExists(explPath);
 
 	// get user info
     var allExplorations = [];
@@ -115,7 +115,7 @@ app.get("/getUserExplorations", function(req, res){
 	    	console.log("audio file length: " + audioArrayBuffer.length);
 				*/
 	    	// set expl.audio to the audio data
-	    	exploration.audio = ascii;	    	
+	    	exploration.audio = ascii;
     	}
 
     	allExplorations.push(exploration);
@@ -129,10 +129,10 @@ app.get("/getUserExplorations", function(req, res){
 app.post('/postExploration', function(req, res){
 
 	var exploration = req.body;
+	var exploration = updateThings.expl;
+	var timeStamp = updateThings.timeStamp;
 	var userName = exploration.userName;
-	var timeStamp = exploration.timeStamp;
-	var audioString = exploration.audio;
-
+	console.log(timeStamp);
 	// makes directory for files if none exist.
 	var path = USER_PATH;
 	ensureDirExists(path);
@@ -160,11 +160,45 @@ app.post('/postExploration', function(req, res){
 	var fileName = userName + timeStamp + ".json";
 	var filePath = path + fileName;
 
-	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));	
+	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
 	console.log("wrote exploration file \"" + fileName + "\"");
 
 	res.sendStatus(200);
 });
+
+
+app.post("/deleteExploration", function(req, res){
+	console.log("delete exploration");
+
+	var delExpl = req.body;
+	var expl = delExpl.expl;
+	var userName = delExpl.userName;
+	var path = USER_PATH;
+	ensureDirExists(path);
+	path += userName + "/";
+	ensureDirExists(path);
+	path += "explorations/";
+	ensureDirExists(path);
+	var explFiles = fs.readdirSync(path);
+
+	// find and delete the file corresponding to the annotation specified.
+	explFiles.forEach(function(filename){
+		var exploration = JSON.parse(fs.readFileSync(path + filename));
+		if (expl.timeStamp.localeCompare(exploration.timeStamp)==0){
+			fs.unlink(path + filename);
+			res.sendStatus(200);
+			return;
+
+		}
+	});
+});
+
+function saveAudio(audioString, path, timeStamp){
+	var filename = path + timeStamp + ".wav";
+	fs.writeFileSync(filename, new Buffer(audioString, "binary"));
+
+	console.log("wrote audio file "+filename);
+}
 
 //post file to shared user folder
 app.post('/shareExploration', function(req, res){
@@ -191,9 +225,38 @@ app.post('/shareExploration', function(req, res){
 			console.log(err);
 		}
 	});
-	res.send(true);	
+	res.send(true);
 	console.log("shared exploration to: "+ to + " from: "+ from);
 });
+
+
+app.post("/updateExplorationState", function(req, res){
+	console.log("update expl state");
+	var update = req.body;
+	var expl = update.expl;
+	var userName = update.userName;
+	var path = USER_PATH;
+	// ensure both dirs exist.
+	path += userName+"/";
+	path += "explorations/";
+
+	var explFiles = fs.readdirSync(path);
+	var exploration;
+	explFiles.forEach(function(filename, index){
+		exploration = JSON.parse(fs.readFileSync(path + filename));
+		if(expl.userName === exploration.userName &&
+				expl.timeStamp === exploration.timeStamp){
+			fs.unlink(path + filename);
+			fs.writeFileSync(path + filename, JSON.stringify(expl, null, 4)+"\n");
+			res.sendStatus(200);
+			return;
+		}
+	});
+
+	res.sendStatus(404);
+});
+
+
 
 //check userName if match return true, if not return false
 app.post("/checkUsersFile", function(req, res){
@@ -303,76 +366,6 @@ app.post("/deleteAnnotation", function(req, res){
 		}
 	});
 });
-
-app.get("/getSharedExploration", function(req, res){
-	console.log("get notification");
-	var userName = req._parsedUrl.query; // data is appended to the URL
-	var path = USER_PATH;
-	// ensure both dirs exist.
-	ensureDirExists(path);
-	ensureDirExists(path + userName);
-	path += userName + "/explorations/";
-	ensureDirExists(path);
-
-	var sharedFiles = fs.readdirSync(path);
-	// if none, return '0'
-
-	var files = [];
-	sharedFiles.forEach(function(filename, index){
-		files[index] = JSON.parse(fs.readFileSync(path + filename));
-	});
-
-	res.send(JSON.stringify(files));
-});
-
-app.post('/saveSharedPlayed', function(req, res){
-	console.log("save Played file from shared folder to playedShared");
-	var timeStamp = req.body.timeStamp;
-	var exploration = req.body.filePlayed;
-	var from = req.body.from;
-	var to = req.body.to;
-	// makes 'pathectory' for files if none exist.
-	var path = USER_PATH;
-	ensureDirExists(path);
-	path += from+"/";
-	ensureDirExists(path);
-	path +="explorations/";
-	ensureDirExists(path)
-	fs.writeFile(path +to+ timeStamp + ".json", exploration+"\n", function(err){
-		if(err){ console.log(err); }
-	});
-});
-
-app.post("/deletePlayed", function(req, res){
-	console.log("delete Played file from shared folder");
-	var playedFile = JSON.parse(req.body.playedFile);
-	var userName = playedFile.user.fname;
-
-	var path = USER_PATH;
-	ensureDirExists(path);
-	path += userName + "/";
-	ensureDirExists(path);
-	path += "explorations/";
-	ensureDirExists(path);
-	var sharedFiles = fs.readdirSync(path);
-
-	// find and delete the file corresponding to the annotation specified.
-	sharedFiles.forEach(function(filename){
-
-		//console.log("aa: "+path + filename);
-		var inputSharedFile = JSON.parse(fs.readFileSync(path + filename));
-		console.log(playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0);
-		console.log("playedFile.startTimeStamp: "+playedFile.startTimeStamp);
-		console.log("inputSharedFile.startTimeStamp: "+inputSharedFile.startTimeStamp);
-
-		if (playedFile.startTimeStamp.localeCompare(inputSharedFile.startTimeStamp)==0){
-
-			fs.unlink(path + filename);
-			res.sendStatus(200); // success code
-		}
-	});
-});
-
 
 //returns whether the dir existed
 function ensureDirExists(path){

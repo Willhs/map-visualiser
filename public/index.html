@@ -89,21 +89,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			</table>
 		</div>
 		<div>
+		<progress id = "process" value="0" max="" ></progress><p id = "processState">State: 0%</p>
+		</div>
+		<div>
 			<div class="selected-exploration">
 				<p id="selected-exploration-name"></p>
 			</div>
+
+			<div>
+			  <input  class="delButton" id="delExplButton" type="button" runat="server"  value="no exploration selected" />
+			</div>
+
 			<div id="exploration-container">
 				<select id="exploration-selector" size="0"></select>
 			</div>
 			<div>
-				<p id="noOfFilesLoaded">no files loaded</p>
+				<p id="noOfFilesLoaded">no exploration loaded</p>
 			</div>
 		</div>
 		<div>
 			<h3>
-				<label for="to">To:</label>
+				<label for="to" id = "to">To:</label>
 			</h3>
-			<input type="text" id="userId" name="user" value="" />
+			<input type="text" id="userId" name="user" placeholder="UserName" />
 			<button type='button' id="submit-shareFile">Send</button>
 		</div>
 		<div class='select-device'>
@@ -130,8 +138,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				src="http://localhost:3000/"> </iframe>
 		</div>
 	</div> -->
- 	<div id = "notification" class="notificaiton-container"></div>
- 	<div id = "notification-files"class = "notificaitonfiles-container"></div>
+	<div>
+		<div id="notification" class="notificaiton-container"
+			style="display: none"></div>
+		<div>
+			<select id="notification-selector" class="notification-selectors" size="5"></select>
+		</div>
  	
     <audio id="exploration-audio">
     </audio>
