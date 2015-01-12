@@ -1,6 +1,7 @@
 //-------------- event handling for DOM elements ----------------
 
-var recordExplButton = document.getElementById("record-exploration-button"),
+var sideBar =  document.getElementById("sideBar"),
+recordExplButton = document.getElementById("record-exploration-button"),
 playExplButton = document.getElementById("play-exploration-button"),
 pauseExplButton = document.getElementById("pause-exploration-button"),
 stopExplButton = document.getElementById("stop-exploration-button"),
@@ -11,7 +12,8 @@ userNameInput = document.getElementById("userName-input"),
 passwordInput = document.getElementById("password-input"),
 logonButton = document.getElementById("submit-userandpassword"),
 delButton = document.getElementById("delExplButton"),
-processBar = document.getElementById("process");
+messageBar = document.getElementById("percent");
+processBar = document.getElementById("progress");
 
 //explorations
 
@@ -39,7 +41,7 @@ pauseExplButton.addEventListener('click', function(){
 
 stopExplButton.addEventListener('click', function(){
 	stopPlayBack(selectedExploration, "stop");
-	});
+});
 
 saveExplButton.onclick = saveExploration;
 
@@ -116,3 +118,30 @@ delButton.onclick = function(){
 
 	deselectExploration();
 };
+processBar.addEventListener("click", function(event){
+	if(selectedExploration==null)return;
+	var cursorX = event.clientX;
+	//var barLeft = sideBar.style.left;
+	var windowWidth = $(window).width();
+	//var barLeft = sideBar.getBoundingClientRect().left - 3;
+	var barLeft = windowWidth*0.81+17.05;
+	//var barRight = barLeft+288;
+	var realBarX = cursorX - barLeft;
+	console.log("realBarX: "+ realBarX);
+	var events = selectedExploration.events;
+	var eventLength =  288/events.length;
+	var eventIndex = function(){
+		var temp = 288/events.length;
+		for(var i = 0; i<events.length; i++){
+			if(realBarX>=temp-eventLength && realBarX<=temp){
+				index = i;
+				return i;
+			}
+		temp += eventLength;
+		}
+	};
+	console.log("events["+eventIndex()+"].time: "+ events[eventIndex()].time +"    "+ events[0].time);
+	processBar.value = events[eventIndex()].time;
+	console.log("processBar.value: "+ processBar.value);
+
+});

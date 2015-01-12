@@ -82,6 +82,10 @@ function Exploration() {
 			that[property] = exploration[property];
 		});
 	}
+	//calculate duration between two events
+	this.getDurationBetweenTwoEvents = function(e1, e2){
+		return (e2.time - e1.time);
+	}
 }
 
 // makes a default name for an exploration
@@ -166,7 +170,7 @@ function startPlayBack(exploration){
 		alert("nothing to play");
 		return; // if no events, do nothing.
 	}
-
+	//var initTime = currentUser.getExplorations()[0].time;
 	function launchEvent(i){
 		index = i;
 		var currentEvent = exploration.getEvent(i);
@@ -189,19 +193,20 @@ function startPlayBack(exploration){
 			// stop playback
 			index = 0;
 			processBar.value = 0;
+			messageBar.innerHTML = "0%";
 			enableAction("record");
 			disableAction("stop");
 			disableAction("pause");
 			enableAction("play");
 			requestStop = false, // reset this variable (sigh)
-			playing = false;
+			//playing = false;
 			console.log("Played " + exploration.numEvents() + " events");
 			return;
 		}
 		if(requestPause){
 			index++;
 			requestPause = false;
-			playing = false;
+			//playing = false;
 			enableAction("play");
 			enableAction("reset");
 			disableAction("pause");
@@ -212,7 +217,13 @@ function startPlayBack(exploration){
 			var nextEvent = exploration.getEvent(i+1);
 			var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
 			processBar.value = processBar.value +delay;
-			document.getElementById("processState").innerHTML = "State: "+ ((processBar.value/processBar.max)*100).toFixed(2) + "%";
+			//processBar.value = exploration.getDurationBetweenTwoEvents(exploration.events[exploration.events.length-1], exploration.events[index]);
+			//console.log("aaa: "+processBar.value + "  index: "+ index);
+			//console.log("lastEventTime: "+exploration.events[exploration.events.length-1].time + "  exploration.events["+index+"].time: "+ exploration.events[index].time);
+			var duration = exploration.events[exploration.events.length-1].time - exploration.events[index].time;
+			var d = new Date(duration);
+
+			messageBar.innerHTML =((processBar.value/processBar.max)*100).toFixed(2)+ "%   " + "Time Left: "+ d.getMinutes() +" : "+d.getSeconds() +" : "+d.getMilliseconds();
 			setTimeout(launchEvent, delay, i + 1);
 		}
 	}
@@ -247,6 +258,7 @@ function playAudio(audioBlob){
 //stops the playback of an exploration
 function stopPlayBack(exploration, state) {
 	if(state.localeCompare("pause")===0){
+		console.log("pause");
 		requestPause = true;
 	}
 	else if(state.localeCompare("stop")===0){
@@ -307,7 +319,7 @@ function saveExploration() {
 
 	// sets the time that this exploration was finished recording
 	var expl = currentUser.getCurrentExploration();
-	expl.setTimeStamp(""+new Date());
+	expl.setTimeStamp(new Date().toString());
 
 	// if the exploration has no audio, go ahead and send
 	if (!expl.audio){
