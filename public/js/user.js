@@ -96,6 +96,7 @@ function logon(name){
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
 
+
 	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
 		updateSideBar();
@@ -108,7 +109,7 @@ function logout(){
 	updateSideBar();
 
 	disableAction("record");
-
+	playProgressBar.style.display = "none";
 	resetNotificationLable("none");
 	document.getElementById("notification-selector").style.display = "none";
 	document.getElementById("userId").value = "";

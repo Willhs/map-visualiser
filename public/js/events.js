@@ -12,6 +12,8 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	logonButton = document.getElementById("submit-userandpassword"),
 	delButton = document.getElementById("del-explButton"),
 	messageBar = document.getElementById("percent"),
+	playProgressBar = document.getElementById("play-progress"),
+	scrubber = document.getElementById("scrubber");
 	notificationSelector = document.getElementById("notification-selector");
 
 //explorations
@@ -114,13 +116,13 @@ delButton.onclick = function(){
 
 	deselectExploration();
 };
-//progressBar.addEventListener("click", function(event){
+//scrubber.addEventListener("click", function(event){
 //	if(selectedExploration==null)return;
 //	var cursorX = event.clientX;
 //	//var barLeft = sideBar.style.left;
 //	var windowWidth = $(window).width();
 //	//var barLeft = sideBar.getBoundingClientRect().left - 3;
-//	var barLeft = windowWidth*0.81+17.05;
+//	var barLeft = windowWidth*playProgressBar.sytle.left;
 //	//var barRight = barLeft+288;
 //	var realBarX = cursorX - barLeft;
 //	console.log("realBarX: "+ realBarX);
@@ -130,14 +132,12 @@ delButton.onclick = function(){
 //		var temp = 288/events.length;
 //		for(var i = 0; i<events.length; i++){
 //			if(realBarX>=temp-eventLength && realBarX<=temp){
-//				index = i;
+//				currentIndex = i;
 //				return i;
 //			}
 //		temp += eventLength;
 //		}
 //	};
-//	console.log("events["+eventIndex()+"].time: "+ events[eventIndex()].time +"    "+ events[0].time);
-//	progressBar.value = events[eventIndex()].time;
-//	console.log("progressBar.value: "+ progressBar.value);
+//	console.log("progressBar.value: "+ scrubber.value);
 //
 //});

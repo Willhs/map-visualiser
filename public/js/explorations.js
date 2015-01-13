@@ -91,6 +91,7 @@ function Exploration() {
 		return this.firstEventTime === exploration.firstEventTime;
 	}
 	this.getDuration = function(){
+		if(this.events.length==0)return 0;
 		return  this.events[this.events.length-1].time;//return millisecond
 
 	}
@@ -189,9 +190,6 @@ function startPlayBack (exploration){
 			requestStop = false, // reset this variable (sigh)
 			updateThings();
 			currentIndex = 0;
-			console.log("stop1: " + currentIndex);
-			console.log("stop2: " + exploration.hasNextEvent(currentEvent));
-
 
 		}
 		else if (requestPause){
@@ -201,11 +199,11 @@ function startPlayBack (exploration){
 			updateThings();
 		}
 		else { // continue playing events
-			console.log("play" + currentIndex);
 			switch (currentEvent.type){
 			case ("travel"):
 				var location = currentEvent.body;
-			goToLoc(location);
+				goToLoc(location);
+
 			break;
 			case ("movement"):
 				var transform = currentEvent.body;
@@ -245,10 +243,10 @@ function startPlayBack (exploration){
 	playAudio(exploration.getAudio());
 
 //	update to show exploration has been played
-	if (selectedExploration.isNew
-			&& !selectedExploration.equals(currentUser.getCurrentExploration())){
+	if($.inArray(selectedExploration, currentUser.getExplorations())==0){
 		setExplorationIsOld(selectedExploration);
 	}
+	selectedExploration.isNew = false;
 //	updates GUI
 	updateNotifications(currentUser);
 	notificationSelector.style.display = "none";
@@ -282,9 +280,9 @@ function stopAudio(){
 //makes an exploration selected
 function selectExploration(exploration){
 	selectedExploration = exploration;
-	console.log("speed: " + selectedExploration.getDuration() + "  " + progress_width);
 	progressBarSpeed = selectedExploration.getDuration/progress_width;
 	delButton.value = "delete selected exploration";
+	playProgressBar.style.display = "block";
 	enableAction("play");
 }
 
@@ -292,6 +290,7 @@ function selectExploration(exploration){
 function deselectExploration(){
 	selectedExploration = null;
 	delButton.value = "no exploration selected";
+	playProgressBar.style.display = "none";
 }
 
 //resets to original state (no explorations selected and no recordings in progress)

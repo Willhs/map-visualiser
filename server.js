@@ -230,7 +230,7 @@ app.post('/shareExploration', function(req, res){
 });
 
 
-app.post("/updateExplorationState", function(req, res){
+app.post("/setExplorationIsOld", function(req, res){
 	console.log("update expl state");
 	var update = req.body;
 	var expl = update.expl;
