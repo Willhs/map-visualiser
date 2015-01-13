@@ -1,3 +1,7 @@
+
+var selectedExploration = null; // currently selected exploration
+var currentUser = null; // the user who is currently logged in
+
 function User(name, explorations){
 	this.name = name;
 	this.explorations = explorations; //all explorations
@@ -61,9 +65,6 @@ function User(name, explorations){
 		return newExplorations;
 	}
 }
-
-var selectedExploration = null; // currently selected exploration
-var currentUser = null; // the user who is currently logged in
 
 function loadFileButtonFunction(){
 	handleFileUpload(document.getElementById("load-file-button").files[0]);

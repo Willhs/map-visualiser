@@ -2,8 +2,9 @@
 // TODO: don't use global variable for these?
 var recording = false,
 	playing = false,
-	requestStop = false,
-	requestPause = false;
+	paused = false,
+	requestedStop = false,
+	requestedPause = false;
 
 var audioElem = document.getElementById("exploration-audio");
 
@@ -190,10 +191,10 @@ function playExploration(exploration){
 
 		// TODO: find better stop solution
 		// stop button has been pushed or playback has been ended
-		if (requestStop || !exploration.hasNextEvent(currentEvent)){
+		if (requestedStop || !exploration.hasNextEvent(currentEvent)){
 			stopPlayback(exploration);
 		}
-		else if (requestPause){
+		else if (requestedPause){
 			pausePlayback(exploration);
 		}
 		else { // continue playing events
@@ -220,9 +221,9 @@ function playExploration(exploration){
 	disableAction("play");
 
 	launchEvent(currentIndex); // launch the first event
-	if (exploration.hasAudio())
-		playAudio(exploration.getAudio());
-
+	if (exploration.hasAudio()){
+		paused ? resumeAudio() : playAudio(exploration.getAudio());
+	}
 
 	// update to show exploration has been played
 	if (selectedExploration.isNew
@@ -232,27 +233,32 @@ function playExploration(exploration){
 	// updates GUI
 	updateNotifications(currentUser);
 	notificationSelector.style.display = "none";
-
+	
 	playing = true;
+	paused = false;
 }
 
-// plays audio from the last position it was left at (determined by audio element)
+// plays audio from a blob
 function playAudio(audioBlob){	
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
 }
 
+function resumeAudio(){
+	audioElem.play();
+}
+
 //stops the playback of an exploration
 function requestStop(exploration) {
-	requestStop = true;
+	requestedStop = true;
 }
 
 function requestPause(exploration){
-	requestPause = true;
+	requestedPause = true;
 }
 
 function stopPlayback(exploration){	
-	requestStop = false, // reset this variable (sigh)
+	requestedStop = false, // reset this variable (sigh)
 	currentIndex = 0;
 
 	if (exploration.hasAudio()){
@@ -264,10 +270,11 @@ function stopPlayback(exploration){
 }
 
 function pausePlayback(exploration){
-	requestPause = false;	
+	requestedPause = false;
+	paused = true;	
 
 	if (exploration.hasAudio())
-		audio.pause();
+		audioElem.pause();
 
 	updatePlaybackStopped();
 }
@@ -309,6 +316,7 @@ function resetExplorations() {
 	disableAction("save");
 	disableAction("play");
 	disableAction("stop");
+	disableAction("pause");
 
 	if (userLoggedOn()){
 		enableAction("record");
