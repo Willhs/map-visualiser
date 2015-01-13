@@ -34,11 +34,11 @@ playExplButton.addEventListener('click', function () {
 });
 
 pauseExplButton.addEventListener('click', function(){
-	requestPause = true;
+	requestPause(selectedExploration);
 });
 
 stopExplButton.addEventListener('click', function(){
-	requestStop = true;
+	requestStop(selectedExploration);
 });
 
 saveExplButton.onclick = saveExploration;
@@ -114,4 +114,3 @@ delButton.onclick = function(){
 
 	deselectExploration();
 };
-

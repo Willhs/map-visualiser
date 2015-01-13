@@ -242,14 +242,17 @@ app.post("/setExplorationIsOld", function(req, res){
 	var found;
 
 	explFiles.forEach(function(filename, index){
-		var exploration = JSON.parse(fs.readFileSync(path + filename));
+		var filePath = path + filename;
+		if (fs.lstatSync(filePath).isDirectory())
+			return; // if the file is a directory
+		var exploration = JSON.parse(fs.readFileSync(filePath));
 		if(userName === exploration.userName &&
 				timeStamp === exploration.timeStamp){
 			// set the property
 			exploration.isNew = false; 
-			fs.writeFileSync(path + filename, JSON.stringify(exploration, null, 4));
+			fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
 			res.sendStatus(200);
-			found = true
+			found = true;
 		}
 	});
 	if (!found)

@@ -1,6 +1,6 @@
-// CODE FROM : http://bl.ocks.org/keithcollins/a0564c578b9328fcdcbb
+//CODE FROM : http://bl.ocks.org/keithcollins/a0564c578b9328fcdcbb
 
-// init some global vars
+//init some global vars
 var progressWidth = 910;
 var progressHeight = 36;
 var cityName = "";
@@ -10,13 +10,13 @@ var progressLeft = 0
 var progressBarSpeed = 0;
 var animation;
 
-// add the progress bar svg
+//add the progress bar svg
 var progress = d3.select("#play-progress").append("svg:svg")
 .attr("id","play-svg")
 .attr("width", progressWidth)
 .attr("height", progressHeight);
-// append a rect, which will move to the right as the animation plays
-// this creates the progress bar effect
+//append a rect, which will move to the right as the animation plays
+//this creates the progress bar effect
 progress.append("rect")
 .attr("id","progress-bar")
 .attr("width", progressWidth)
@@ -24,7 +24,7 @@ progress.append("rect")
 .attr("x",progressLeft)
 .attr("y",progressTop);
 
-// append line and text for mouseover
+//append line and text for mouseover
 progress.append("line")
 .attr("id","mouseline")
 .attr("x1",progressLeft)
@@ -42,7 +42,7 @@ progress.append("text")
 .style("fill","#fff")
 .style("opacity",0);
 
-// mouseover
+//mouseover
 $('#scrubber')
 .on("mousemove",function(e) {
 	// figure out x position of mouse
@@ -51,7 +51,7 @@ $('#scrubber')
 	// what percent across the rect is the mouse?
 	// multiply that by the length of the data to get the index
 	if(selectedExploration==null)return;
-	var tempIndex= Math.ceil(xpos/progressWidth*selectedExploration.events.length);
+	tempIndex= Math.ceil(xpos/progressWidth*selectedExploration.events.length);
 	if(selectedExploration.events[tempIndex].type=="travel"){
 		cityName = selectedExploration.events[tempIndex].body;
 	}
@@ -69,8 +69,8 @@ $('#scrubber')
 	d3.select("#mouseline").style("opacity",0);
 	d3.select("#mousetext").style("opacity",0);
 })
-// on click do the same thing but update the data index with it
-// then restart the animation from the selected index
+//on click do the same thing but update the data index with it
+//then restart the animation from the selected index
 .on("click",function(e) {
 	var offset = $(this).offset();
 	var xpos = e.clientX - offset.left + progressHeight;
@@ -81,7 +81,7 @@ $('#scrubber')
 
 	animation = setInterval(function(){ play() }, progressBarSpeed);
 });
-// simple play, pause, replay stuff
+//simple play, pause, replay stuff
 d3.select("#play-control").on("click",function() {
 
 	if(selectedExploration==null)return;
@@ -105,15 +105,12 @@ d3.select("#play-control").on("click",function() {
 		animation = setInterval(function(){ play() }, progressBarSpeed);
 	}
 });
-// this is the play function that is executed on each interval until the interval is cleared
-// the speed variable at the top dictates how frequent the intervals are
+//this is the play function that is executed on each interval until the interval is cleared
+//the speed variable at the top dictates how frequent the intervals are
 function play() {
 	// update what is being displayed
 	if(selectedExploration==null)
 		return;
-	if(selectedExploration.events[tempIndex].type=="travel"){
-		cityName = selectedExploration.events[tempIndex].body;
-	}
 	d3.select("#display-data").html("travel: "+cityName);
 
 	// move the progress bar to the right
@@ -128,4 +125,7 @@ function play() {
 	}
 
 	currentIndex = currentIndex + 1;
+}
+function addCityName(){
+
 }

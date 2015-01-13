@@ -2,8 +2,9 @@
 // TODO: don't use global variable for these?
 var recording = false,
 	playing = false,
-	requestStop = false,
-	requestPause = false;
+	paused = false,
+	requestedStop = false,
+	requestedPause = false;
 
 var audioElem = document.getElementById("exploration-audio");
 
@@ -94,7 +95,8 @@ function Exploration() {
 		return this.firstEventTime === exploration.firstEventTime;
 	}
 	this.getDuration = function(){
-		if(this.events.length==0)return 0;
+		if(this.events.length == 0)
+			return 0;
 		return  this.events[this.events.length-1].time;//return millisecond
 
 	}
@@ -191,10 +193,10 @@ function playExploration(exploration){
 
 		// TODO: find better stop solution
 		// stop button has been pushed or playback has been ended
-		if (requestStop || !exploration.hasNextEvent(currentEvent)){
+		if (requestedStop || !exploration.hasNextEvent(currentEvent)){
 			stopPlayback(exploration);
 		}
-		else if (requestPause){
+		else if (requestedPause){
 			pausePlayback(exploration);
 		}
 		else { // continue playing events
@@ -214,20 +216,23 @@ function playExploration(exploration){
 			setTimeout(launchEvent, delay, i + 1);
 		}
 	}
+
 	enableAction("stop");
 	enableAction("pause");
 	disableAction("record");
 	disableAction("play");
 
 	launchEvent(currentIndex); // launch the first event
-	if (exploration.hasAudio())
-		playAudio(exploration.getAudio());
+	if (exploration.hasAudio()){
+		paused ? resumeAudio() : playAudio(exploration.getAudio());
+	}
 
 //	update to show exploration has been played
 	if(currentUser.getExploration(selectedExploration.timeStamp)){
 		setExplorationIsOld(selectedExploration);
 	}
 	selectedExploration.isNew = false;
+
 //	updates GUI
 	updateNotifications(currentUser);
 	notificationSelector.style.display = "none";
@@ -235,23 +240,23 @@ function playExploration(exploration){
 	playing = true;
 }
 
-// plays audio from the last position it was left at (determined by audio element)
-function playAudio(audioBlob){
+// plays audio from a blob
+function playAudio(audioBlob){	
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
 }
 
 //stops the playback of an exploration
 function requestStop(exploration) {
-	requestStop = true;
+	requestedStop = true;
 }
 
 function requestPause(exploration){
-	requestPause = true;
+	requestedPause = true;
 }
 
-function stopPlayback(exploration){
-	requestStop = false, // reset this variable (sigh)
+function stopPlayback(exploration){	
+	requestedStop = false, // reset this variable (sigh)
 	currentIndex = 0;
 
 	if (exploration.hasAudio()){
@@ -263,10 +268,11 @@ function stopPlayback(exploration){
 }
 
 function pausePlayback(exploration){
-	requestPause = false;
+	requestedPause = false;
+	paused = true;	
 
 	if (exploration.hasAudio())
-		audio.pause();
+		audioElem.pause();
 
 	updatePlaybackStopped();
 }
@@ -295,7 +301,6 @@ function deselectExploration(){
 	selectedExploration = null;
 	delButton.value = "no exploration selected";
 	playProgressBar.style.display = "none";
-	console.log("delButton value: "+delButton.value );
 }
 
 // resets to original state (no explorations selected and no recordings in progress)
@@ -311,6 +316,7 @@ function resetExplorations() {
 	disableAction("save");
 	disableAction("play");
 	disableAction("stop");
+	disableAction("pause");
 
 	if (userLoggedOn()){
 		enableAction("record");
@@ -324,12 +330,10 @@ function resetExplorations() {
 function saveExploration() {
 	stopRecording();
 	disableAction("save"); // disables until the current recording changes
+
 	// sets the time that this exploration was finished recording
 	var expl = currentUser.getCurrentExploration();
-	if(expl==null)
-		return;
 	expl.setTimeStamp(new Date().toString());
-
 
 	// if the exploration has no audio, go ahead and send
 	if (!expl.audio){
@@ -366,14 +370,14 @@ function saveExploration() {
 
 }
 
-//disables an action (currently button)
+// disables an action (currently button)
 function disableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = true;
 	changeButtonColour(name, false);
 }
 
-//enable an action
+// enable an action
 function enableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = false;
