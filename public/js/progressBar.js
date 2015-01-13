@@ -3,7 +3,7 @@
 // init some global vars
 var progressWidth = 910;
 var progressHeight = 36;
-
+var cityName = "";
 var progressTop = 0;
 var progressLeft = 0
 //var speed = 65;
@@ -51,9 +51,9 @@ $('#scrubber')
 	// what percent across the rect is the mouse?
 	// multiply that by the length of the data to get the index
 	if(selectedExploration==null)return;
-	currentIndex = Math.ceil(xpos/progressWidth*selectedExploration.events.length);
-	if(selectedExploration.events[currentIndex].type=="travel"){
-		var cityName = selectedExploration.events[currentIndex].body;
+	var tempIndex= Math.ceil(xpos/progressWidth*selectedExploration.events.length);
+	if(selectedExploration.events[tempIndex].type=="travel"){
+		cityName = selectedExploration.events[tempIndex].body;
 	}
 
 	d3.select("#mouseline")
@@ -111,8 +111,10 @@ function play() {
 	// update what is being displayed
 	if(selectedExploration==null)
 		return;
-
-	d3.select("#display-data").html("selectedExploration.events["+currentIndex+"]: "+ selectedExploration.events[currentIndex].time);
+	if(selectedExploration.events[tempIndex].type=="travel"){
+		cityName = selectedExploration.events[tempIndex].body;
+	}
+	d3.select("#display-data").html("travel: "+cityName);
 
 	// move the progress bar to the right
 	var progress_xpos = currentIndex/selectedExploration.events.length*progressWidth;

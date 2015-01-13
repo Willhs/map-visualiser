@@ -295,6 +295,7 @@ function deselectExploration(){
 	selectedExploration = null;
 	delButton.value = "no exploration selected";
 	playProgressBar.style.display = "none";
+	console.log("delButton value: "+delButton.value );
 }
 
 // resets to original state (no explorations selected and no recordings in progress)

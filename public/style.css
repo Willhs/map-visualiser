@@ -79,8 +79,8 @@ input,label {
 
 /* Annotation stuff */
 #delete-button {
-	width: 10px;
-	height: 10px;
+	width: 170px;
+	height: 20px;
 }
 
 .annotation-row {

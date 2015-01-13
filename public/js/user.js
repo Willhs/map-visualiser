@@ -379,16 +379,6 @@ function setExplorationIsOld(expl){
 	});
 }
 
-function addDeleteButton(){
-	var deleteButton = document.createElement("input");
-	deleteButton.id = "delButton";
-	deleteButton.type = "image";
-	deleteButton.src = "data/image/delete.png";
-	deleteButton.style.width = "15px";
-	deleteButton.style.height = "15px";
-	return deleteButton;
-}
-
 
 function divHideShow(div){
 
