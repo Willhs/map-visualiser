@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 </head>
 
 <body>
-	<div class="sideBar" id="sideBar">
+	<div id="side-bar">
 
 		<div class="users">
 
@@ -57,11 +57,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			</table>
 			<h3>Or...</h3>
 			<div>
-				<input type="text" id="userName-input" placeholder='user-name'>
+				<input type="text" id="username-input" placeholder='user-name'>
 				<input type="password" id="password-input" placeholder='password'>
 				<div>
-					<input type="submit" id="submit-userandpassword" class="account-submit" value="Logon">
-					<button id="createNewAccount" class="account-submit">Create Account</button>
+					<input type="submit" id="logon-button" class="account-submit" value="Logon">
+					<button id="create-new-account" class="account-submit">Create Account</button>
 				</div>
 			</div>
 		</div>
@@ -99,7 +99,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			</div>
 
 			<div>
-				<input class="delButton" id="del-explButton" type="button" runat="server" value="no exploration selected" />
+				<input id="delete-button" type="button" value="no exploration selected" />
 			</div>
 
 			<div id="exploration-container">
@@ -107,18 +107,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			</div>
 
 			<div>
-				<p id="noOfFilesLoaded">no exploration loaded</p>
+				<p id="files-loaded">no exploration loaded</p>
 			</div>
 		</div>
 		<div>
 			<h3>
 				<label for="to" id = "to">To:</label>
 			</h3>
-			<input type="text" id="userId" name="user" placeholder="UserName" />
-			<button type='button' id="submit-shareFile">Send</button>
+			<input type="text" id="user-input" name="user" placeholder="UserName" />
+			<button type='button' id="submit-shared-file">Send</button>
 		</div>
 		<div class='select-device'>
-			<label for='audioSource'>Audio source: </label> <select id='audioSource'></select>
+			<label for='audio-source'>Audio source: </label> <select id='audio-source'></select>
 		</div>
 
 		<div id="location-div" class="location-pane">
@@ -142,12 +142,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 	</div> -->
 	<div>
-		<div id="notification" class="notificaiton-container"
+		<div id="notification" class="notification-container"
 			style="display: none"></div>
 		<div>
 			<select id="notification-selector" class="notification-selectors" size="5"></select>
 		</div>
-</div>
+	</div>
 	<div id="play-progress">
 		<div id="play-control" class="play"></div>
 		<div id="scrubber"></div>
@@ -161,13 +161,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 	<script src="js/visualiser.js"></script>
 	<script src="js/paths.js"></script>
 	<script src="js/user.js"></script>
+	<script src="js/progressBar.js"></script>
 	<script src="js/explorations.js"></script>
 	<script src="js/events.js"></script>
-	<script src ="js/progressBar.js"></script>
 	<script src="js/audio/audio.js"></script>
 	<script src="js/audio/recorder/recorder.js"></script>
 	<script src="js/audio/recorder/recorderWorker.js"></script>
-
 
 </body>
 </html>

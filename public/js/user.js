@@ -5,7 +5,7 @@ function User(name, explorations){
 
 	// add an exploration
 	this.addExploration = function (expl){
-		this.exploration.push(expl);
+		this.explorations.push(expl);
 	};
 
 	this.setExplorations = function(explorations){
@@ -24,7 +24,7 @@ function User(name, explorations){
 	};
 	// gets an exploration (given a timestamp) from the user's collection of explorations
 	this.getExploration = function(timeStamp){
-		var userExpl;
+		var userExpl = null;
 		this.explorations.forEach(function(expl){
 			if (expl.timeStamp.localeCompare(timeStamp)==0){
 				userExpl = expl;
@@ -112,7 +112,7 @@ function logout(){
 	playProgressBar.style.display = "none";
 	resetNotificationLable("none");
 	document.getElementById("notification-selector").style.display = "none";
-	document.getElementById("userId").value = "";
+	document.getElementById("user-input").value = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -333,7 +333,6 @@ function createAccount(name, pw){
 	});
 	window.document.write("new account created!");
 	window.close();
-
 }
 
 
@@ -371,7 +370,10 @@ function setExplorationIsOld(expl){
 	$.ajax({
 		type: 'POST',
 		url: "setExplorationIsOld",
-		data: JSON.stringify({expl: expl, userName: currentUser.name}),
+		data: JSON.stringify({
+			userName: currentUser.name,
+			timeStamp: expl.timeStamp
+		}),
 		contentType: "application/json",
 		success: function(response){ console.log(response); }, //callback when ajax request finishes
 	});

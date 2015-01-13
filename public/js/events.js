@@ -7,10 +7,10 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	saveExplButton = document.getElementById('save-exploration-button'),
 	resetExplButton = document.getElementById("reset-exploration-button"),
 	explChooser = document.getElementById("exploration-selector"),
-	userNameInput = document.getElementById("userName-input"),
+	userNameInput = document.getElementById("username-input"),
 	passwordInput = document.getElementById("password-input"),
-	logonButton = document.getElementById("submit-userandpassword"),
-	delButton = document.getElementById("del-explButton"),
+	logonButton = document.getElementById("logon-button"),
+	delButton = document.getElementById("delete-button"),
 	messageBar = document.getElementById("percent"),
 	playProgressBar = document.getElementById("play-progress"),
 	scrubber = document.getElementById("scrubber");
@@ -30,16 +30,15 @@ playExplButton.addEventListener('click', function () {
 	var firstTime = selectedExploration.getEvent(0).time
 	var totalDruation = lastTime - firstTime;
 //	progressBar.max = totalDruation;
-	startPlayBack(selectedExploration);
+	playExploration(selectedExploration);
 });
 
 pauseExplButton.addEventListener('click', function(){
-	//requestPause = true;
-	pausePlayBack(selectedExploration, "pause");
+	requestPause = true;
 });
 
 stopExplButton.addEventListener('click', function(){
-	stopPlayBack(selectedExploration, "stop");
+	requestStop = true;
 });
 
 saveExplButton.onclick = saveExploration;
@@ -54,7 +53,6 @@ explChooser.onclick = function(){
 	var userExpl = currentUser.getExploration(explTimeStamp);
 	stopRecording();
 	selectExploration(userExpl);
-
 };
 
 //users
@@ -80,7 +78,7 @@ logonButton.onclick = function(){
 	}
 };
 //share button
-document.getElementById("submit-shareFile").addEventListener('click',function(){
+document.getElementById("submit-shared-file").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("userId").value;
 	console.log("userID: "+userLabelValue);
@@ -98,7 +96,7 @@ document.getElementById("notification").addEventListener('click',function(){
 
 //new account
 var myWindow;
-var newAccount = document.getElementById("createNewAccount");
+var newAccount = document.getElementById("create-new-account");
 newAccount.onclick = function(){
 	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
@@ -116,28 +114,4 @@ delButton.onclick = function(){
 
 	deselectExploration();
 };
-//scrubber.addEventListener("click", function(event){
-//	if(selectedExploration==null)return;
-//	var cursorX = event.clientX;
-//	//var barLeft = sideBar.style.left;
-//	var windowWidth = $(window).width();
-//	//var barLeft = sideBar.getBoundingClientRect().left - 3;
-//	var barLeft = windowWidth*playProgressBar.sytle.left;
-//	//var barRight = barLeft+288;
-//	var realBarX = cursorX - barLeft;
-//	console.log("realBarX: "+ realBarX);
-//	var events = selectedExploration.events;
-//	var eventLength =  288/events.length;
-//	var eventIndex = function(){
-//		var temp = 288/events.length;
-//		for(var i = 0; i<events.length; i++){
-//			if(realBarX>=temp-eventLength && realBarX<=temp){
-//				currentIndex = i;
-//				return i;
-//			}
-//		temp += eventLength;
-//		}
-//	};
-//	console.log("progressBar.value: "+ scrubber.value);
-//
-//});
+
