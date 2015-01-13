@@ -14,7 +14,7 @@ body {
 	top: 3px;
 }
 
-.sideBar {
+#side-bar {
 	position: fixed;
 	left: 81%;
 	top: 3px;
@@ -24,7 +24,7 @@ body {
 	border: 3px solid black;
 }
 
-.sideBar>* { /* all child elements of sidebar */
+#side-bar>* { /* all child elements of sidebar */
 	padding-left: 1em;
 }
 
@@ -37,22 +37,6 @@ body {
 
 input,label {
 	display: block;
-}
-
-#slider {
-	margin-left: 10px;
-}
-
-#zoomChosen,#panChosen {
-	border-radius: 10px;
-	width: 45px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	text-align: center;
-	color: #000000;
-	font-weight: bold;
-	font-size: 1em;
-	margin-left: 40px;
 }
 
 .checkbox {
@@ -186,8 +170,8 @@ input,label {
 	overflow: scroll;
 	background-color: #fff;
 }
-
-.delDivClass {
+/*
+.del-div {
 	position: fixed;
 	padding-right: 2px;
 	float: right;
@@ -211,7 +195,7 @@ input,label {
 	top: 76.5%;
 	width: 5px;
 	height: 5px;
-}
+}*/
 
 #newAccount {
 	position: fixed;
@@ -228,6 +212,8 @@ input,label {
 	left: 90%;
 	top: 70%;
 }
+
+/* ------ PROGRESS BAR ------------ */
 
 #progress {
 	position: relative;

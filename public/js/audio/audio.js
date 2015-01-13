@@ -2,7 +2,7 @@
 // and       ~/projects/web/audio-recorder/public/js/main.
 
 // select elem for audio devices
-var audioSelect = document.querySelector("#audioSource");
+var audioSelect = document.querySelector("#audio-source");
 
 navigator.getUserMedia = navigator.getUserMedia ||
 navigator.webkitGetUserMedia || navigator.mozGetUserMedia;

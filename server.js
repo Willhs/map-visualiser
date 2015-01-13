@@ -227,30 +227,33 @@ app.post('/shareExploration', function(req, res){
 	console.log("shared exploration to: "+ to + " from: "+ from);
 });
 
-
-app.post("/updateExplorationState", function(req, res){
-	console.log("update expl state");
+app.post("/setExplorationIsOld", function(req, res){
+	console.log("setting exploration isNew");
 	var update = req.body;
-	var expl = update.expl;
 	var userName = update.userName;
+	var timeStamp = update.timeStamp;
 	var path = USER_PATH;
 	// ensure both dirs exist.
-	path += userName+"/";
+	path += userName + "/";
 	path += "explorations/";
 
+	// find the exploration with the right user and timestamp, and change the isNew property
 	var explFiles = fs.readdirSync(path);
-	var exploration;
+	var found;
+
 	explFiles.forEach(function(filename, index){
-		exploration = JSON.parse(fs.readFileSync(path + filename));
-		if(expl.userName === exploration.userName &&
-				expl.timeStamp === exploration.timeStamp){
-			fs.unlink(path + filename);
-			fs.writeFileSync(path + filename, JSON.stringify(expl, null, 4)+"\n");
+		var exploration = JSON.parse(fs.readFileSync(path + filename));
+		if(userName === exploration.userName &&
+				timeStamp === exploration.timeStamp){
+			// set the property
+			exploration.isNew = false; 
+			fs.writeFileSync(path + filename, JSON.stringify(exploration, null, 4));
 			res.sendStatus(200);
-			return;
+			found = true
 		}
 	});
-	res.sendStatus(404);
+	if (!found)
+		res.sendStatus(404); // not found
 });
 
 

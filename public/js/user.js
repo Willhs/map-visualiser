@@ -111,7 +111,7 @@ function logout(){
 
 	resetNotificationLable("none");
 	document.getElementById("notification-selector").style.display = "none";
-	document.getElementById("userId").value = "";
+	document.getElementById("user-input").value = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -332,7 +332,6 @@ function createAccount(name, pw){
 	});
 	window.document.write("new account created!");
 	window.close();
-
 }
 
 
@@ -370,7 +369,10 @@ function setExplorationIsOld(expl){
 	$.ajax({
 		type: 'POST',
 		url: "setExplorationIsOld",
-		data: JSON.stringify({expl: expl, userName: currentUser.name}),
+		data: JSON.stringify({
+			userName: currentUser.name, 
+			timeStamp: expl.timeStamp 
+		}),
 		contentType: "application/json",
 		success: function(response){ console.log(response); }, //callback when ajax request finishes
 	});

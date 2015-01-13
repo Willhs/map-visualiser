@@ -90,6 +90,7 @@ function Exploration() {
 	}
 
 	this.equals = function(exploration){
+		if (exploration == null) return false;
 		return this.firstEventTime === exploration.firstEventTime;
 	}
 	this.getDuration = function(){
@@ -98,7 +99,7 @@ function Exploration() {
 	}
 }
 
-// makes a default name for an exploration
+//makes a default name for an exploration
 var generateDefaultExplName = function(){
 	var index = 0;
 	return function(){
@@ -108,7 +109,7 @@ var generateDefaultExplName = function(){
 	};
 }();
 
-// begins recording of certain user navigation actions and audio
+//beings recording of certain user navigation actions
 function startRecording() {
 	resetExplorations();
 
@@ -176,35 +177,30 @@ var currentIndex = 0;
 
 // plays OR resumes an exploration
 // PRE: no other exploration is being played
-function playExploration(){
+function playExploration(exploration){
 
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
 	}
 	function launchEvent(i){
-
 		var currentEvent = exploration.getEvent(i);
 		var nextEvent = exploration.getEvent(i+1);
-		//console.log("i " + currentIndex);
 		currentIndex = i;
 
 		// TODO: find better stop solution
 		// stop button has been pushed or playback has been ended
 		if (requestStop || !exploration.hasNextEvent(currentEvent)){
-			requestStop = false, // reset this variable (sigh)
-			updateThings();
-			currentIndex = 0;
+			stopPlayback(exploration);
 		}
 		else if (requestPause){
-			requestPause = false;
-			updateThings();
+			pausePlayback(exploration);
 		}
-		else { // continue playing events				
+		else { // continue playing events
 			switch (currentEvent.type){
 			case ("travel"):
 				var location = currentEvent.body;
-			    goToLoc(location);
+				goToLoc(location);
 			   	break;
 			case ("movement"):
 				var transform = currentEvent.body;
@@ -212,21 +208,10 @@ function playExploration(){
 				updateScaleAndTrans();
 				break;
 			}
-			
-			var delay = nextEvent.time - currentEvent.time; // is ms, the time between current and next event
-			processBar.value = processBar.value +delay;
-			document.getElementById("processState").innerHTML = "State: "+ ((processBar.value/processBar.max)*100).toFixed(2) + "%";
+
+			var delay = nextEvent.time - currentEvent.time;
 			setTimeout(launchEvent, delay, i + 1);
 		}
-
-		function updateThings(){
-			enableAction("play");
-			enableAction("reset");
-			enableAction("record");
-			disableAction("pause");
-			disableAction("stop");
-			playing = false;
-		}			
 	}
 
 	enableAction("stop");
@@ -234,12 +219,13 @@ function playExploration(){
 	disableAction("record");
 	disableAction("play");
 
-//	console.log("start index: " + currentIndex);
 	launchEvent(currentIndex); // launch the first event
-	playAudio(exploration.getAudio());
+	if (exploration.hasAudio())
+		playAudio(exploration.getAudio());
+
 
 	// update to show exploration has been played
-	if (selectedExploration.isNew 
+	if (selectedExploration.isNew
 		&& !selectedExploration.equals(currentUser.getCurrentExploration())){
 		setExplorationIsOld(selectedExploration);
 	}
@@ -248,7 +234,6 @@ function playExploration(){
 	notificationSelector.style.display = "none";
 
 	playing = true;
-	
 }
 
 // plays audio from the last position it was left at (determined by audio element)
@@ -300,6 +285,7 @@ function updatePlaybackStopped(){
 // makes an exploration selected
 function selectExploration(exploration){
 	selectedExploration = exploration;
+	progressBarSpeed = selectedExploration.getDuration/progressWidth;
 	delButton.value = "delete selected exploration";
 	enableAction("play");
 }
@@ -325,7 +311,6 @@ function resetExplorations() {
 	disableAction("stop");
 
 	if (userLoggedOn()){
-		console.log("enable record");
 		enableAction("record");
 	}
 	else {
@@ -349,13 +334,13 @@ function saveExploration() {
 	else { // if the exploration contains audio
 		// convert audio from blob to string so it can be sent
 		var reader = new FileReader();
-	    reader.addEventListener("loadend", audioConverted);
-	    reader.readAsBinaryString(expl.getAudio());
+		reader.addEventListener("loadend", audioConverted);
+		reader.readAsBinaryString(expl.getAudio());
 
-	    function audioConverted(){
-	        var audioString = reader.result;
-	        expl.setAudio(audioString);
-	        sendExploration(expl);
+		function audioConverted(){
+			var audioString = reader.result;
+			expl.setAudio(audioString);
+			sendExploration(expl);
 		}
 	}
 
