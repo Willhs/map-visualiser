@@ -9,7 +9,7 @@ function User(name, explorations){
 
 	// add an exploration
 	this.addExploration = function (expl){
-		this.exploration.push(expl);
+		this.explorations.push(expl);
 	};
 
 	this.setExplorations = function(explorations){
@@ -28,7 +28,7 @@ function User(name, explorations){
 	};
 	// gets an exploration (given a timestamp) from the user's collection of explorations
 	this.getExploration = function(timeStamp){
-		var userExpl;
+		var userExpl = null;
 		this.explorations.forEach(function(expl){
 			if (expl.timeStamp.localeCompare(timeStamp)==0){
 				userExpl = expl;
@@ -97,6 +97,7 @@ function logon(name){
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
 
+
 	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
 		updateSideBar();
@@ -109,7 +110,7 @@ function logout(){
 	updateSideBar();
 
 	disableAction("record");
-
+	playProgressBar.style.display = "none";
 	resetNotificationLable("none");
 	document.getElementById("notification-selector").style.display = "none";
 	document.getElementById("user-input").value = "";
@@ -371,8 +372,8 @@ function setExplorationIsOld(expl){
 		type: 'POST',
 		url: "setExplorationIsOld",
 		data: JSON.stringify({
-			userName: currentUser.name, 
-			timeStamp: expl.timeStamp 
+			userName: currentUser.name,
+			timeStamp: expl.timeStamp
 		}),
 		contentType: "application/json",
 		success: function(response){ console.log(response); }, //callback when ajax request finishes

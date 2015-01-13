@@ -95,6 +95,8 @@ function Exploration() {
 		return this.firstEventTime === exploration.firstEventTime;
 	}
 	this.getDuration = function(){
+		if(this.events.length == 0)
+			return 0;
 		return  this.events[this.events.length-1].time;//return millisecond
 
 	}
@@ -225,26 +227,22 @@ function playExploration(exploration){
 		paused ? resumeAudio() : playAudio(exploration.getAudio());
 	}
 
-	// update to show exploration has been played
-	if (selectedExploration.isNew
-		&& !selectedExploration.equals(currentUser.getCurrentExploration())){
+//	update to show exploration has been played
+	if(currentUser.getExploration(selectedExploration.timeStamp)){
 		setExplorationIsOld(selectedExploration);
 	}
-	// updates GUI
+	selectedExploration.isNew = false;
+
+//	updates GUI
 	updateNotifications(currentUser);
 	notificationSelector.style.display = "none";
-	
+
 	playing = true;
-	paused = false;
 }
 
 // plays audio from a blob
 function playAudio(audioBlob){	
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
-	audioElem.play();
-}
-
-function resumeAudio(){
 	audioElem.play();
 }
 
@@ -366,6 +364,8 @@ function saveExploration() {
 			contentType: "application/json"
 		});
 	}
+	currentUser.addExploration(expl);
+
 }
 
 // disables an action (currently button)

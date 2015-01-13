@@ -51,7 +51,11 @@ $('#scrubber')
 	// what percent across the rect is the mouse?
 	// multiply that by the length of the data to get the index
 	if(selectedExploration==null)return;
-	var scrub_index = Math.ceil(xpos/progressWidth*selectedExploration.events.length);
+	currentIndex = Math.ceil(xpos/progressWidth*selectedExploration.events.length);
+	if(selectedExploration.events[currentIndex].type=="travel"){
+		var cityName = selectedExploration.events[currentIndex].body;
+	}
+
 	d3.select("#mouseline")
 	.style("opacity",1)
 	.attr("x1",xpos)
@@ -59,7 +63,7 @@ $('#scrubber')
 	d3.select("#mousetext")
 	.style("opacity",1)
 	.attr("x",xpos+5)
-	.text("event: ["+currentIndex+"]");
+	.text("City: "+ cityName);
 })
 .on("mouseout",function(e) {
 	d3.select("#mouseline").style("opacity",0);
@@ -79,6 +83,8 @@ $('#scrubber')
 });
 // simple play, pause, replay stuff
 d3.select("#play-control").on("click",function() {
+
+	if(selectedExploration==null)return;
 	currentClass = $(this).attr("class");
 	if (currentClass == "play") {
 		if(selectedExploration==null)return;
@@ -94,8 +100,7 @@ d3.select("#play-control").on("click",function() {
 		if(selectedExploration==null)return;
 		$(this).removeClass("replay").addClass("pause");
 		currentIndex = 0;
-		startPlayBack(selectedExploration);
-		console.log("progressBar:requestStop: "+requestStop);
+		playExploration(selectedExploration);
 		clearInterval(animation);
 		animation = setInterval(function(){ play() }, progressBarSpeed);
 	}

@@ -12,6 +12,8 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	logonButton = document.getElementById("logon-button"),
 	delButton = document.getElementById("delete-button"),
 	messageBar = document.getElementById("percent"),
+	playProgressBar = document.getElementById("play-progress"),
+	scrubber = document.getElementById("scrubber");
 	notificationSelector = document.getElementById("notification-selector");
 
 //explorations
@@ -112,6 +114,3 @@ delButton.onclick = function(){
 
 	deselectExploration();
 };
-
-// INIT
-resetExplorations();
