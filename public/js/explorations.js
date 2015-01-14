@@ -86,8 +86,10 @@ function Exploration() {
 
 	this.equals = function(exploration){
 		if (exploration == null) return false;
-		return this.firstEventTime === exploration.firstEventTime;
+		return this.userName === exploration.userName
+			&& this.timeStamp === exploration.timeStamp;
 	}
+
 	this.getDuration = function(){
 		if(this.events.length == 0)
 			return 0;
@@ -144,7 +146,7 @@ function startRecording() {
 //ends recording of user navigation
 function stopRecording() {
 	// if there is no recording, do nothing
-	if (!currentUser.currentExpl)
+	if (!currentUser.currentExpl || !recording)
 		return;
 
 	// removes event listeners which are recording user navigation.
@@ -245,6 +247,11 @@ function playExploration(exploration){
 function playAudio(audioBlob){	
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
+}
+
+// assumes there is aleady audio data loaded into audioElem
+function resumeAudio(){
+	audioElem.play();	
 }
 
 //stops the playback of an exploration
@@ -360,14 +367,12 @@ function saveExploration() {
 			data: JSON.stringify({expl: exploration, timeStamp: ""+exploration.timeStamp}),
 			success: function(response){
 				console.log("Saved successful"+ exploration.timeStamp);
-				selectExploration(exploration);
-				currentUser.explorations.push(selectedExploration);
+				currentUser.addExploration(selectedExploration);
 				updateExplorationChooser();
 			},
 			contentType: "application/json"
 		});
 	}
-	currentUser.addExploration(expl);
 }
 
 // disables an action (currently button)
@@ -404,7 +409,11 @@ function deleteExploration(expl){
 	$.ajax({
 		type: 'POST',
 		url: "deleteExploration",
-		data: JSON.stringify({expl: expl, userName: currentUser.name}),
+		data: JSON.stringify({
+			userName: expl.userName,
+			timeStamp: expl.timeStamp,
+			hasAudio: expl.hasAudio()
+		}),
 		contentType: "application/json",
 		success: function(response){
 			currentUser.removeExploration(expl);

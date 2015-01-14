@@ -96,7 +96,6 @@ delButton.onclick = function(){
 	if(currentUser.explorations.indexOf(selectedExploration)<0){
 		return;
 	}
-	console.log(selectedExploration);
 	deleteExploration(selectedExploration);
 
 	deselectExploration();

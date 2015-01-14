@@ -67,10 +67,10 @@ function User(name, explorations){
 
 	// removes the first exploration from the user
 	this.removeExploration = function(exploration){
-		for (var i = 0; i < exploration.length; i++){
-			if (explorations[i].equals(exploration))
-				explorations.splice(i, 1);
-				return;
+		for (var i = 0; i < this.explorations.length; i++){
+			if (this.explorations[i].equals(exploration))
+				this.explorations.splice(i, 1);
+				return true;
 		}
 	}
 }

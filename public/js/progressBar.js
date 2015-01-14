@@ -149,14 +149,14 @@ function ProgressBar(){
 
 			function showTravelText(mouseEvent){
 				var travelId = mouseEvent.target.id;
-				d3.select("#" + travelId)
+				progess.select("#" + travelId)
 					.append("text")
 					.attr("id", travelId + "-text")
 					.attr("y", -12)
 					.text(travelId);
 			}
 			function removeTravelText(mouseEvent){
-				d3.remove("#" + mouseEvent.id);
+				progess.remove("#" + mouseEvent.id);
 			}
 
 			progress.style.visibility = "visible";

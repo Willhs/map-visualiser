@@ -96,25 +96,6 @@ app.get("/getUserExplorations", function(req, res){
     		var audioPath = exploration.audio;
     		var fd = fs.readFileSync(audioPath, "binary");
     		var ascii = btoa(fd);
-	    	// expl.audio contains the path of the audio file
-	    	/*var stats = fs.statSync(audioPath);
- 			var fileSizeInBytes = stats["size"];
-	    	var buffer = new Buffer(fileSizeInBytes);
-	    	var fd = fs.openSync(audioPath, "r");
-	    	var length = fs.readSync(fd, buffer, 0, fileSizeInBytes, 0);
-	    	var audioArrayBuffer = toArrayBuffer(buffer);
-
-	    	function toArrayBuffer(buffer) {
-			    var view = [];
-			    for (var i = 0; i < buffer.length; ++i) {
-			        view.push(buffer[i]);
-			    }
-			    return view;
-			}
-
-	    	console.log("audio file length: " + audioArrayBuffer.length);
-				*/
-	    	// set expl.audio to the audio data
 	    	exploration.audio = ascii;
     	}
 
@@ -169,9 +150,10 @@ app.post('/postExploration', function(req, res){
 app.post("/deleteExploration", function(req, res){
 	console.log("delete exploration");
 
-	var delExpl = req.body;
-	var expl = delExpl.expl;
-	var userName = delExpl.userName;
+	var userName = req.body.userName;
+	var timeStamp = req.body.timeStamp;
+	var hasAudio = req.body.hasAudio;
+
 	var path = USER_PATH;
 	ensureDirExists(path);
 	path += userName + "/";
@@ -186,10 +168,15 @@ app.post("/deleteExploration", function(req, res){
 		if (fs.lstatSync(filePath).isDirectory())
 			return; // if the file is a directory
 		var exploration = JSON.parse(fs.readFileSync(filePath));
-		if (expl.timeStamp.localeCompare(exploration.timeStamp)==0){
-			fs.unlink(filePath);
+		if (timeStamp.localeCompare(exploration.timeStamp)==0){
+			// found match
+			fs.unlinkSync(filePath);
+
+			// delete audio file if there is one
+			if (hasAudio){
+				fs.unlinkSync(exploration.audio);
+			}
 			res.sendStatus(200);
-			return;
 		}
 	});
 });
@@ -360,12 +347,11 @@ app.post("/deleteAnnotation", function(req, res){
 	annotationFiles.forEach(function(filename){
 		var inputAnnotation = JSON.parse(fs.readFileSync(path + filename));
 
-		//console.log(JSON.stringify(annotation) + "\n" + JSON.stringify(inputAnnotation) + "\n\n");
 		// if annotations are equal, delete the file
 		if (annotation.userName === inputAnnotation.userName
 				&&annotation.timestamp === inputAnnotation.timestamp
 				&& annotation.text === inputAnnotation.text){
-			fs.unlink(path + filename);
+			fs.unlinkSync(path + filename);
 			res.sendStatus(200); // success code
 		}
 	});
