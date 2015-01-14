@@ -8,6 +8,8 @@ var recording = false,
 
 var audioElem = document.getElementById("exploration-audio");
 
+var progressBar = new ProgressBar;
+
 //constructor for Event objects
 function Event(type, body, time){
 	this.type = type;
@@ -15,8 +17,7 @@ function Event(type, body, time){
 	this.time = time; // time that event occured at
 }
 
-//a record of an exploration of the visualisation
-
+// an exploration of the visualisation
 function Exploration() {
 	this.name = generateDefaultExplName();
 	this.userName = (currentUser ? currentUser.name : null);
@@ -54,13 +55,6 @@ function Exploration() {
 	this.setAudio = function(audio){
 		this.audio = audio;
 	}
-
-	this.hasNextEvent = function (event){
-		if (this.events.indexOf(event) >= this.events.length-1){
-			return false;
-		}
-		return true;
-	};
 
 	this.nextEvent = function (event){
 		if (!isNextEvent(event)){
@@ -128,13 +122,14 @@ function startRecording() {
 	currentUser.currentExpl = new Exploration();
 	selectExploration(currentUser.currentExpl); // the current recording
 
+	// add start event
+	currentUser.getCurrentExploration().addEvent("start", "");
+
 	// starts recording audio
 	if (audioRecorder)
 		startAudioRecording();
 	// shows that recording is in progess
-	addRecordingGraphics();
-
-	recording = true;
+	addRecordingGraphics();	
 
 	changeButtonColour("record", true);
 	// user can now stop the recording and do save or play immediately
@@ -142,6 +137,8 @@ function startRecording() {
 	disableAction("pause");
 	disableAction("save");
 	disableAction("play");
+
+	recording = true;
 }
 
 //ends recording of user navigation
@@ -160,6 +157,8 @@ function stopRecording() {
 		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
 	}
 
+	currentUser.getCurrentExploration().addEvent("end", "");
+
 	if (audioRecorder)
 		stopAudioRecording();
 
@@ -172,6 +171,7 @@ function stopRecording() {
 	removeRecordingGraphics();
 
 	recording = false;
+	progressBar.load(currentUser.getCurrentExploration());
 
 	console.log("Recorded " + currentUser.currentExpl.numEvents() + " events");
 }
@@ -187,19 +187,19 @@ function playExploration(exploration){
 		return; // if no events, do nothing.
 	}
 	function launchEvent(i){
+		currentIndex = i;		
 		var currentEvent = exploration.getEvent(i);
-		var nextEvent = exploration.getEvent(i+1);
-		currentIndex = i;
 
 		// TODO: find better stop solution
 		// stop button has been pushed or playback has been ended
-		if (requestedStop || !exploration.hasNextEvent(currentEvent)){
+		if (requestedStop || currentEvent.type == "end"){
 			stopPlayback(exploration);
 		}
 		else if (requestedPause){
 			pausePlayback(exploration);
 		}
 		else { // continue playing events
+
 			switch (currentEvent.type){
 			case ("travel"):
 				var location = currentEvent.body;
@@ -212,6 +212,7 @@ function playExploration(exploration){
 				break;
 			}
 
+			var nextEvent = exploration.getEvent(i+1);
 			var delay = nextEvent.time - currentEvent.time;
 			setTimeout(launchEvent, delay, i + 1);
 		}
@@ -223,19 +224,19 @@ function playExploration(exploration){
 	disableAction("play");
 
 	launchEvent(currentIndex); // launch the first event
+
 	if (exploration.hasAudio()){
 		paused ? resumeAudio() : playAudio(exploration.getAudio());
 	}
-
-//	update to show exploration has been played
+	// update to show exploration has been played
 	if(currentUser.getExploration(selectedExploration.timeStamp)){
 		setExplorationIsOld(selectedExploration);
 	}
 	selectedExploration.isNew = false;
 
-//	updates GUI
+	// updates GUI
 	updateNotifications(currentUser);
-	notificationSelector.style.display = "none";
+	progressBar.updateState();
 
 	playing = true;
 }
@@ -284,23 +285,23 @@ function updatePlaybackStopped(){
 	enableAction("record");
 	disableAction("pause");
 	disableAction("stop");
+	progressBar.updateState();
 	playing = false;
 }
 
 // makes an exploration selected
 function selectExploration(exploration){
 	selectedExploration = exploration;
-	progressBarSpeed = selectedExploration.getDuration/progressWidth;
-	delButton.value = "delete selected exploration";
-	playProgressBar.style.display = "block";
+	updateDeleteButton();
+	progressBar.load(selectedExploration);
 	enableAction("play");
 }
 
 // deselects current exploration
 function deselectExploration(){
 	selectedExploration = null;
-	delButton.value = "no exploration selected";
-	playProgressBar.style.display = "none";
+	updateDeleteButton();
+	progressBar.load(selectedExploration);
 }
 
 // resets to original state (no explorations selected and no recordings in progress)
@@ -367,7 +368,6 @@ function saveExploration() {
 		});
 	}
 	currentUser.addExploration(expl);
-
 }
 
 // disables an action (currently button)
@@ -387,49 +387,6 @@ function enableAction(name){
 		changeButtonColour(name, true);
 }
 
-function changeButtonColour(name, state){
-	var button = document.getElementById(name + "-exploration-button");
-
-	if (state)
-		button.src = IMAGE_PATH + name + "_on.jpeg";
-	else
-		button.src = IMAGE_PATH + name + "_off.jpeg";
-}
-
-//adds graphics to the map to show that recording is in progress.
-function addRecordingGraphics(){
-	//var points = [0, 0, width, height];
-	var borderWidth = 10;
-	var circleRadius = 20;
-	var padding = 10;
-	var bottomPadding = 10;
-	var circleCX = borderWidth + circleRadius;
-	var circleCY = borderWidth + circleRadius;
-
-	svg.append("rect")
-	.attr("id", "record-border")
-	.attr("x", 0 + borderWidth/2)
-	.attr("y", 0 + borderWidth/2)
-	.attr("width", width - borderWidth)
-	.attr("height", height - bottomPadding - borderWidth)
-	.style("stroke", "red")
-	.style("fill", "none")
-	.style("stroke-width", borderWidth);
-
-	svg.append('circle')
-	.attr("id", "record-circle")
-	.attr('cx', circleCX)
-	.attr('cy', circleCY)
-	.attr('r', circleRadius)
-	.style('fill', 'red')
-	.transition().duration();
-}
-
-// remove recording related graphics
-function removeRecordingGraphics(){
-	d3.select("#record-border").remove();
-	d3.select("#record-circle").remove();
-}
 
 //records an instance of a user action to travel to a place on the map
 function recordTravel(cityIndex){
@@ -441,4 +398,17 @@ function recordTravel(cityIndex){
 //records a user pan or zoom
 function recordMovement(){
 	currentUser.getCurrentExploration().addEvent("movement", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+function deleteExploration(expl){
+	$.ajax({
+		type: 'POST',
+		url: "deleteExploration",
+		data: JSON.stringify({expl: expl, userName: currentUser.name}),
+		contentType: "application/json",
+		success: function(response){
+			currentUser.removeExploration(expl);
+			updateExplorationChooser();
+		},
+	});
 }

@@ -7,12 +7,6 @@ body {
 	font: 0.625em/1em Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
-.map {
-	position: absolute;
-	width: 80%;
-	height: 95%;
-	top: 3px;
-}
 
 #side-bar {
 	position: fixed;
@@ -70,7 +64,8 @@ input,label {
 .exploration-button {
 	width: 40px;
 	height: 40px;
-	border: 0px;
+	border: 2px solid #000;
+	display: inline-block;
 }
 
 .location-pane {
@@ -79,8 +74,6 @@ input,label {
 
 /* Annotation stuff */
 #delete-button {
-	width: 170px;
-	height: 20px;
 }
 
 .annotation-row {
@@ -170,32 +163,6 @@ input,label {
 	overflow: scroll;
 	background-color: #fff;
 }
-/*
-.del-div {
-	position: fixed;
-	padding-right: 2px;
-	float: right;
-	left: 78%;
-	top: 76.5%;
-}
-
-.delFileDivClass {
-	position: fixed;
-	padding-right: 2px;
-	float: right;
-	left: 94%;
-	top: 40%;
-}
-
-.quickPlayDivClass {
-	position: fixed;
-	padding-right: 2px;
-	float: left;
-	left: 77%;
-	top: 76.5%;
-	width: 5px;
-	height: 5px;
-}*/
 
 #newAccount {
 	position: fixed;
@@ -244,7 +211,6 @@ input,label {
   border-radius: 20px;
   left: 20%;
   top:85%;
-  display:none;
 }
 
 #play-svg {
@@ -297,4 +263,11 @@ input,label {
   top:93%;
   position: fixed;
 
+}
+
+.map {
+	position: absolute;
+	width: 80%;
+	height: 95%;
+	top: 3px;
 }

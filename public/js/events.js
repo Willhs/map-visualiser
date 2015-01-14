@@ -11,8 +11,7 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	passwordInput = document.getElementById("password-input"),
 	logonButton = document.getElementById("logon-button"),
 	delButton = document.getElementById("delete-button"),
-	messageBar = document.getElementById("percent"),
-	playProgressBar = document.getElementById("play-progress"),
+	messageBar = document.getElementById("percent"),	
 	scrubber = document.getElementById("scrubber");
 	notificationSelector = document.getElementById("notification-selector");
 
@@ -25,11 +24,7 @@ recordExplButton.addEventListener("click", function(){
 		startRecording();
 });
 
-playExplButton.addEventListener('click', function () {
-	var lastTime = selectedExploration.getEvent(selectedExploration.events.length-1).time;
-	var firstTime = selectedExploration.getEvent(0).time
-	var totalDruation = lastTime - firstTime;
-//	progressBar.max = totalDruation;
+playExplButton.addEventListener('click', function () {	
 	playExploration(selectedExploration);
 });
 
@@ -45,15 +40,7 @@ saveExplButton.onclick = saveExploration;
 
 resetExplButton.onclick = resetExplorations;
 
-explChooser.onclick = function(){
-	if (explChooser.selectedIndex === -1)
-		return;
-
-	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
-	var userExpl = currentUser.getExploration(explTimeStamp);
-	stopRecording();
-	selectExploration(userExpl);
-};
+explChooser.onclick = updateSelectedExploration;
 
 //users
 var guestUsers = ["obama", "john", "lorde", "will"];
@@ -114,3 +101,6 @@ delButton.onclick = function(){
 
 	deselectExploration();
 };
+
+// init
+resetExplorations();

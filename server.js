@@ -182,9 +182,12 @@ app.post("/deleteExploration", function(req, res){
 
 	// find and delete the file corresponding to the annotation specified.
 	explFiles.forEach(function(filename){
-		var exploration = JSON.parse(fs.readFileSync(path + filename));
+		var filePath = path + filename;
+		if (fs.lstatSync(filePath).isDirectory())
+			return; // if the file is a directory
+		var exploration = JSON.parse(fs.readFileSync(filePath));
 		if (expl.timeStamp.localeCompare(exploration.timeStamp)==0){
-			fs.unlink(path + filename);
+			fs.unlink(filePath);
 			res.sendStatus(200);
 			return;
 		}
@@ -258,8 +261,6 @@ app.post("/setExplorationIsOld", function(req, res){
 	if (!found)
 		res.sendStatus(404); // not found
 });
-
-
 
 //check userName if match return true, if not return false
 app.post("/checkUsersFile", function(req, res){
