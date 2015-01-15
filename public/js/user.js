@@ -142,7 +142,9 @@ function loadAllExplorations(userName, cb){
 		type: 'GET',
 		url: "/getUserExplorations",
 		data: userName,
-		success: function(data) { dealWithExplorations(data, cb); },
+		success: function(data) {
+			dealWithExplorations(data, cb);
+		},
 		dataType: "json",
 		complete: function(){ console.log("get all files complete"); }
 

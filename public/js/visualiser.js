@@ -319,17 +319,12 @@ function updateScaleAndTrans(){
 
 // gets the scale from a html transform string
 function getScale(transformStr){
-	var length = transformStr.length;
-	var scale = transformStr.slice(transformStr.indexOf("scale")+6, length-1);
-	return parseFloat(scale);
+	return d3.transform(transformStr).scale[0];
 }
 
 // gets the translation from a html transform string
 function getTranslate(transformStr){
-	var length = transformStr.length;
-	var translationX = transformStr.slice(transformStr.indexOf("translate")+10, transformStr.indexOf(","));
-	var translationY = transformStr.slice(transformStr.indexOf(",")+1, transformStr.indexOf(")"));
-	return [parseFloat(translationX), parseFloat(translationY)];
+	return [d3.transform(transformStr).translate[0], d3.transform(transformStr).translate[1]];
 }
 
 // A function to reset the map view.
@@ -366,6 +361,7 @@ function setEaseFunction(index){
 function getCityIndex(name){
 	for(j = 0; j < cities.length; j++){
 		if(cities[j].properties.NAME == name){
+			console.log("return index: "+ j );
 			return j;
 		}
 	}
@@ -449,7 +445,6 @@ function getRealBounds() {
 
 	var xcenter = ((width / 2) - tx) / transforms.scale[0];
 	var ycenter = ((height / 2) - ty) / transforms.scale[0];
-
 	var xspan = width * sc / SCALE_FACTOR;
 	var yspan = height * sc / SCALE_FACTOR;
 
