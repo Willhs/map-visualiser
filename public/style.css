@@ -79,8 +79,8 @@ input,label {
 
 /* Annotation stuff */
 #delete-button {
-	width: 170px;
-	height: 20px;
+	width: 10px;
+	height: 10px;
 }
 
 .annotation-row {
@@ -142,7 +142,7 @@ input,label {
 	width: 926px;
 }
 
-.notificaiton-container {
+.notification-container {
 	position: fixed;
 	left: 63%;
 	top: 96%;
@@ -151,12 +151,13 @@ input,label {
 	border: 2px solid black;
 	font-size: 150%;
 	background-color: #ccc;
+	display: none;
 }
 
 .notification-selectors {
 	position: fixed;
 	left: 63%;
-	top: 85%;
+	top: 83%;
 	width: 250px;
 	height: 70px;
 	background-color: #fff;
@@ -169,6 +170,26 @@ input,label {
 	height: 70px;
 	overflow: scroll;
 	background-color: #fff;
+}
+
+.remove-notification{
+	position: fixed;
+	left: 76.4%;
+	top: 96.5%;
+	width:20px;
+	height:20px;
+	display: none;
+
+}
+
+.quickplay-notification{
+	position: fixed;
+	left: 77.6%;
+	top: 96.5%;
+	width:20px;
+	height:20px;
+	display: none;
+
 }
 /*
 .del-div {
@@ -187,14 +208,6 @@ input,label {
 	top: 40%;
 }
 
-.quickPlayDivClass {
-	position: fixed;
-	padding-right: 2px;
-	float: left;
-	left: 77%;
-	top: 76.5%;
-	width: 5px;
-	height: 5px;
 }*/
 
 #newAccount {
@@ -234,7 +247,8 @@ input,label {
 	left: 30%;
 }
 
-/* play grogress bar */
+/* -------- play grogress bar -------*/
+
 #play-progress {
   position: fixed;
   width: 910px;
@@ -242,7 +256,7 @@ input,label {
   background-color: #28AADE;
   height: 36px;
   border-radius: 20px;
-  left: 20%;
+  left: 10%;
   top:85%;
   display:none;
 }

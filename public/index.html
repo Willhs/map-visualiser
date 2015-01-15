@@ -60,8 +60,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<input type="text" id="username-input" placeholder='user-name'>
 				<input type="password" id="password-input" placeholder='password'>
 				<div>
-					<input type="submit" id="logon-button" class="account-submit" value="Logon">
-					<button id="create-new-account" class="account-submit">Create Account</button>
+					<input type="submit" id="logon-button" class="account-submit"
+						value="Logon">
+					<button id="create-new-account" class="account-submit">Create
+						Account</button>
 				</div>
 			</div>
 		</div>
@@ -83,6 +85,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<td><input type="image" id="save-exploration-button"
 					class="exploration-button" src="data/image/save_off.jpeg"
 					alt="javascript button"></td>
+				<td><input type="image" id="delete-exploration-button"
+					class="exploration-button" src="data/image/delete_off.jpeg"
+					alt="javascript button"></td>
 				<td><input type="image" id="reset-exploration-button"
 					class="exploration-button" src="data/image/reset_on.jpeg"
 					alt="javascript button"></td>
@@ -98,10 +103,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<p id="selected-exploration-name"></p>
 			</div>
 
-			<div>
-				<input id="delete-button" type="button" value="no exploration selected" />
-			</div>
-
 			<div id="exploration-container">
 				<select id="exploration-selector" size="0"></select>
 			</div>
@@ -112,13 +113,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 		<div>
 			<h3>
-				<label for="to" id = "to">To:</label>
+				<label for="to" id="to">To:</label>
 			</h3>
 			<input type="text" id="user-input" name="user" placeholder="UserName" />
 			<button type='button' id="submit-shared-file">Send</button>
+			<p id = "expl-sent-message"></p>
 		</div>
 		<div class='select-device'>
-			<label for='audio-source'>Audio source: </label> <select id='audio-source'></select>
+			<label for='audio-source'>Audio source: </label> <select
+				id='audio-source'></select>
 		</div>
 
 		<div id="location-div" class="location-pane">
@@ -130,7 +133,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<!-- will be populated by user annotations -->
 			</div>
 			<div id="annotation-input-container">
-				<!-- input will be added --></div>
+				<!-- input will be added -->
+			</div>
 		</div>
 	</div>
 
@@ -141,12 +145,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				src="http://localhost:3000/"> </iframe>
 		</div>
 	</div> -->
+	<div id="notification" class="notification-container"></div>
 	<div>
-		<div id="notification" class="notification-container"
-			style="display: none"></div>
-		<div>
-			<select id="notification-selector" class="notification-selectors" size="5"></select>
-		</div>
+		<input id="remove-notification" class="remove-notification"
+			type="image" src="data/image/delete.png" alt="javascript button">
+	</div>
+	<div>
+		<input id="quickplay-notification" class="quickplay-notification"
+			type="image" src="data/image/play.jpeg" alt="javascript button">
+	</div>
+	<div>
+		<select id="notification-selector" class="notification-selectors"
+			size="5"></select>
 	</div>
 	<div id="play-progress">
 		<div id="play-control" class="play"></div>

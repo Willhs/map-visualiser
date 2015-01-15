@@ -114,6 +114,7 @@ function logout(){
 	resetNotificationLable("none");
 	document.getElementById("notification-selector").style.display = "none";
 	document.getElementById("user-input").value = "";
+	document.getElementById("expl-sent-message").innerHTML = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -150,13 +151,12 @@ function loadAllExplorations(userName, cb){
 	function dealWithExplorations(explorations, cb){
 		// input arrays contain objects with exploration data, but no methods.
 		var allExplorationsData = explorations;
-		var explorationCount = allExplorationsData.length;
-
+		var explorationCount = explorations.length;
 		if (explorationCount == 0){
-			$("#noOfFilesLoaded").html("no exploration loaded");
+			$("#files-loaded").html("no exploration loaded");
 		}
 		else {
-			$("#noOfFilesLoaded").html("have "+ explorationCount + " explorations loaded");
+			$("#files-loaded").html("have "+ explorationCount + " explorations loaded");
 		}
 
 		// transfer all data into new Exploration objects (so that methods can be used on them).
@@ -206,8 +206,8 @@ function updateExplorationChooser(){
 	}
 
 	var explorations = userLoggedOn() ? currentUser.getExplorations() : [];
-	if(explorations.length===0){
-		$("#noOfFilesLoaded").html("no explorations loaded");
+	if(explorations.length==0){
+		$("#files-loaded").html("no explorations loaded");
 		return;
 	}
 	explorations.forEach(function(exploration, index){
@@ -249,8 +249,7 @@ function updateNotifications(){
 	sharedExpl.forEach(function(expl){
 		if(expl.isNew) newCount++;
 	});
-	if(newCount!=0){
-
+	if(newCount>0){
 		$("#notification").html("have "+ newCount + " new explorations.");
 		resetNotificationLable("block");
 	}
@@ -310,14 +309,16 @@ function deleteExploration(expl){
 		data: JSON.stringify({expl: expl, userName: currentUser.name}),
 		contentType: "application/json",
 		success: function(response){
-			console.log("del expl: "+response);
-			console.log(selectedExploration);
 
 			var index = currentUser.explorations.indexOf(expl);
 			if(index<0) return;
 			currentUser.explorations.splice(index,1);
 			updateExplorationChooser();
 			disableAction("play");
+			deselectExploration();
+			updateNotifications();
+			updateSideBar();
+
 		}, //callback when ajax request finishes
 	});
 }
@@ -339,6 +340,7 @@ function createAccount(name, pw){
 
 function showListNotifications(){
 	var notificationChooser= document.getElementById("notification-selector");
+	var notificationContainer= document.getElementById("notification");
 	while(notificationChooser.firstChild){//remove old labels
 		notificationChooser.removeChild(notificationChooser.firstChild);
 	}
@@ -347,32 +349,37 @@ function showListNotifications(){
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
 			if(expl.isNew){
+
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
 
 				explorationName = expl.userName +" "+ expl.timeStamp.substr(0,24)+" "+expl.timeStamp.substr(34,40);
-				newOption.innerHTML = explorationName;
-				newOption.onclick  = function(){
-					selectExploration(newSharedExpls[index]);
-					stopRecording();
-					enableAction("play");
-					enableAction("reset");
 
-				};
+				newOption.innerHTML = explorationName;
+				newOption.addEventListener("click", function(){
+					//selectExploration(newSharedExpls[index]);
+					//var selectedForQuickPlay = {};
+					//jQuery.extend(selectedForQuickPlay,expl);
+					//document.getElementById("quick-play").style.display = "block"
+					//console.log(selectedForQuickPlay.timeStamp);
+					currentUser.setCurrentExploration(expl);
+				});
+
 				notificationChooser.appendChild(newOption);
 			}
+
 		});
 	}
 }
 
 function setExplorationIsOld(expl){
-	expl.isNew = false;
 	$.ajax({
 		type: 'POST',
 		url: "setExplorationIsOld",
 		data: JSON.stringify({
-			userName: currentUser.name,
+			currentUserName:currentUser.name,
+			otherUserName:expl.userName,
 			timeStamp: expl.timeStamp
 		}),
 		contentType: "application/json",
@@ -385,15 +392,19 @@ function divHideShow(div){
 
 	if (div.style.display.localeCompare("block")==0){
 		div.style.display = "none";
+		removeNotification.style.display = "none";
+		quickplayNotification.style.display = "none";
 	}
 	else{
 		div.style.display = "block";
-		setTimeout(function () {div.style.display = "none";}, 3000);
+		//setTimeout(function () {div.style.display = "none";}, 5000);
+		removeNotification.style.display = "block";
+		quickplayNotification.style.display = "block";
 	}
 }
 //reset notificatoins lable when logoff
 function resetNotificationLable(state){
-	document.getElementById("notification").style.display = state;
+	notificationLabel.style.display = state;
 }
 
 function userLoggedOn(){

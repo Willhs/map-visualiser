@@ -228,20 +228,24 @@ function playExploration(exploration){
 	}
 
 //	update to show exploration has been played
-	if(currentUser.getExploration(selectedExploration.timeStamp)){
-		setExplorationIsOld(selectedExploration);
+	if(selectedExploration){
+		if(currentUser.getExploration(selectedExploration.timeStamp)){
+			setExplorationIsOld(selectedExploration);
+		}
+		selectedExploration.isNew = false;
 	}
-	selectedExploration.isNew = false;
+
 
 //	updates GUI
 	updateNotifications(currentUser);
 	notificationSelector.style.display = "none";
-
+	removeNotification.style.display = "none";
+	quickplayNotification.style.display = "none";
 	playing = true;
 }
 
 // plays audio from a blob
-function playAudio(audioBlob){	
+function playAudio(audioBlob){
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
 }
@@ -255,7 +259,7 @@ function requestPause(exploration){
 	requestedPause = true;
 }
 
-function stopPlayback(exploration){	
+function stopPlayback(exploration){
 	requestedStop = false, // reset this variable (sigh)
 	currentIndex = 0;
 
@@ -269,7 +273,7 @@ function stopPlayback(exploration){
 
 function pausePlayback(exploration){
 	requestedPause = false;
-	paused = true;	
+	paused = true;
 
 	if (exploration.hasAudio())
 		audioElem.pause();
@@ -291,16 +295,16 @@ function updatePlaybackStopped(){
 function selectExploration(exploration){
 	selectedExploration = exploration;
 	progressBarSpeed = selectedExploration.getDuration/progressWidth;
-	delButton.value = "delete selected exploration";
 	playProgressBar.style.display = "block";
 	enableAction("play");
+	enableAction("delete");
 }
 
 // deselects current exploration
 function deselectExploration(){
 	selectedExploration = null;
-	delButton.value = "no exploration selected";
 	playProgressBar.style.display = "none";
+	disableAction("delete");
 }
 
 // resets to original state (no explorations selected and no recordings in progress)
@@ -360,8 +364,12 @@ function saveExploration() {
 			success: function(response){
 				console.log("Saved successful"+ exploration.timeStamp);
 				selectExploration(exploration);
-				currentUser.explorations.push(selectedExploration);
+				if(currentUser.getExploration(selectedExploration.timeStamp)==null){
+					currentUser.explorations.push(selectedExploration);
+				}
 				updateExplorationChooser();
+
+
 			},
 			contentType: "application/json"
 		});

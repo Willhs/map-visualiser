@@ -94,7 +94,7 @@ d3.select("#play-control").on("click",function() {
 	} else if (currentClass == "pause") {
 		if(selectedExploration==null)return;
 		$(this).removeClass("pause").addClass("play");
-		pausePlayBack(selectedExploration);
+		requestPause(selectedExploration);
 		clearInterval(animation);
 	} else if (currentClass == "replay") {
 		if(selectedExploration==null)return;
