@@ -143,9 +143,7 @@ function loadAllExplorations(userName, cb){
 		url: "/getUserExplorations",
 		data: userName,
 		success: function(data) { dealWithExplorations(data, cb); },
-		dataType: "json",
-		complete: function(){ console.log("get all files complete"); }
-
+		dataType: "json"
 	});
 
 	function dealWithExplorations(explorations, cb){
@@ -245,6 +243,5 @@ function updateSelectedExploration(){
 
 	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
 	var userExpl = currentUser.getExploration(explTimeStamp);
-	stopRecording();
 	selectExploration(userExpl);
 }

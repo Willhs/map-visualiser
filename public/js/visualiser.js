@@ -25,8 +25,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
 var IMAGE_PATH = "data/image/";
 
 var width = $(window).width() * 0.8,
-height = $(window).height(),
-centered;
+	height = $(window).height(),
+	centered;
 
 var active;
 //How far we should scale into a selection
@@ -88,14 +88,13 @@ d3.json("data/map/kaz.json", function(error, json) {
 	// set colour
 	.attr("fill","#D0FA58")
 	.attr("stroke", "#FF0040");
-
 });
 
 // Add cities
 d3.json("data/map/kaz_places.json", function(error, json){
 	cities = json.features;
 	// places group to contain all elements of a place
-	var places = g.selectAll("place")
+	var places = g.selectAll(".place")
 	.data(cities)
 	.enter()
 	.append("g")
@@ -117,8 +116,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	// Align labels to minimize overlaps
 	g.selectAll(".place-label")
 	.attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
-	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
-
+	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });	
 });
 
 // updates info bar to show information about the location and allows user to add annotations

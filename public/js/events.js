@@ -24,16 +24,18 @@ recordExplButton.addEventListener("click", function(){
 		startRecording();
 });
 
-playExplButton.addEventListener('click', function () {	
-	playExploration(selectedExploration);
+playExplButton.addEventListener('click', function () {
+	if (!paused)
+		startPlayback(selectedExploration);
+	else resumePlayback(selectedExploration);
 });
 
 pauseExplButton.addEventListener('click', function(){
-	requestPause(selectedExploration);
+	pausePlayback(selectedExploration);
 });
 
 stopExplButton.addEventListener('click', function(){
-	requestStop(selectedExploration);
+	stopPlayback(selectedExploration);
 });
 
 saveExplButton.onclick = saveExploration;
