@@ -311,20 +311,10 @@ function move(city, cb) {
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
-	var scale = getScale(g.attr("transform"));
-	var translate = getTranslate(g.attr("transform"));
+	var scale = d3.transform(g.attr("transform")).scale[0];
+	var translate = [d3.transform(g.attr("transform")).translate[0], d3.transform(g.attr("transform")).translate[1]];
 	zoom.scale(scale);
 	zoom.translate(translate);
-}
-
-// gets the scale from a html transform string
-function getScale(transformStr){
-	return d3.transform(transformStr).scale[0];
-}
-
-// gets the translation from a html transform string
-function getTranslate(transformStr){
-	return [d3.transform(transformStr).translate[0], d3.transform(transformStr).translate[1]];
 }
 
 // A function to reset the map view.
@@ -361,7 +351,6 @@ function setEaseFunction(index){
 function getCityIndex(name){
 	for(j = 0; j < cities.length; j++){
 		if(cities[j].properties.NAME == name){
-			console.log("return index: "+ j );
 			return j;
 		}
 	}
