@@ -1,10 +1,10 @@
 
-// TODO: don't use global variable for these?
+//TODO: don't use global variable for these?
 var recording = false,
-	playing = false,
-	paused = false,
-	requestedStop = false,
-	requestedPause = false;
+playing = false,
+paused = false,
+requestedStop = false,
+requestedPause = false;
 
 var audioElem = document.getElementById("exploration-audio");
 
@@ -178,8 +178,8 @@ function stopRecording() {
 
 var currentIndex = 0;
 
-// plays OR resumes an exploration
-// PRE: no other exploration is being played
+//plays OR resumes an exploration
+//PRE: no other exploration is being played
 function playExploration(exploration){
 
 	if (!exploration || exploration.numEvents() == 0) {
@@ -203,13 +203,13 @@ function playExploration(exploration){
 			switch (currentEvent.type){
 			case ("travel"):
 				var location = currentEvent.body;
-				goToLoc(location);
-			   	break;
+			goToLoc(location);
+			break;
 			case ("movement"):
 				var transform = currentEvent.body;
-				g.attr("transform", transform);
-				updateScaleAndTrans();
-				break;
+			g.attr("transform", transform);
+			updateScaleAndTrans();
+			break;
 			}
 
 			var delay = nextEvent.time - currentEvent.time;
@@ -244,7 +244,7 @@ function playExploration(exploration){
 	playing = true;
 }
 
-// plays audio from a blob
+//plays audio from a blob
 function playAudio(audioBlob){
 	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 	audioElem.play();
@@ -281,7 +281,7 @@ function pausePlayback(exploration){
 	updatePlaybackStopped();
 }
 
-// updates GUI and other things..
+//updates GUI and other things..
 function updatePlaybackStopped(){
 	enableAction("play");
 	enableAction("reset");
@@ -291,23 +291,27 @@ function updatePlaybackStopped(){
 	playing = false;
 }
 
-// makes an exploration selected
+//makes an exploration selected
 function selectExploration(exploration){
 	selectedExploration = exploration;
 	progressBarSpeed = selectedExploration.getDuration/progressWidth;
 	playProgressBar.style.display = "block";
 	enableAction("play");
-	enableAction("delete");
+	if(currentUser.getExplorations().indexOf(exploration)>=0){
+		console.log("enable");
+		enableAction("delete");
+
+	}
 }
 
-// deselects current exploration
+//deselects current exploration
 function deselectExploration(){
 	selectedExploration = null;
 	playProgressBar.style.display = "none";
 	disableAction("delete");
 }
 
-// resets to original state (no explorations selected and no recordings in progress)
+//resets to original state (no explorations selected and no recordings in progress)
 function resetExplorations() {
 	if (playing)
 		requestStop(selectedExploration);
@@ -330,7 +334,7 @@ function resetExplorations() {
 	}
 }
 
-// PRE: current exploration != null
+//PRE: current exploration != null
 function saveExploration() {
 	stopRecording();
 	disableAction("save"); // disables until the current recording changes
@@ -378,14 +382,14 @@ function saveExploration() {
 
 }
 
-// disables an action (currently button)
+//disables an action (currently button)
 function disableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = true;
 	changeButtonColour(name, false);
 }
 
-// enable an action
+//enable an action
 function enableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = false;
@@ -433,7 +437,7 @@ function addRecordingGraphics(){
 	.transition().duration();
 }
 
-// remove recording related graphics
+//remove recording related graphics
 function removeRecordingGraphics(){
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();

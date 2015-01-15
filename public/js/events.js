@@ -70,6 +70,9 @@ guestUsers.forEach(function(userName){
 	document.getElementById(userName).onclick= function() {
 		userNameInput.value = userName;
 		passwordInput.value = "password";
+		disableAction("record");
+		disableAction("play");
+		disableAction("save");
 	};
 });
 
