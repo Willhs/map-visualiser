@@ -215,25 +215,10 @@ function move(city, cb) {
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
-	var scale = getScale(g.attr("transform"));
-	var translate = getTranslate(g.attr("transform"));
+	var scale = d3.transform(g.attr("transform")).scale[0];
+	var translate = [d3.transform(g.attr("transform")).translate[0], d3.transform(g.attr("transform")).translate[1]];
 	zoom.scale(scale);
 	zoom.translate(translate);
-}
-
-// gets the scale from a html transform string
-function getScale(transformStr){
-	var length = transformStr.length;
-	var scale = transformStr.slice(transformStr.indexOf("scale")+6, length-1);
-	return parseFloat(scale);
-}
-
-// gets the translation from a html transform string
-function getTranslate(transformStr){
-	var length = transformStr.length;
-	var translationX = transformStr.slice(transformStr.indexOf("translate")+10, transformStr.indexOf(","));
-	var translationY = transformStr.slice(transformStr.indexOf(",")+1, transformStr.indexOf(")"));
-	return [parseFloat(translationX), parseFloat(translationY)];
 }
 
 // A function to reset the map view.
@@ -353,7 +338,6 @@ function getRealBounds() {
 
 	var xcenter = ((width / 2) - tx) / transforms.scale[0];
 	var ycenter = ((height / 2) - ty) / transforms.scale[0];
-
 	var xspan = width * sc / SCALE_FACTOR;
 	var yspan = height * sc / SCALE_FACTOR;
 

@@ -279,3 +279,12 @@ function makeAnnotationInput(container){
 	container.appendChild(annInput);
 	annInput.focus();
 }
+
+function changeButtonColour(name, state){
+	var button = document.getElementById(name + "-exploration-button");
+
+	if (state)
+		button.src = IMAGE_PATH + name + "_on.jpeg";
+	else
+		button.src = IMAGE_PATH + name + "_off.jpeg";
+}

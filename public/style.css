@@ -7,6 +7,12 @@ body {
 	font: 0.625em/1em Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
+.map {
+	position: absolute;
+	width: 80%;
+	height: 95%;
+	top: 3px;
+}
 
 #side-bar {
 	position: fixed;
@@ -74,6 +80,8 @@ input,label {
 
 /* Annotation stuff */
 #delete-button {
+	width: 10px;
+	height: 10px;
 }
 
 .annotation-row {
@@ -135,7 +143,7 @@ input,label {
 	width: 926px;
 }
 
-.notificaiton-container {
+.notification-container {
 	position: fixed;
 	left: 63%;
 	top: 96%;
@@ -144,12 +152,13 @@ input,label {
 	border: 2px solid black;
 	font-size: 150%;
 	background-color: #ccc;
+	display: none;
 }
 
 .notification-selectors {
 	position: fixed;
 	left: 63%;
-	top: 85%;
+	top: 83%;
 	width: 250px;
 	height: 70px;
 	background-color: #fff;
@@ -162,6 +171,26 @@ input,label {
 	height: 70px;
 	overflow: scroll;
 	background-color: #fff;
+}
+
+.remove-notification{
+	position: fixed;
+	left: 76.4%;
+	top: 96.5%;
+	width:20px;
+	height:20px;
+	display: none;
+
+}
+
+.quickplay-notification{
+	position: fixed;
+	left: 77.6%;
+	top: 96.5%;
+	width:20px;
+	height:20px;
+	display: none;
+
 }
 
 #newAccount {
@@ -246,28 +275,4 @@ input,label {
 }
 #play-control.replay:hover {
   background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -72px;
-}
-
-#scrubber {
-  width:873px;
-  height:36px;
-  position:absolute;
-  top:0;
-  left:37px;
-}
-#display-data {
-  font-family: "arial","helvetica";
-  font-size: 30px;
-  color:#666;
-  left: 30%;
-  top:93%;
-  position: fixed;
-
-}
-
-.map {
-	position: absolute;
-	width: 80%;
-	height: 95%;
-	top: 3px;
 }

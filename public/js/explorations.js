@@ -89,7 +89,6 @@ function Exploration() {
 		return this.userName === exploration.userName
 			&& this.timeStamp === exploration.timeStamp;
 	}
-
 	this.getDuration = function(){
 		if(this.events.length == 0)
 			return 0;
@@ -131,7 +130,7 @@ function startRecording() {
 	if (audioRecorder)
 		startAudioRecording();
 	// shows that recording is in progess
-	addRecordingGraphics();	
+	addRecordingGraphics();
 
 	changeButtonColour("record", true);
 	// user can now stop the recording and do save or play immediately
@@ -197,6 +196,12 @@ function startPlayback(exploration){
 	// launch the first event
 	launchEvents(exploration, currentEventIndex); 
 
+	enableAction("stop");
+	enableAction("pause");
+	disableAction("record");
+	disableAction("play");
+
+	launchEvent(currentIndex); // launch the first event
 	if (exploration.hasAudio()){
 		playAudio(exploration.getAudio());
 	}
@@ -387,7 +392,10 @@ function saveExploration() {
 			data: JSON.stringify({expl: exploration, timeStamp: ""+exploration.timeStamp}),
 			success: function(response){
 				console.log("Saved successful"+ exploration.timeStamp);
-				currentUser.addExploration(selectedExploration);
+				selectExploration(exploration);
+				if(currentUser.getExploration(selectedExploration.timeStamp)==null){
+					currentUser.explorations.push(selectedExploration);
+				}
 				updateExplorationChooser();
 			},
 			contentType: "application/json"
@@ -411,7 +419,6 @@ function enableAction(name){
 	if (!name.localeCompare("record") == 0)
 		changeButtonColour(name, true);
 }
-
 
 //records an instance of a user action to travel to a place on the map
 function recordTravel(cityIndex){
