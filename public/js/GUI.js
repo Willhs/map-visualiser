@@ -93,8 +93,8 @@ function updateLogonElements(){
 
 function updateDeleteButton(){	
 	if (selectedExploration)
-		delButton.style.visibility = "visible";
-	else delButton.style.visibility = "hidden";
+		deleteExplButton.style.visibility = "visible";
+	else deleteExplButton.style.visibility = "hidden";
 }
 
 

@@ -201,7 +201,6 @@ function startPlayback(exploration){
 	disableAction("record");
 	disableAction("play");
 
-	launchEvent(currentIndex); // launch the first event
 	if (exploration.hasAudio()){
 		playAudio(exploration.getAudio());
 	}
@@ -257,7 +256,9 @@ function playAudio(audioBlob){
 }
 
 // assumes there is aleady audio data loaded into audioElem
-function resumeAudio(){
+// resumes from current position + skipped time (skip arg)
+function resumeAudio(skip){
+	audioElem.position = audioElem.position + skip/1000;
 	audioElem.play();
 }
 
@@ -297,7 +298,7 @@ function resumePlayback(exploration){
 	setTimeout(launchEvents(exploration, currentEventIndex+1), timeTilNextEvent);
 	
 	if (exploration.hasAudio())
-		resumeAudio();
+		resumeAudio(timeTilNextEvent);
 
 	progressBar.updateProgress(currentEvent.time + timeIntoEvent, 
 		timeTilNextEvent);
@@ -323,8 +324,9 @@ function updatePlaybackStopped(){
 
 // makes an exploration selected
 function selectExploration(exploration){
+	deselectExploration();
 	selectedExploration = exploration;
-	updateDeleteButton();
+	updateDeleteButton();		
 	progressBar.load(selectedExploration);
 	enableAction("play");
 }
@@ -389,9 +391,9 @@ function saveExploration() {
 		$.ajax({
 			type: 'POST',
 			url: "/postExploration",
-			data: JSON.stringify({expl: exploration, timeStamp: ""+exploration.timeStamp}),
+			data: JSON.stringify({expl: exploration, timeStamp: exploration.timeStamp.toString()}),
 			success: function(response){
-				console.log("Saved successful"+ exploration.timeStamp);
+				console.log("Saved successful: " + exploration.timeStamp);
 				selectExploration(exploration);
 				if(currentUser.getExploration(selectedExploration.timeStamp)==null){
 					currentUser.explorations.push(selectedExploration);

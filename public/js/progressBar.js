@@ -54,7 +54,6 @@ function ProgressBar() {
 		.duration(eventDuration)
 		.ease("linear in-out")
 		.attr("x", nextPosition);
-		//console.log("bar x: " + bar.attr("x"));
 	}
 	this.pause = function(){
 		bar.transition()
@@ -62,22 +61,22 @@ function ProgressBar() {
 	}
 
 	this.resetProgress = function(){
-		bar.transition().duration(0); // replace current transition with dummy one to stop it
+		// replace current transition with dummy one to stop it
+		bar.transition().duration(0); 
 		bar.attr("x", progressLeft);
-		// /console.log("bar x: " + bar.attr("x"));
 	}
 
 	this.updateState = function(){
 		if (playing)
-			$(this).removeClass().addClass("pause")
+			$(this).removeClass().addClass("pause");
 		else
-			$(this).removeClass().addClass("play")
+			$(this).removeClass().addClass("play");
 	}
 
 	this.load = function(exploration){
 		// get all travel events
 		var travelEvents = [];
-		var barWidth = 10;
+		var barWidth = 5;
 
 		for (var i = 0; i < exploration.numEvents(); i++){
 			var event = exploration.getEvent(i);
@@ -103,8 +102,7 @@ function ProgressBar() {
 						fill: "orange"
 					})
 					.on("mouseover", showTravelText)
-					.on("mouseout", removeTravelText)
-					.on("click", function (){ console.log("click");});
+					.on("mouseout", removeTravelText);
 
 
 		function getEventPosition(eventTime){
@@ -126,7 +124,7 @@ function ProgressBar() {
 				.text(travelId);
 		}		
 		function removeTravelText(d){
-			//d3.select("#" + d.body + "-text").remove();
+			d3.select("#" + d.body + "-text").remove();
 		}
 
 		progress.style.visibility = "visible";
@@ -135,6 +133,7 @@ function ProgressBar() {
 	// unloads an exploration
 	this.unload = function(){
 		progress.style.visibility = "hidden";
-	}
-
+		// remove all event markers
+		d3.selectAll(".event-marker").remove();
+	}	
 }

@@ -114,8 +114,8 @@ function logout(){
 	updateSideBar();
 
 	disableAction("record");
-	resetNotificationLable("none");
-	document.getElementById("expl-sent-message").innerHTML = "";
+//	resetNotificationLable("none");
+//	document.getElementById("expl-sent-message").innerHTML = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -149,7 +149,7 @@ function loadAllExplorations(userName, cb){
 
 	function dealWithExplorations(explorations, cb){
 		// input arrays contain objects with exploration data, but no methods.
-		var allExplorationsData = explorations;
+		var allExplorationsData = JSON.parse(explorations);
 		var explorationCount = allExplorationsData.length;
 
 		if (explorationCount == 0){
@@ -228,11 +228,19 @@ function setExplorationIsOld(expl){
 			userName: currentUser.name,
 			timeStamp: expl.timeStamp
 		}),
-		contentType: "application/json",
-		success: function(response){ console.log(response); }, //callback when ajax request finishes
+		contentType: "application/json"
 	});
 }
 
 function userLoggedOn(){
 	return currentUser;
+}
+
+function updateSelectedExploration(){
+	if (explChooser.selectedIndex === -1)
+		return;
+
+	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
+	var userExpl = currentUser.getExploration(explTimeStamp);
+	selectExploration(userExpl);
 }
