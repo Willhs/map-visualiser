@@ -26,16 +26,19 @@ function ProgressBar() {
 	d3.select("#play-control")
 	.on("click",function() {
 
-		var currentClass = $(this).attr("class");
+		var currentClass = $("#play-control").attr("class");
 
-		if (currentClass == "play") {
-			playExploration(selectedExploration);			
+		if (currentClass == "start") {
+			startPlayback(selectedExploration);
 		} 
+		else if (currentClass == "resume"){
+			resumePlayback(selectedExploration);
+		}
 		else if (currentClass == "pause") {
-			requestPause(selectedExploration);
+			pausePlayback(selectedExploration);
 		} 
 		else if (currentClass == "replay") {
-			playExploration(selectedExploration);
+			startPlayback(selectedExploration);
 		}
 	});
 
@@ -67,10 +70,14 @@ function ProgressBar() {
 	}
 
 	this.updateState = function(){
-		if (playing)
-			$(this).removeClass().addClass("pause");
+		console.log("paused: " + paused);
+
+		if (playing && !paused)
+			$("#play-control").removeClass().addClass("pause");
+		else if (!playing && !paused)
+			$("#play-control").removeClass().addClass("start");
 		else
-			$(this).removeClass().addClass("play");
+			$("#play-control").removeClass().addClass("resume");
 	}
 
 	this.load = function(exploration){

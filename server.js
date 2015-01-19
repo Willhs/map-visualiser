@@ -236,15 +236,13 @@ app.post("/setExplorationIsOld", function(req, res){
 		if (fs.lstatSync(filePath).isDirectory())
 			return; // if the file is a directory
 		var exploration = JSON.parse(fs.readFileSync(filePath));
-
-		if(otherUserName === exploration.userName &&
+		if(userName === exploration.userName &&
 				timeStamp === exploration.timeStamp){
 			// set the property
-			exploration.isNew = false;
+			exploration.isNew = false; 
 			fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
 			res.sendStatus(200);
 			found = true;
-			return;
 		}
 	});
 	if (!found)

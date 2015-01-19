@@ -112,3 +112,5 @@ removeNotification.addEventListener("click", function(){
 quickplayNotification.addEventListener("click", function(){
 	playExploration(currentUser.getCurrentExploration());
 });
+
+resetExplorations();

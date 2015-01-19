@@ -211,6 +211,7 @@ function startPlayback(exploration){
 	}
 	selectedExploration.isNew = false;
 
+	playing = true;
 	// updates GUI
 	updateNotifications(currentUser);
 	progressBar.updateState();
@@ -220,7 +221,6 @@ function startPlayback(exploration){
 	disableAction("record");
 	disableAction("play");
 
-	playing = true;
 }
 
 // launches the events of an exploration started at the ith event
@@ -300,15 +300,16 @@ function resumePlayback(exploration){
 	if (exploration.hasAudio())
 		resumeAudio(timeTilNextEvent);
 
-	progressBar.updateProgress(currentEvent.time + timeIntoEvent, 
-		timeTilNextEvent);
-	progressBar.updateState();
+	paused = false;
+	playing = true;
+
+	progressBar.updateProgress(currentEvent.time + timeIntoEvent, timeTilNextEvent);
+	progressBar.updateState();	
 
 	enableAction("stop");
 	enableAction("pause");
 	disableAction("record");
 	disableAction("play");
-	playing = true;
 }
 
 // updates GUI and other things..
@@ -341,7 +342,7 @@ function deselectExploration(){
 // resets to original state (no explorations selected and no recordings in progress)
 function resetExplorations() {
 	if (playing)
-		requestStop(selectedExploration);
+		stopPlayback(selectedExploration);
 	if (recording)
 		stopRecording();
 	if (currentUser)
@@ -360,6 +361,7 @@ function resetExplorations() {
 		disableAction("record");
 	}
 }
+
 
 // PRE: current exploration != null
 function saveExploration() {
