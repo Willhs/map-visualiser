@@ -70,7 +70,8 @@ input,label {
 .exploration-button {
 	width: 40px;
 	height: 40px;
-	border: 0px;
+	border: 2px solid #000;
+	display: inline-block;
 }
 
 .location-pane {
@@ -191,24 +192,6 @@ input,label {
 	display: none;
 
 }
-/*
-.del-div {
-	position: fixed;
-	padding-right: 2px;
-	float: right;
-	left: 78%;
-	top: 76.5%;
-}
-
-.delFileDivClass {
-	position: fixed;
-	padding-right: 2px;
-	float: right;
-	left: 94%;
-	top: 40%;
-}
-
-}*/
 
 #newAccount {
 	position: fixed;
@@ -247,8 +230,7 @@ input,label {
 	left: 30%;
 }
 
-/* -------- play grogress bar -------*/
-
+/* play grogress bar */
 #play-progress {
   position: fixed;
   width: 910px;
@@ -256,9 +238,8 @@ input,label {
   background-color: #28AADE;
   height: 36px;
   border-radius: 20px;
-  left: 10%;
+  left: 20%;
   top:85%;
-  display:none;
 }
 
 #play-svg {
@@ -294,21 +275,4 @@ input,label {
 }
 #play-control.replay:hover {
   background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -72px;
-}
-
-#scrubber {
-  width:873px;
-  height:36px;
-  position:absolute;
-  top:0;
-  left:37px;
-}
-#display-data {
-  font-family: "arial","helvetica";
-  font-size: 30px;
-  color:#666;
-  left: 30%;
-  top:93%;
-  position: fixed;
-
 }

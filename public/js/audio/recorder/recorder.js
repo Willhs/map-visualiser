@@ -20,6 +20,8 @@ DEALINGS IN THE SOFTWARE.
 (function(window){
  
   var WORKER_PATH = 'js/audio/recorder/recorderWorker.js';
+  var foo = function(){}
+  var bar = 5;
 
   var Recorder = function(source, cfg){
     var config = cfg || {};

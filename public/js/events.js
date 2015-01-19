@@ -12,8 +12,6 @@ userNameInput = document.getElementById("username-input"),
 passwordInput = document.getElementById("password-input"),
 logonButton = document.getElementById("logon-button"),
 messageBar = document.getElementById("percent"),
-playProgressBar = document.getElementById("play-progress"),
-scrubber = document.getElementById("scrubber"),
 notificationLabel = document.getElementById("notification"),
 removeNotification = document.getElementById("remove-notification"),
 quickplayNotification = document.getElementById("quickplay-notification"),
@@ -30,38 +28,24 @@ recordExplButton.addEventListener("click", function(){
 });
 
 playExplButton.addEventListener('click', function () {
-	if(selectedExploration){
-		var lastTime = selectedExploration.getEvent(selectedExploration.events.length-1).time;
-		var firstTime = selectedExploration.getEvent(0).time
-		var totalDruation = lastTime - firstTime;
-		playExploration(selectedExploration);
-	}
-	else if(currentUser.getCurrentExploration()){
-		playExploration(currentUser.getCurrentExploration());
-	}
+	if (!paused)
+		startPlayback(selectedExploration);
+	else resumePlayback(selectedExploration);
 });
 
 pauseExplButton.addEventListener('click', function(){
-	requestPause(selectedExploration);
+	pausePlayback(selectedExploration);
 });
 
 stopExplButton.addEventListener('click', function(){
-	requestStop(selectedExploration);
+	stopPlayback(selectedExploration);
 });
 
 saveExplButton.onclick = saveExploration;
 
 resetExplButton.onclick = resetExplorations;
 
-explChooser.onclick = function(){
-	if (explChooser.selectedIndex === -1)
-		return;
-
-	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
-	var userExpl = currentUser.getExploration(explTimeStamp);
-	stopRecording();
-	selectExploration(userExpl);
-};
+explChooser.onclick = updateSelectedExploration;
 
 //users
 var guestUsers = ["obama", "john", "lorde", "will"];
@@ -70,9 +54,6 @@ guestUsers.forEach(function(userName){
 	document.getElementById(userName).onclick= function() {
 		userNameInput.value = userName;
 		passwordInput.value = "password";
-		disableAction("record");
-		disableAction("play");
-		disableAction("save");
 	};
 });
 
@@ -115,15 +96,8 @@ newAccount.onclick = function(){
 
 //remove current choice exploration
 deleteExplButton.onclick = function(){
-	if(selectedExploration==null){
-		return;
-	}
-	if(currentUser.explorations.indexOf(selectedExploration)<0){
-		return;
-	}
 	deleteExploration(selectedExploration);
-
-
+	deselectExploration();
 };
 
 removeNotification.addEventListener("click", function(){
@@ -137,5 +111,6 @@ removeNotification.addEventListener("click", function(){
 });
 quickplayNotification.addEventListener("click", function(){
 	playExploration(currentUser.getCurrentExploration());
-
 });
+
+resetExplorations();

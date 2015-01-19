@@ -25,8 +25,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
 var IMAGE_PATH = "data/image/";
 
 var width = $(window).width() * 0.8,
-height = $(window).height(),
-centered;
+	height = $(window).height(),
+	centered;
 
 var active;
 //How far we should scale into a selection
@@ -88,14 +88,13 @@ d3.json("data/map/kaz.json", function(error, json) {
 	// set colour
 	.attr("fill","#D0FA58")
 	.attr("stroke", "#FF0040");
-
 });
 
 // Add cities
 d3.json("data/map/kaz_places.json", function(error, json){
 	cities = json.features;
 	// places group to contain all elements of a place
-	var places = g.selectAll("place")
+	var places = g.selectAll(".place")
 	.data(cities)
 	.enter()
 	.append("g")
@@ -117,108 +116,13 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	// Align labels to minimize overlaps
 	g.selectAll(".place-label")
 	.attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
-	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
-
+	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });	
 });
 
 // updates info bar to show information about the location and allows user to add annotations
 function selectLocation(city){
 	selectedLocation = city;
 	displayLocationInfo(city);
-}
-
-// displays information about the location selected
-function displayLocationInfo(city){
-
-	document.getElementById("location-title").innerHTML = city.properties.NAME;
-
-	var annotations = document.getElementById("annotation-container");
-	annotations.innerHTML = null; // clear previous annotations
-
-	//remove and add new annotation input
-	var annotationInputCont = document.getElementById("annotation-input-container");
-	annotationInputCont.innerHTML = null;
-	if (currentUser != null)
-		makeAnnotationInput(annotationInputCont);
-
-	// get annotations for this location
-	$.ajax({
-		type: 'GET',
-		url: "/getAnnotations",
-		data: city.properties.NAME,
-		success: displayAnnotations,
-		dataType: "json",
-	});
-
-	// displays annotations associated with the current location
-	function displayAnnotations(annotations){
-		// if response is "no_annotations", no annotations were found, so do nothing
-		if (annotations === "no_annotations") return;
-		// make a secondary annotation container so that all annotations can be loaded at once
-		var container = document.createElement("div");
-		container.className["annotation-container-2"];
-
-		annotations.forEach(function(annotation){
-
-			var userName = annotation.userName;
-			var timestamp = new Date(annotation.timestamp);
-			var time = timestamp.getHours() + ":" + timestamp.getMinutes();
-			var date = timestamp.getDate() + "/" + timestamp.getMonth();
-		 	var annInfo = "<i> – " + userName + " " + date + " " + time + "</i>";
-
-		 	// make necessary DOM elements
-		 	var rowDiv = document.createElement("div");
-		 	var textDiv = document.createElement("div");
-		 	var controlsDiv = document.createElement("div");
-		 	var content = document.createElement("p");
-		 	var info = document.createElement("p");
-
-		 	// set class (styles are applied in styles.css)
-		 	content.className = "annotation-text annotation-content";
-		 	info.className = "annotation-text annotation-info";
-		 	controlsDiv.className ="annotation-inner-container annotation-controls";
-		 	textDiv.className ="annotation-inner-container annotation-text-container";
-		 	rowDiv.className = "annotation-row";
-
-		 	content.innerHTML = annotation.text;
-		 	info.innerHTML = annInfo;
-
-		 	// display delete button if user owns the annotation
-		 	// TODO: more reliable equality check
-		 	if (currentUser != null && currentUser.name === userName){
-			 	var deleteButton = document.createElement("input");
-			 	deleteButton.type = "image";
-			 	deleteButton.src = IMAGE_PATH + "delete.png";
-			 	deleteButton.id = "delete-button";
-			 	deleteButton.onclick = function () { deleteAnnotation(annotation); }
-		 		controlsDiv.appendChild(deleteButton);
-		 	}
-
-		 	textDiv.appendChild(content);
-		 	textDiv.appendChild(info);
-
-		 	rowDiv.appendChild(textDiv);
-		 	rowDiv.appendChild(controlsDiv);
-
-			container.appendChild(rowDiv);
-		});
-		// TODO: load all annotations at once
-		document.getElementById("annotation-container")
-			.appendChild(container);
-	}
-}
-
-// makes an annotation text input element.
-function makeAnnotationInput(container){
-	var annInput = document.createElement("input");
-	annInput.type = "text";
-	annInput.placeholder = "Add annotation";
-
-	annInput.onkeydown = function(event) { // if enter is pushed, submit the annotation
-		if (event.keyCode === 13) submitAnnotation(annInput.value);
-	}
-	container.appendChild(annInput);
-	annInput.focus();
 }
 
 // adds an annotations to the currently selected location
@@ -236,13 +140,13 @@ function submitAnnotation(annotationText){
 		url: "/postAnnotation",
 		data: JSON.stringify(annotation),
 		contentType: "application/json",
-		complete: refreshLocationInfo
+		complete: updateLocationInfo
 	});
 }
 
 
 // refresh the location info bar
-function refreshLocationInfo(){
+function updateLocationInfo(){
 	if (selectedLocation)
 		selectLocation(selectedLocation);
 }
@@ -255,7 +159,7 @@ function deleteAnnotation(annotation){
 		url: "deleteAnnotation",
 		data: JSON.stringify(annotation),
 		contentType: "application/json",
-		complete: refreshLocationInfo
+		complete: updateLocationInfo
 	})
 }
 

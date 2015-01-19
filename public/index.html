@@ -41,57 +41,51 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 	<div id="side-bar">
 
 		<div class="users">
-
-			<table border="0" id="userTable">
+			<div id="user-buttons">
 				<h3>
 					<b>Select Guest User:</b>
 				</h3>
-				<td><input type="image" id='obama' class="user-button"
-					src="data/image/userImage/obama.jpeg" alt="javascript button"></td>
-				<td><input type="image" id='john' class="user-button"
-					src="data/image/userImage/john.jpeg" alt="javascript button"></td>
-				<td><input type="image" id='lorde' class="user-button"
-					src="data/image/userImage/lorde.jpeg" alt="javascript button"></td>
-				<td><input type="image" id='will' class="user-button"
-					src="data/image/userImage/will.jpeg" alt="javascript button"></td>
-			</table>
+				<input type="image" id='obama' class="user-button"
+					src="data/image/userImage/obama.jpeg" alt="javascript button">
+				<input type="image" id='john' class="user-button"
+					src="data/image/userImage/john.jpeg" alt="javascript button">
+				<input type="image" id='lorde' class="user-button"
+					src="data/image/userImage/lorde.jpeg" alt="javascript button">
+				<input type="image" id='will' class="user-button"
+					src="data/image/userImage/will.jpeg" alt="javascript button">
+			</div>	
 			<h3>Or...</h3>
-			<div>
+			<div id="user-inputs">
 				<input type="text" id="username-input" placeholder='user-name'>
 				<input type="password" id="password-input" placeholder='password'>
 				<div>
-					<input type="submit" id="logon-button" class="account-submit"
-						value="Logon">
-					<button id="create-new-account" class="account-submit">Create
-						Account</button>
+					<input type="submit" id="logon-button" class="account-submit" value="Logon">
+					<button id="create-new-account" class="account-submit">Create Account</button>
 				</div>
 			</div>
 		</div>
 		<div class="exploration-controls">
 			<h2>Exploration recording controls</h2>
-			<table border="5">
-				<td><input type="image" id="record-exploration-button"
+			<div id="exploration-buttons">
+				<input type="image" id="record-exploration-button"
 					class="exploration-button" src="data/image/record_off.jpeg"
-					alt="javascript button"></td>
-				<td><input type="image" id="play-exploration-button"
+					alt="javascript button">
+				<input type="image" id="play-exploration-button"
 					class="exploration-button" src="data/image/play_off.jpeg"
-					alt="javascript button"></td>
-				<td><input type="image" id="pause-exploration-button"
+					alt="javascript button">
+				<input type="image" id="pause-exploration-button"
 					class="exploration-button" src="data/image/pause_off.jpeg"
-					alt="javascript button"></td>
-				<td><input type="image" id="stop-exploration-button"
+					alt="javascript button">
+				<input type="image" id="stop-exploration-button"
 					class="exploration-button" src="data/image/stop_off.jpeg"
-					alt="javascript button"></td>
-				<td><input type="image" id="save-exploration-button"
+					alt="javascript button">
+				<input type="image" id="save-exploration-button"
 					class="exploration-button" src="data/image/save_off.jpeg"
-					alt="javascript button"></td>
-				<td><input type="image" id="delete-exploration-button"
-					class="exploration-button" src="data/image/delete_off.jpeg"
-					alt="javascript button"></td>
-				<td><input type="image" id="reset-exploration-button"
+					alt="javascript button">
+				<input type="image" id="reset-exploration-button"
 					class="exploration-button" src="data/image/reset_on.jpeg"
-					alt="javascript button"></td>
-			</table>
+					alt="javascript button">
+			</div>
 		</div>
 		<!-- <div>
 			<progress id="progress-bar" value="0" max=""></progress>
@@ -102,9 +96,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			<div class="selected-exploration">
 				<p id="selected-exploration-name"></p>
 			</div>
-
 			<div id="exploration-container">
 				<select id="exploration-selector" size="0"></select>
+			</div>			
+			<div>
+				<input id="delete-exploration-button" type="button" value="delete" />
 			</div>
 
 			<div>
@@ -113,15 +109,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 		<div>
 			<h3>
-				<label for="to" id="to">To:</label>
+				<label for="user-input" id="to-label">To:</label>
 			</h3>
-			<input type="text" id="user-input" name="user" placeholder="UserName" />
+			<input type="text" id="user-input" name="user" placeholder="Username" />
 			<button type='button' id="submit-shared-file">Send</button>
-			<p id = "expl-sent-message"></p>
 		</div>
 		<div class='select-device'>
-			<label for='audio-source'>Audio source: </label> <select
-				id='audio-source'></select>
+			<label for='audio-source'>Audio source: </label> <select id='audio-source'></select>
 		</div>
 
 		<div id="location-div" class="location-pane">
@@ -133,16 +127,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<!-- will be populated by user annotations -->
 			</div>
 			<div id="annotation-input-container">
-				<!-- input will be added -->
-			</div>
+				<!-- input will be added --></div>
 		</div>
 	</div>
 
-	<!--
-	<div id="minimap">
-		<div id="minimap-div">
-			<iframe id='minimap-iframe' scrolling="no"
-				src="http://localhost:3000/"> </iframe>
+	<div id="notifications">
+		<div id="notification" class="notification-container"
+			style="display: none"></div>
+		<div>
+			<select id="notification-selector" class="notification-selectors" size="5"></select>
 		</div>
 	</div> -->
 	<div id="notification" class="notification-container"></div>
@@ -159,8 +152,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			size="5"></select>
 	</div>
 	<div id="play-progress">
-		<div id="play-control" class="play"></div>
-		<div id="scrubber"></div>
+		<div id="play-control" class="start"></div>
+		<!--<div id="scrubber"></div>-->
 	</div>
 
 	<div id="display-data"></div>
@@ -168,6 +161,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 	<audio id="exploration-audio">
 	</audio>
 
+	<script src="js/GUI.js"></script>
 	<script src="js/visualiser.js"></script>
 	<script src="js/paths.js"></script>
 	<script src="js/user.js"></script>
@@ -180,3 +174,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 
 </body>
 </html>
+
+	<!--
+	<div id="minimap">
+		<div id="minimap-div">
+			<iframe id='minimap-iframe' scrolling="no"
+				src="http://localhost:3000/"> </iframe>
+		</div>
+	</div> -->

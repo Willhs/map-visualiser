@@ -64,10 +64,15 @@ function User(name, explorations){
 		});
 		return newExplorations;
 	}
-}
 
-function loadFileButtonFunction(){
-	handleFileUpload(document.getElementById("load-file-button").files[0]);
+	// removes the first exploration from the user
+	this.removeExploration = function(exploration){
+		for (var i = 0; i < this.explorations.length; i++){
+			if (this.explorations[i].equals(exploration))
+				this.explorations.splice(i, 1);
+				return true;
+		}
+	}
 }
 
 //logs on a user
@@ -97,7 +102,6 @@ function logon(name){
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
 
-
 	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
 		updateSideBar();
@@ -110,11 +114,8 @@ function logout(){
 	updateSideBar();
 
 	disableAction("record");
-	playProgressBar.style.display = "none";
-	resetNotificationLable("none");
-	document.getElementById("notification-selector").style.display = "none";
-	document.getElementById("user-input").value = "";
-	document.getElementById("expl-sent-message").innerHTML = "";
+//	resetNotificationLable("none");
+//	document.getElementById("expl-sent-message").innerHTML = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -142,23 +143,20 @@ function loadAllExplorations(userName, cb){
 		type: 'GET',
 		url: "/getUserExplorations",
 		data: userName,
-		success: function(data) {
-			dealWithExplorations(data, cb);
-		},
-		dataType: "json",
-		complete: function(){ console.log("get all files complete"); }
-
+		success: function(data) { dealWithExplorations(data, cb); },
+		contentType: "application/json",		
 	});
 
 	function dealWithExplorations(explorations, cb){
 		// input arrays contain objects with exploration data, but no methods.
-		var allExplorationsData = explorations;
-		var explorationCount = explorations.length;
+		var allExplorationsData = JSON.parse(explorations);
+		var explorationCount = allExplorationsData.length;
+
 		if (explorationCount == 0){
-			$("#files-loaded").html("no exploration loaded");
+			$("#noOfFilesLoaded").html("no exploration loaded");
 		}
 		else {
-			$("#files-loaded").html("have "+ explorationCount + " explorations loaded");
+			$("#noOfFilesLoaded").html("have "+ explorationCount + " explorations loaded");
 		}
 
 		// transfer all data into new Exploration objects (so that methods can be used on them).
@@ -188,100 +186,6 @@ function loadAllExplorations(userName, cb){
 	}
 }
 
-//updates elements in the side bar
-function updateSideBar(){
-	updateUserButtons(currentUser);
-	updateExplorationChooser();
-	refreshLocationInfo();
-	updateExplorationControls();
-	updateNotifications();
-	updateLogonElements();
-}
-
-//updates the exploration chooser (drop down box)
-function updateExplorationChooser(){
-	// remove old
-	var chooser= document.getElementById("exploration-selector");
-
-	while(chooser.firstChild){//remove old labels
-		chooser.removeChild(chooser.firstChild);
-	}
-
-	var explorations = userLoggedOn() ? currentUser.getExplorations() : [];
-	if(explorations.length==0){
-		$("#files-loaded").html("no explorations loaded");
-		return;
-	}
-	explorations.forEach(function(exploration, index){
-		var explOption = document.createElement('option');
-		explOption.setAttribute("id", exploration.timeStamp);
-		var explorationName = exploration.name +" - "+ exploration.timeStamp.substr(0,24)+" "+exploration.timeStamp.substr(34,40);
-		explOption.innerHTML = explorationName;
-		explOption.value = index;
-		chooser.appendChild(explOption);
-		var linebreak = document.createElement("br");
-		chooser.appendChild(linebreak);
-
-	});
-
-
-}
-
-//updates the user buttons to show who is logged in
-function updateUserButtons(currentUser){
-	var userButtons = document.getElementsByClassName("user-button");
-	Array.prototype.forEach.call(userButtons, function(userButton){
-		if (currentUser && userButton.id === currentUser.name){
-			userButton.classList.remove("other-user-button");
-			userButton.classList.add("current-user-button");
-		} else {
-			userButton.classList.remove("current-user-button");
-			userButton.classList.add("other-user-button");
-		}
-	});
-}
-
-//updates the notification GUI elements
-function updateNotifications(){
-	if (!userLoggedOn())
-		return;
-
-	var sharedExpl = currentUser.getSharedExploration();
-	var newCount = 0;
-	sharedExpl.forEach(function(expl){
-		if(expl.isNew) newCount++;
-	});
-	if(newCount>0){
-		$("#notification").html("have "+ newCount + " new explorations.");
-		resetNotificationLable("block");
-	}
-	else{
-		$("#notification").html("have no new explorations.");
-	}
-}
-
-function updateExplorationControls(){
-	resetExplorations();
-}
-
-function updateLogonElements(){
-	// if user is currently logged on
-	if (userLoggedOn()){
-		logonButton.value = "Log off";
-		userNameInput.disabled = true;
-		passwordInput.disabled = true;
-	}
-	// if no users logged on
-	else {
-		logonButton.value = "Log on";
-		userNameInput.disabled = false;
-		passwordInput.disabled = false;
-
-		userNameInput.value = "";
-		passwordInput.value = "";
-	}
-}
-
 function saveFileToSharedUser(name){
 	if(name==currentUser.name) return;
 	if(selectedExploration==null) return;
@@ -301,30 +205,6 @@ function saveFileToSharedUser(name){
 	});
 }
 
-function deleteExploration(expl){
-	console.log("delete exploration");
-	console.log(expl.timeStamp);
-
-	$.ajax({
-		type: 'POST',
-		url: "deleteExploration",
-		data: JSON.stringify({expl: expl, userName: currentUser.name}),
-		contentType: "application/json",
-		success: function(response){
-
-			var index = currentUser.explorations.indexOf(expl);
-			if(index<0) return;
-			currentUser.explorations.splice(index,1);
-			updateExplorationChooser();
-			disableAction("play");
-			deselectExploration();
-			updateNotifications();
-			updateSideBar();
-
-		}, //callback when ajax request finishes
-	});
-}
-
 function createAccount(name, pw){
 	console.log("add new user's name and pw to logonInfo file");
 
@@ -339,76 +219,28 @@ function createAccount(name, pw){
 	window.close();
 }
 
-
-function showListNotifications(){
-	var notificationChooser= document.getElementById("notification-selector");
-	var notificationContainer= document.getElementById("notification");
-	while(notificationChooser.firstChild){//remove old labels
-		notificationChooser.removeChild(notificationChooser.firstChild);
-	}
-	var newSharedExpls = currentUser.getSharedExploration();
-	divHideShow(notificationChooser);
-	if(newSharedExpls.length>0){
-		newSharedExpls.forEach(function(expl, index){
-			if(expl.isNew){
-
-				var newOption = document.createElement('option');
-				newOption.setAttribute("id", currentUser.name+index);
-				newOption.value = index;
-
-				explorationName = expl.userName +" "+ expl.timeStamp.substr(0,24)+" "+expl.timeStamp.substr(34,40);
-
-				newOption.innerHTML = explorationName;
-				newOption.addEventListener("click", function(){
-					//selectExploration(newSharedExpls[index]);
-					//var selectedForQuickPlay = {};
-					//jQuery.extend(selectedForQuickPlay,expl);
-					//document.getElementById("quick-play").style.display = "block"
-					//console.log(selectedForQuickPlay.timeStamp);
-					currentUser.setCurrentExploration(expl);
-				});
-
-				notificationChooser.appendChild(newOption);
-			}
-
-		});
-	}
-}
-
 function setExplorationIsOld(expl){
+	expl.isNew = false;
 	$.ajax({
 		type: 'POST',
 		url: "setExplorationIsOld",
 		data: JSON.stringify({
-			currentUserName:currentUser.name,
-			otherUserName:expl.userName,
+			userName: currentUser.name,
 			timeStamp: expl.timeStamp
 		}),
-		contentType: "application/json",
-		success: function(response){ console.log(response); }, //callback when ajax request finishes
+		contentType: "application/json"
 	});
-}
-
-
-function divHideShow(div){
-
-	if (div.style.display.localeCompare("block")==0){
-		div.style.display = "none";
-		removeNotification.style.display = "none";
-		quickplayNotification.style.display = "none";
-	}
-	else{
-		div.style.display = "block";
-		//setTimeout(function () {div.style.display = "none";}, 5000);
-		removeNotification.style.display = "block";
-		quickplayNotification.style.display = "block";
-	}
-}
-//reset notificatoins lable when logoff
-function resetNotificationLable(state){
-	notificationLabel.style.display = state;
 }
 
 function userLoggedOn(){
 	return currentUser;
+}
+
+function updateSelectedExploration(){
+	if (explChooser.selectedIndex === -1)
+		return;
+
+	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
+	var userExpl = currentUser.getExploration(explTimeStamp);
+	selectExploration(userExpl);
 }
