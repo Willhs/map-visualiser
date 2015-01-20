@@ -95,6 +95,14 @@ function Exploration() {
 		return  this.events[this.events.length-1].time;//return millisecond
 
 	}
+
+	// PRE: time must be > 0
+	this.getEventAtTime = function(time){
+		for (var i = 0; i < this.events.length; i++){
+			if (this.getEvent(i).time > time)
+				return this.getEvent(i-1);
+		}
+	}
 }
 
 //makes a default name for an exploration
@@ -180,7 +188,7 @@ function stopRecording() {
 // index of last event which was played
 var currentEventIndex = 0,
 	// for resumePlayback
-	timePlaybackStarted = -1; // the time which the last playback started
+	lastEventTime = -1; // the time which the last playback started
 
 // plays an exploration from the start
 // PRE: no other exploration is being played
@@ -190,11 +198,9 @@ function startPlayback(exploration){
 		alert("nothing to play");
 		return; // if no events, do nothing.
 	}
-	// for resumePlayback
-	timePlaybackStarted = new Date();
 
 	// launch the first event
-	launchEvents(exploration, currentEventIndex); 
+	launchEvents(exploration, 0); 
 
 	enableAction("stop");
 	enableAction("pause");
@@ -224,27 +230,31 @@ function startPlayback(exploration){
 }
 
 // launches the events of an exploration started at the ith event
-function launchEvents(exploration, i){
-	currentEventIndex = i;		
+// if time is specified, plays from time ... event end time.
+function launchEvents(exploration, i, elapsedTime){
+	lastEventTime = new Date();
+	currentEventIndex = i;
 	var currentEvent = exploration.getEvent(i);
 
 	switch (currentEvent.type){
 	case ("travel"):
 		var location = currentEvent.body;
-		goToLoc(location);
+		goToLoc(location, elapsedTime);
 	   	break;
 	case ("movement"):
 		var transform = currentEvent.body;
 		g.attr("transform", transform);
 		updateScaleAndTrans();
 		break;
-	case ("end"):		
+	case ("end"):
 		stopPlayback(exploration);
 		return;
 	}
 
 	var nextEvent = exploration.getEvent(i+1);
-	var delay = nextEvent.time - currentEvent.time;			
+	var delay = nextEvent.time - currentEvent.time;
+	// if resumeTime is specified, remove it from delay
+	delay = elapsedTime ? delay - elapsedTime : delay;
 	progressBar.updateProgress(currentEvent.time, delay);
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
@@ -256,15 +266,16 @@ function playAudio(audioBlob){
 }
 
 // assumes there is aleady audio data loaded into audioElem
-// resumes from current position + skipped time (skip arg)
+// resumes from current position + skipped time (in seconds)
 function resumeAudio(skip){
-	audioElem.position = audioElem.position + skip/1000;
+	audioElem.position = audioElem.position + skip;
 	audioElem.play();
 }
 
 function stopPlayback(exploration){	
-	clearTimeout(playTimeout);	
+	clearTimeout(playTimeout);
 
+	console.log(exploration);
 	if (exploration.hasAudio()){
 		audioElem.pause();
 		audioElem.currentTime = 0; // in seconds
@@ -276,6 +287,7 @@ function stopPlayback(exploration){
 }
 
 function pausePlayback(exploration){
+	console.log("pausing");
 	clearTimeout(playTimeout);
 	paused = true;	
 
@@ -288,28 +300,38 @@ function pausePlayback(exploration){
 
 // waits until next event before executing playExploration
 function resumePlayback(exploration){
+	console.log("resuming playback at event " + currentEventIndex);
 	var currentEvent = exploration.getEvent(currentEventIndex);
-	var timeIntoEvent = new Date() - timePlaybackStarted - currentEvent.time;
 	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time;
-	var timeTilNextEvent = eventDur - timeIntoEvent;	
+	var elapsedTime = new Date() - lastEventTime;
+	var timeTilNextEvent = eventDur - elapsedTime;	
 	
 	// skips the rest of the event and goes to the next one.
 	// TODO: play the rest of the event, don't skip
 	setTimeout(launchEvents(exploration, currentEventIndex+1), timeTilNextEvent);
 	
 	if (exploration.hasAudio())
-		resumeAudio(timeTilNextEvent);
+		resumeAudio(timeTilNextEvent/1000);
 
 	paused = false;
 	playing = true;
 
-	progressBar.updateProgress(currentEvent.time + timeIntoEvent, timeTilNextEvent);
+	progressBar.updateProgress(currentEvent.time + elapsedTime, timeTilNextEvent);
 	progressBar.updateState();	
 
 	enableAction("stop");
 	enableAction("pause");
 	disableAction("record");
 	disableAction("play");
+}
+
+function playFromTime(exploration, time){
+	console.log("playing back from time: " + time);
+	pausePlayback(exploration);
+	var newCurrentEvent = exploration.getEventAtTime(time);
+	console.log("event time: " + newCurrentEvent.time);
+	currentEventIndex = exploration.events.indexOf(newCurrentEvent);
+	resumePlayback(exploration);
 }
 
 // updates GUI and other things..

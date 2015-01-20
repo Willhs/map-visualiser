@@ -168,13 +168,8 @@ var start = [width / 2, height / 2, height],
 	end = [width / 2, height / 2, height];
 
 // smoothly transitions from current location to a city
-function move(city, cb) {
-
-	var callback = function() {
-		if (cb) {
-			cb();
-		}
-	};
+// if elapsedTime is specified, makes the transition from elapsedTime to end
+function move(city, elapsedTime) {
 
 	var b = path.centroid(city);
 	var x = b[0],
@@ -191,13 +186,14 @@ function move(city, cb) {
 	var center = [width / 2, height / 2],
 	i = d3.interpolateZoom(start, end);
 
+	var ease = elapsedTime ? resumed_ease(EASE_FUNCTION, elapsedTime) : EASE_FUNCTION;
+
 	g.transition()
 	.duration(i.duration * ANIMATION_DELAY)
-	.ease(EASE_FUNCTION)
+	.ease(ease)
 	.attrTween("transform", function() {
 		return function(t) { return transform(i(t)); };
 	})
-	.each("end.cb", callback)
 	.each("end.update", function(){
 		updateScaleAndTrans(); // updates global scale and transition variables});
 	});
@@ -211,6 +207,22 @@ function move(city, cb) {
 		var k = height / p[2];
 		return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
 	}
+}
+
+function resumed_ease( ease, elapsed_time ) {
+    var y = typeof ease == "function" ? ease : d3.ease.call(d3, ease);
+    return function( x_resumed ) {
+        var x_original = d3.scale
+                        .linear()
+                        .domain([0,1])
+                        .range([elapsed_time,1])
+                        ( x_resumed );
+        return d3.scale
+                .linear()
+                .domain([ y(elapsed_time), 1 ])
+                .range([0,1])
+                ( y ( x_original ) );
+    };
 }
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
@@ -266,14 +278,14 @@ function cityClicked(d){
 
 // A function that takes you to a city
 // location can be number (city index) or string (city name)
-function goToLoc(location) {
+function goToLoc(location, elapsedTime) {
 	if (typeof location === "number")
 		location = cities[index];
 	if (typeof location === "string")
 		location = cities[getCityIndex(location)];
 
 	selectLocation(location);
-	move(location);
+	move(location, elapsedTime);
 }
 
 //Pings a country on the scren
