@@ -32,7 +32,7 @@ var active;
 //How far we should scale into a selection
 var SCALE_FACTOR = 1200;
 //How fast we should zoom. Lower numbers zoom faster.
-var ANIMATION_DELAY = 0.8;
+var ANIMATION_DELAY = 1.5;
 //How large the ping effect should be, in proportion to the height of the screen.
 var PING_SIZE = 0.2;
 //The ease function used for transitioning
@@ -74,6 +74,7 @@ var svg = d3.select("body").append("svg")
 .on("dblclick.zoom", null); // disable double-click zoom
 
 var g = svg.append("g")
+	.attr("id","map_area")
 	.attr("transform", "translate(0,0)scale(1)");
 
 // Read country outline from file
@@ -104,6 +105,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	.attr("class", "place");
 
 	places.append("path")
+	.attr("id", function(d, i) { return i;} )
 	.attr("d", path);
 
 	// Assign labels to cities
@@ -116,7 +118,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	// Align labels to minimize overlaps
 	g.selectAll(".place-label")
 	.attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
-	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });	
+	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
 });
 
 // updates info bar to show information about the location and allows user to add annotations
@@ -169,7 +171,6 @@ var start = [width / 2, height / 2, height],
 
 // smoothly transitions from current location to a city
 function move(city, cb) {
-
 	var callback = function() {
 		if (cb) {
 			cb();

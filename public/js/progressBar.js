@@ -30,13 +30,13 @@ function ProgressBar() {
 
 		if (currentClass == "start") {
 			startPlayback(selectedExploration);
-		} 
+		}
 		else if (currentClass == "resume"){
 			resumePlayback(selectedExploration);
 		}
 		else if (currentClass == "pause") {
 			pausePlayback(selectedExploration);
-		} 
+		}
 		else if (currentClass == "replay") {
 			startPlayback(selectedExploration);
 		}
@@ -44,15 +44,25 @@ function ProgressBar() {
 
 	// updates the progress of the bar by displaying progression of an event of the exploration.
 	// eventTime: timestamp of event
-	// eventDuration: duration of the 
+	// eventDuration: duration of the
 	this.updateProgress = function(eventTime, eventDuration){
 		// the next bar position of the progress bar
-		var currentPosition =  eventTime / selectedExploration.getDuration() * progressWidth;
-		var nextPosition = ((eventTime + eventDuration) / 
-			selectedExploration.getDuration()) * progressWidth;
+		var playExploration = new Exploration();
+		if(notificationSelector.selectedIndex>=0){
+			selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
+			playExploration = selected;
+		}
+		else if(selectedExploration){
+			playExploration = selectedExploration;
+		}
+		else{
+			return;
+		}
+		var currentPosition =  eventTime / playExploration.getDuration() * progressWidth;
+		var nextPosition = ((eventTime + eventDuration) /
+				playExploration.getDuration()) * progressWidth;
 
 		bar.attr("x", currentPosition);
-
 		bar.transition()
 		.duration(eventDuration)
 		.ease("linear in-out")
@@ -65,7 +75,7 @@ function ProgressBar() {
 
 	this.resetProgress = function(){
 		// replace current transition with dummy one to stop it
-		bar.transition().duration(0); 
+		bar.transition().duration(0);
 		bar.attr("x", progressLeft);
 	}
 
@@ -129,7 +139,7 @@ function ProgressBar() {
 					"text-anchor": "middle"
 				})
 				.text(travelId);
-		}		
+		}
 		function removeTravelText(d){
 			d3.select("#" + d.body + "-text").remove();
 		}
@@ -142,5 +152,5 @@ function ProgressBar() {
 		progress.style.visibility = "hidden";
 		// remove all event markers
 		d3.selectAll(".event-marker").remove();
-	}	
+	}
 }

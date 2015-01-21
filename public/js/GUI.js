@@ -30,7 +30,7 @@ function updateExplorationChooser(){
 		explChooser.appendChild(explOption);
 	});
 
-	updateSelectedExploration();
+	//updateSelectedExploration();
 }
 
 //updates the user buttons to show who is logged in
@@ -54,15 +54,15 @@ function updateNotifications(){
 
 	var sharedExpl = currentUser.getSharedExploration();
 	var newCount = 0;
-	
+
 	sharedExpl.forEach(function(expl){
 		if(expl.isNew) newCount++;
 	});
 
 	if(newCount!=0){
-		$("#notification").html("have "+ newCount + " new explorations.");	
-		notificationSelector.style.display = "none";
-		resetNotificationLable("block");
+		$("#notification").html("have "+ newCount + " new explorations.");
+		notificationSelector.style.visibility = "hidden";
+		resetNotificationLable("visible");
 	}
 	else{
 		$("#notification").html("have no new explorations.");
@@ -89,12 +89,6 @@ function updateLogonElements(){
 		userNameInput.value = "";
 		passwordInput.value = "";
 	}
-}
-
-function updateDeleteButton(){	
-	if (selectedExploration)
-		deleteExplButton.style.visibility = "visible";
-	else deleteExplButton.style.visibility = "hidden";
 }
 
 
@@ -143,47 +137,56 @@ function removeRecordingGraphics(){
 }
 
 function showListNotifications(){
-	var notificationChooser= document.getElementById("notification-selector");
-	while(notificationChooser.firstChild){//remove old labels
-		notificationChooser.removeChild(notificationChooser.firstChild);
+	while(notificationSelector.firstChild){//remove old labels
+		notificationSelector.removeChild(notificationSelector.firstChild);
 	}
 	var newSharedExpls = currentUser.getSharedExploration();
-	divHideShow(notificationChooser);
+	divHideShow(notificationSelector);
+	var newExpl = false;
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
 			if(expl.isNew){
+
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
 
 				explorationName = expl.userName +" "+ expl.timeStamp.substr(0,24)+" "+expl.timeStamp.substr(34,40);
-				newOption.innerHTML = explorationName;
-				newOption.onclick  = function(){
-					selectExploration(newSharedExpls[index]);
-					stopRecording();
-					enableAction("play");
-					enableAction("reset");
 
-				};
-				notificationChooser.appendChild(newOption);
+				newOption.innerHTML = explorationName;
+				newOption.addEventListener("click", function(){
+					//selectExploration(newSharedExpls[index]);
+					//var selectedForQuickPlay = {};
+					//jQuery.extend(selectedForQuickPlay,expl);
+					//document.getElementById("quick-play").style.display = "block"
+					//console.log(selectedForQuickPlay.timeStamp);
+					currentUser.setCurrentExploration(expl);
+					showExplorationPath(expl);
+				});
+
+				notificationSelector.appendChild(newOption);
+				newExpl = true;
 			}
+
 		});
 	}
+	return newExpl;
 }
+
 
 function divHideShow(div){
 
-	if (div.style.display.localeCompare("block")==0){
-		div.style.display = "none";
+	if (div.style.visibility.localeCompare("visible")==0){
+		div.style.visibility= "hidden";
 	}
 	else{
-		div.style.display = "block";
-		setTimeout(function () {div.style.display = "none";}, 3000);
+		div.style.visibility = "visible";
+		//setTimeout(function () {div.style.display = "none";}, 3000);
 	}
 }
 //reset notifications lable when logoff
 function resetNotificationLable(state){
-	document.getElementById("notification").style.display = state;
+	document.getElementById("notification").style.visibility = state;
 }
 
 // displays information about the location selected

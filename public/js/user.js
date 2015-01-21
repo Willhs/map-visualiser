@@ -101,7 +101,6 @@ function logon(name){
 
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
-
 	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
 		updateSideBar();
@@ -116,6 +115,12 @@ function logout(){
 	disableAction("record");
 //	resetNotificationLable("none");
 //	document.getElementById("expl-sent-message").innerHTML = "";
+	//playProgressBar.style.display = "none";
+	resetNotificationLable("hidden");
+	notificationSelector.style.visibility = "hidden";
+	removeExplorationPath();
+	document.getElementById("user-input").value = "";
+	document.getElementById("expl-sent-message").innerHTML = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -144,7 +149,7 @@ function loadAllExplorations(userName, cb){
 		url: "/getUserExplorations",
 		data: userName,
 		success: function(data) { dealWithExplorations(data, cb); },
-		contentType: "application/json",		
+		contentType: "application/json",
 	});
 
 	function dealWithExplorations(explorations, cb){
@@ -190,7 +195,6 @@ function saveFileToSharedUser(name){
 	if(name==currentUser.name) return;
 	if(selectedExploration==null) return;
 	console.log("save file to "+name+"'s folder");
-	console.log("select time: "+selectedExploration.timeStamp);
 
 	$.ajax({
 		type: 'POST',
@@ -220,15 +224,16 @@ function createAccount(name, pw){
 }
 
 function setExplorationIsOld(expl){
-	expl.isNew = false;
 	$.ajax({
 		type: 'POST',
 		url: "setExplorationIsOld",
 		data: JSON.stringify({
-			userName: currentUser.name,
+			currentUserName:currentUser.name,
+			otherUserName:expl.userName,
 			timeStamp: expl.timeStamp
 		}),
-		contentType: "application/json"
+		contentType: "application/json",
+		success: function(response){ console.log("exploration set to old"); }, //callback when ajax request finishes
 	});
 }
 
@@ -242,5 +247,6 @@ function updateSelectedExploration(){
 
 	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
 	var userExpl = currentUser.getExploration(explTimeStamp);
+	stopRecording();
 	selectExploration(userExpl);
 }
