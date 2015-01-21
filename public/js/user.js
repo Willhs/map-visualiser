@@ -219,28 +219,6 @@ function createAccount(name, pw){
 	window.close();
 }
 
-function setExplorationIsOld(expl){
-	expl.isNew = false;
-	$.ajax({
-		type: 'POST',
-		url: "setExplorationIsOld",
-		data: JSON.stringify({
-			userName: currentUser.name,
-			timeStamp: expl.timeStamp
-		}),
-		contentType: "application/json"
-	});
-}
-
 function userLoggedOn(){
 	return currentUser;
-}
-
-function updateSelectedExploration(){
-	if (explChooser.selectedIndex === -1)
-		return;
-
-	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
-	var userExpl = currentUser.getExploration(explTimeStamp);
-	selectExploration(userExpl);
 }

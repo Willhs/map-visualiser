@@ -4,7 +4,7 @@ var recording = false,
 	playing = false,
 	paused = false;
 
-var	playTimeout = -1; // id for setTimeout used while playing an exploration
+var	playTimeouts = -1; // id for setTimeout used while playing an exploration
 
 var audioElem = document.getElementById("exploration-audio");
 
@@ -187,8 +187,9 @@ function stopRecording() {
 
 // index of last event which was played
 var currentEventIndex = 0,
-	// for resumePlayback
-	lastEventTime = -1; // the time which the last playback started
+	// for pausePlayback
+	lastEventTime = -1, // the time which the last playback started
+	elapsedEventTime = -1; // how much time elapsed since event before pausing
 
 // plays an exploration from the start
 // PRE: no other exploration is being played
@@ -217,24 +218,19 @@ function startPlayback(exploration){
 	}
 	selectedExploration.isNew = false;
 
-	playing = true;
+	updatePlaybackStarted();
 	// updates GUI
 	updateNotifications(currentUser);
-	progressBar.updateState();
-
-	enableAction("stop");
-	enableAction("pause");
-	disableAction("record");
-	disableAction("play");
-
 }
 
 // launches the events of an exploration started at the ith event
-// if time is specified, plays from time ... event end time.
+// if time is specified, plays from time ... event end time. *not supported currently*
 function launchEvents(exploration, i, elapsedTime){
+	
 	lastEventTime = new Date();
 	currentEventIndex = i;
 	var currentEvent = exploration.getEvent(i);
+	console.log("launching event at time:", currentEvent.time);
 
 	switch (currentEvent.type){
 	case ("travel"):
@@ -289,6 +285,7 @@ function stopPlayback(exploration){
 function pausePlayback(exploration){
 	console.log("pausing");
 	clearTimeout(playTimeout);
+	elapsedEventTime = new Date() - lastEventTime;
 	paused = true;	
 
 	if (exploration.hasAudio())
@@ -297,43 +294,6 @@ function pausePlayback(exploration){
 	progressBar.pause();
 	updatePlaybackStopped();
 }
-
-// waits until next event before executing playExploration
-function resumePlayback(exploration){
-	console.log("resuming playback at event " + currentEventIndex);
-	var currentEvent = exploration.getEvent(currentEventIndex);
-	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time;
-	var elapsedTime = new Date() - lastEventTime;
-	var timeTilNextEvent = eventDur - elapsedTime;	
-	
-	// skips the rest of the event and goes to the next one.
-	// TODO: play the rest of the event, don't skip
-	setTimeout(launchEvents(exploration, currentEventIndex+1), timeTilNextEvent);
-	
-	if (exploration.hasAudio())
-		resumeAudio(timeTilNextEvent/1000);
-
-	paused = false;
-	playing = true;
-
-	progressBar.updateProgress(currentEvent.time + elapsedTime, timeTilNextEvent);
-	progressBar.updateState();	
-
-	enableAction("stop");
-	enableAction("pause");
-	disableAction("record");
-	disableAction("play");
-}
-
-function playFromTime(exploration, time){
-	console.log("playing back from time: " + time);
-	pausePlayback(exploration);
-	var newCurrentEvent = exploration.getEventAtTime(time);
-	console.log("event time: " + newCurrentEvent.time);
-	currentEventIndex = exploration.events.indexOf(newCurrentEvent);
-	resumePlayback(exploration);
-}
-
 // updates GUI and other things..
 function updatePlaybackStopped(){
 	enableAction("play");
@@ -341,15 +301,65 @@ function updatePlaybackStopped(){
 	enableAction("record");
 	disableAction("pause");
 	disableAction("stop");
-	progressBar.updateState();
 	playing = false;
+	progressBar.updateState();
+}
+
+function updatePlaybackStarted(){
+	enableAction("stop");
+	enableAction("pause");
+	disableAction("record");
+	disableAction("play");
+	playing = true;
+	progressBar.updateState();
+}
+
+// waits until next event before executing playExploration
+function resumePlayback(exploration){
+	console.log("resuming playback at event " + currentEventIndex);
+	var currentEvent = exploration.getEvent(currentEventIndex);
+	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time;
+	var timeTilNextEvent = eventDur - elapsedEventTime;	
+
+	console.log("dur", eventDur, "elapsed", elapsedEventTime, "remaining", timeTilNextEvent);
+	
+	// skips the rest of the event and goes to the next one.
+	// TODO: play the rest of the event, don't skip
+	playTimeout = setTimeout(function(){
+		launchEvents(exploration, currentEventIndex+1);
+	}, timeTilNextEvent);
+	
+	if (exploration.hasAudio())
+		resumeAudio(timeTilNextEvent/1000);
+
+	paused = false;
+	updatePlaybackStarted();
+
+	progressBar.updateProgress(currentEvent.time + elapsedEventTime, timeTilNextEvent);
+	progressBar.updateState();
+}
+
+// sets playback position to time parameter, then plays from that position
+function playFromTime(exploration, time){	
+	pausePlayback(exploration);
+	var newEvent = exploration.getEventAtTime(time);
+
+	console.log("playing back from time:", time);
+	console.log("event time: ", newEvent.time);
+
+	currentEventIndex = exploration.events.indexOf(newEvent);
+	// set the elapsed time since the last event
+	eventTimeElapsed = time - newEvent.time;
+	// resume from this point
+	resumePlayback(exploration);
 }
 
 // makes an exploration selected
 function selectExploration(exploration){
-	deselectExploration();
+	if (selectedExploration)
+		deselectExploration();
 	selectedExploration = exploration;
-	updateDeleteButton();		
+	updateDeleteButton();
 	progressBar.load(selectedExploration);
 	enableAction("play");
 }
@@ -476,4 +486,40 @@ function deleteExploration(expl){
 		updateExplorationChooser();
 		updateDeleteButton();
 	}
+}
+
+function updateSelectedExploration(){
+	// nothing is selected
+	if (explChooser.selectedIndex === -1)
+		return;
+
+	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
+	var userExpl = currentUser.getExploration(explTimeStamp);
+	selectExploration(userExpl);
+}
+
+// ensures that an exploration is selected by selecting the first in the list
+function ensureExplorationSelected(){
+	if (!selectedExploration 
+		&& userLoggedOn() 
+		&& currentUser.explorations.length > 0){
+
+		var explTimeStamp = explChooser.options[0].id;
+		console.log("selecting.. ", explTimeStamp);
+		var userExpl = currentUser.getExploration(explTimeStamp);
+		selectExploration(userExpl);
+	}
+}
+
+function setExplorationIsOld(expl){
+	expl.isNew = false;
+	$.ajax({
+		type: 'POST',
+		url: "setExplorationIsOld",
+		data: JSON.stringify({
+			userName: currentUser.name,
+			timeStamp: expl.timeStamp
+		}),
+		contentType: "application/json"
+	});
 }

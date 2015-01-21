@@ -233,7 +233,7 @@ function updateScaleAndTrans(){
 	zoom.translate(translate);
 }
 
-// A function to reset the map view.
+// A function to reset the map to the center, zoomed out.
 /*function reset(){
 	x = width / 2;
 	y = height / 2;

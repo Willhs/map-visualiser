@@ -24,13 +24,13 @@ function updateExplorationChooser(){
 	explorations.forEach(function(exploration, index){
 		var explOption = document.createElement('option');
 		explOption.setAttribute("id", exploration.timeStamp);
-		var explorationName = exploration.name +" - "+ exploration.timeStamp.substr(0,24)+" "+exploration.timeStamp.substr(34,40);
+		var explorationName = exploration.name +" - "+ exploration.timeStamp;
 		explOption.innerHTML = explorationName;
 		explOption.value = index;
 		explChooser.appendChild(explOption);
 	});
 
-	updateSelectedExploration();
+	ensureExplorationSelected();
 }
 
 //updates the user buttons to show who is logged in

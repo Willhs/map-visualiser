@@ -28,8 +28,6 @@ function ProgressBar() {
 
 		var currentClass = $("#play-control").attr("class");
 
-		console.log("state observed: " + $("#play-control").attr("class"));
-
 		if (currentClass == "start") {
 			startPlayback(selectedExploration);
 		} 
@@ -48,6 +46,9 @@ function ProgressBar() {
 	// eventTime: timestamp of event
 	// eventDuration: duration of the event
 	this.updateProgress = function(eventTime, eventDuration){
+
+		console.log("updating progress: ", eventTime, eventDuration);
+
 		// the next bar position of the progress bar
 		var currentPosition = eventTime / selectedExploration.getDuration() * progressWidth,
 			nextPosition = ((eventTime + eventDuration) / selectedExploration.getDuration()) * progressWidth;
@@ -78,7 +79,6 @@ function ProgressBar() {
 			$("#play-control").removeClass().addClass("start");
 		else
 			$("#play-control").removeClass().addClass("resume");
-		console.log("button is now in state: " + $("#play-control").attr("class"));
 	}
 
 	this.load = function(exploration){
@@ -92,17 +92,23 @@ function ProgressBar() {
 				travelEvents.push(event);
 		}
 
+//		console.log(exploration, travelEvents);
+
+		// console.log(progress.selectAll(".event-marker")
+		// 	.data(travelEvents)
+		//	.enter());
+
 		// add event markers
 		progress.selectAll(".event-marker")
 			.data(travelEvents)
 			.enter()
-				.append("g")
+			.append("g")
 				.attr({
 					// id is city name
 					id: function(d){ return d.body; },
 					class: "event-marker",
 				})
-					.append("rect")
+				.append("rect")
 					.attr({
 						x: function(d){ return getEventPosition(d.time) - barWidth/2; },
 						y: 0,
@@ -137,17 +143,7 @@ function ProgressBar() {
 		}
 
 		// add mouse listener to bar
-		d3.select("#play-svg").on("click", function(e){
-			console.log("clicked on progress bar");
-			var rect = d3.select("#play-svg");
-			// figure out x position of mouse
-	      	var offset = $(this).offset();
-	      	var xpos = d3.mouse(this)[0]; // 36 ?
-
-	      	// what percent (as decimal) across the rect is the mouse?
-	      	var progress = xpos/progressWidth;
-	      	playFromTime(selectedExploration, selectedExploration.getDuration() * progress);
-		});
+		d3.select("#play-svg").on("click", triggerPlayFromPosition);
 
 		progress.style.visibility = "visible";
 	}
@@ -160,4 +156,16 @@ function ProgressBar() {
 		// remove mouse event listener
 		d3.select("progress-bar").on("click", null);
 	}	
+
+	function triggerPlayFromPosition(e){		
+		var rect = d3.select("#play-svg");
+		// figure out x position of mouse
+      	var offset = $(this).offset();
+      	var xpos = d3.mouse(this)[0]; // 36 ?
+
+      	// what percent (as decimal) across the rect is the mouse?
+      	var progress = xpos/progressWidth;
+
+      	playFromTime(selectedExploration, selectedExploration.getDuration() * progress);
+	}
 }
