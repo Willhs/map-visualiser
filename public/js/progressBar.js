@@ -47,8 +47,6 @@ function ProgressBar() {
 	// eventDuration: duration of the event
 	this.updateProgress = function(eventTime, eventDuration){
 
-		console.log("updating progress: ", eventTime, eventDuration);
-
 		// the next bar position of the progress bar
 		var currentPosition = eventTime / selectedExploration.getDuration() * progressWidth,
 			nextPosition = ((eventTime + eventDuration) / selectedExploration.getDuration()) * progressWidth;
@@ -61,18 +59,24 @@ function ProgressBar() {
 		.attr("x", nextPosition);
 	}
 
-	this.pause = function(){
+	this.pause = function(cb){
 		bar.transition()
-		.duration(0);
+		.duration(0)
+		.each("end", cb);
+	}
+
+	this.setPosition = function(time){
+		bar.attr("x", time / selectedExploration.getDuration() * progressWidth);
 	}
 
 	this.resetProgress = function(){
 		// replace current transition with dummy one to stop it
-		bar.transition().duration(0); 
-		bar.attr("x", progressLeft);
+		bar.transition().duration(0).each("end", function(){ 
+			bar.attr("x", progressLeft); 
+		});		
 	}
 
-	this.updateState = function(){		
+	this.updateButton = function(){		
 		if (playing && !paused)
 			$("#play-control").removeClass().addClass("pause");
 		else if (!playing && !paused)

@@ -230,7 +230,7 @@ function launchEvents(exploration, i, elapsedTime){
 	lastEventTime = new Date();
 	currentEventIndex = i;
 	var currentEvent = exploration.getEvent(i);
-	console.log("launching event at time:", currentEvent.time);
+//	console.log("launching event at time:", currentEvent.time);
 
 	switch (currentEvent.type){
 	case ("travel"):
@@ -255,20 +255,8 @@ function launchEvents(exploration, i, elapsedTime){
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
 
-// plays audio from a blob
-function playAudio(audioBlob){	
-	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
-	audioElem.play();
-}
-
-// assumes there is aleady audio data loaded into audioElem
-// resumes from current position + skipped time (in seconds)
-function resumeAudio(skip){
-	audioElem.position = audioElem.position + skip;
-	audioElem.play();
-}
-
-function stopPlayback(exploration){	
+// stops playback and resets position to the start
+function stopPlayback(exploration){
 	clearTimeout(playTimeout);
 
 	console.log(exploration);
@@ -282,8 +270,8 @@ function stopPlayback(exploration){
 	currentEventIndex = 0;
 }
 
-function pausePlayback(exploration){
-	console.log("pausing");
+// pauses the current playback. cb will happen after progress bar updates
+function pausePlayback(exploration, cb){	
 	clearTimeout(playTimeout);
 	elapsedEventTime = new Date() - lastEventTime;
 	paused = true;	
@@ -291,37 +279,15 @@ function pausePlayback(exploration){
 	if (exploration.hasAudio())
 		audioElem.pause();
 
-	progressBar.pause();
+	progressBar.pause(cb);
 	updatePlaybackStopped();
-}
-// updates GUI and other things..
-function updatePlaybackStopped(){
-	enableAction("play");
-	enableAction("reset");
-	enableAction("record");
-	disableAction("pause");
-	disableAction("stop");
-	playing = false;
-	progressBar.updateState();
-}
-
-function updatePlaybackStarted(){
-	enableAction("stop");
-	enableAction("pause");
-	disableAction("record");
-	disableAction("play");
-	playing = true;
-	progressBar.updateState();
 }
 
 // waits until next event before executing playExploration
 function resumePlayback(exploration){
-	console.log("resuming playback at event " + currentEventIndex);
 	var currentEvent = exploration.getEvent(currentEventIndex);
 	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time;
 	var timeTilNextEvent = eventDur - elapsedEventTime;	
-
-	console.log("dur", eventDur, "elapsed", elapsedEventTime, "remaining", timeTilNextEvent);
 	
 	// skips the rest of the event and goes to the next one.
 	// TODO: play the rest of the event, don't skip
@@ -330,28 +296,60 @@ function resumePlayback(exploration){
 	}, timeTilNextEvent);
 	
 	if (exploration.hasAudio())
-		resumeAudio(timeTilNextEvent/1000);
+		resumeAudio((currentEvent.time + eventTimeElapsed)/1000);
 
 	paused = false;
 	updatePlaybackStarted();
 
 	progressBar.updateProgress(currentEvent.time + elapsedEventTime, timeTilNextEvent);
-	progressBar.updateState();
+	progressBar.updateButton();
 }
 
 // sets playback position to time parameter, then plays from that position
 function playFromTime(exploration, time){	
-	pausePlayback(exploration);
-	var newEvent = exploration.getEventAtTime(time);
+	pausePlayback(exploration, function(){
+		var newEvent = exploration.getEventAtTime(time);
 
-	console.log("playing back from time:", time);
-	console.log("event time: ", newEvent.time);
+		currentEventIndex = exploration.events.indexOf(newEvent);
+		// set the elapsed time since the last event
+		eventTimeElapsed = time - newEvent.time;
 
-	currentEventIndex = exploration.events.indexOf(newEvent);
-	// set the elapsed time since the last event
-	eventTimeElapsed = time - newEvent.time;
-	// resume from this point
-	resumePlayback(exploration);
+		progressBar.setPosition(time);	
+	});	
+
+}
+
+// plays audio from a blob
+function playAudio(audioBlob){	
+	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
+	audioElem.play();
+}
+
+// assumes there is aleady audio data loaded into audioElem
+// resumes from current position + skipped time (in seconds)
+function resumeAudio(position){
+	audioElem.position = position;
+	audioElem.play();
+}
+
+// updates GUI and other things..
+function updatePlaybackStopped(){
+	enableAction("play");
+	enableAction("reset");
+	enableAction("record");
+	disableAction("pause");
+	disableAction("stop");
+	playing = false;
+	progressBar.updateButton();
+}
+
+function updatePlaybackStarted(){
+	enableAction("stop");
+	enableAction("pause");
+	disableAction("record");
+	disableAction("play");
+	playing = true;
+	progressBar.updateButton();
 }
 
 // makes an exploration selected
