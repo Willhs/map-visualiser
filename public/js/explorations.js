@@ -9,7 +9,7 @@ var	playTimeout = -1; // id for setTimeout used while playing an exploration
 var audioElem = document.getElementById("exploration-audio");
 
 var progressBar = new ProgressBar;
-var pathMove = new PathMove;
+//var pathMove = new PathMove;
 
 //constructor for Event objects
 function Event(type, body, time){
@@ -238,7 +238,7 @@ function launchEvents(exploration, i, elapsedTime){
 	// if resumeTime is specified, remove it from delay
 	delay = elapsedTime ? delay - elapsedTime : delay;
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
-	pathMove.updatePathMove(exploration, currentEvent.time, delay);
+//	pathMove.updatePathMove(exploration, currentEvent.time, delay);
 
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
@@ -269,9 +269,9 @@ function pausePlayback(exploration, cb){
 	if (exploration.hasAudio())
 		audioElem.pause();
 
-	progressBar.pause(cb);
-	pathMove.pause(exploration, cb);
 	updatePlaybackStopped();
+	progressBar.pause(cb);
+///	pathMove.pause(exploration, cb);
 }
 
 // waits until next event before executing playExploration
@@ -369,7 +369,7 @@ function selectExploration(exploration){
 		deselectExploration();
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
-	pathMove.load(selectedExploration);
+	//pathMove.load(selectedExploration);
 	if(currentUser.getExplorations().indexOf(exploration)>-1 ||selectedExploration){
 		enableAction("delete");
 	}

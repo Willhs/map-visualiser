@@ -31,7 +31,7 @@ function updateExplorationChooser(){
 		explChooser.appendChild(explOption);
 	});
 
-	//ensureExplorationSelected();
+	ensureExplorationSelected();
 }
 
 //updates the user buttons to show who is logged in
