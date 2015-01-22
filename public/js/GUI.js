@@ -6,6 +6,7 @@ function updateSideBar(){
 	updateExplorationControls();
 	updateNotifications();
 	updateLogonElements();
+	updateUserInputElements();
 }
 
 //updates the exploration chooser (drop down box)
@@ -24,13 +25,13 @@ function updateExplorationChooser(){
 	explorations.forEach(function(exploration, index){
 		var explOption = document.createElement('option');
 		explOption.setAttribute("id", exploration.timeStamp);
-		var explorationName = exploration.name +" - "+ exploration.timeStamp.substr(0,24)+" "+exploration.timeStamp.substr(34,40);
+		var explorationName = exploration.name +" - "+ exploration.timeStamp;
 		explOption.innerHTML = explorationName;
 		explOption.value = index;
 		explChooser.appendChild(explOption);
 	});
 
-	//updateSelectedExploration();
+	//ensureExplorationSelected();
 }
 
 //updates the user buttons to show who is logged in
@@ -49,23 +50,32 @@ function updateUserButtons(currentUser){
 
 //updates the notification GUI elements
 function updateNotifications(){
-	if (!userLoggedOn())
+	resetVisibility(notificationContainer,"hidden");
+	resetVisibility(notificationSelector,"hidden");
+	resetVisibility(removeNotification, "hidden");
+	resetVisibility(quickplayNotification, "hidden");
+	if (!userLoggedOn()){
 		return;
+	}
+
 
 	var sharedExpl = currentUser.getSharedExploration();
 	var newCount = 0;
 
 	sharedExpl.forEach(function(expl){
+
 		if(expl.isNew) newCount++;
+		console.log(newCount);
 	});
 
-	if(newCount!=0){
-		$("#notification").html("have "+ newCount + " new explorations.");
-		notificationSelector.style.visibility = "hidden";
-		resetNotificationLable("visible");
+	if(newCount>0){
+		$("#notification-container").html("have "+ newCount + " new explorations.");
+		resetVisibility(notificationSelector,"hidden");
+		resetVisibility(notificationContainer,"visible");
 	}
 	else{
-		$("#notification").html("have no new explorations.");
+		resetVisibility(notificationContainer,"visible");
+		$("#notification-container").html("have no new explorations.");
 	}
 }
 
@@ -91,6 +101,10 @@ function updateLogonElements(){
 	}
 }
 
+function updateUserInputElements(){
+	document.getElementById("user-input").value = "";
+	document.getElementById("expl-sent-message").innerHTML = "";
+}
 
 function changeButtonColour(name, state){
 	var button = document.getElementById(name + "-exploration-button");
@@ -142,40 +156,39 @@ function showListNotifications(){
 	}
 	var newSharedExpls = currentUser.getSharedExploration();
 	divHideShow(notificationSelector);
-	var newExpl = false;
+	divHideShow(removeNotification);
+	divHideShow(quickplayNotification);
+
+	var hasNewExpl = false;
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
 			if(expl.isNew){
-
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
-
 				explorationName = expl.userName +" "+ expl.timeStamp.substr(0,24)+" "+expl.timeStamp.substr(34,40);
-
 				newOption.innerHTML = explorationName;
-				newOption.addEventListener("click", function(){
-					//selectExploration(newSharedExpls[index]);
-					//var selectedForQuickPlay = {};
-					//jQuery.extend(selectedForQuickPlay,expl);
-					//document.getElementById("quick-play").style.display = "block"
-					//console.log(selectedForQuickPlay.timeStamp);
+				newOption.onclick  = function(){
+					stopRecording();
+					enableAction("play");
+					enableAction("reset");
 					currentUser.setCurrentExploration(expl);
-					showExplorationPath(expl);
-				});
-
+					var pathMove = new PathMove;
+					pathMove.load(expl);
+					progressBar.load(expl);
+				}
 				notificationSelector.appendChild(newOption);
-				newExpl = true;
-			}
 
+				hasNewExpl = true;
+
+			}
 		});
 	}
-	return newExpl;
+	return hasNewExpl;
 }
 
-
 function divHideShow(div){
-
+	console.log("a");
 	if (div.style.visibility.localeCompare("visible")==0){
 		div.style.visibility= "hidden";
 	}
@@ -185,8 +198,8 @@ function divHideShow(div){
 	}
 }
 //reset notifications lable when logoff
-function resetNotificationLable(state){
-	document.getElementById("notification").style.visibility = state;
+function resetVisibility(idVar, state){
+	idVar.style.visibility = state;
 }
 
 // displays information about the location selected

@@ -101,6 +101,7 @@ function logon(name){
 
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
+
 	function gotExplorations(allExplorations){
 		currentUser.setExplorations(allExplorations);
 		updateSideBar();
@@ -111,16 +112,6 @@ function logout(){
 	currentUser = null;
 	deselectExploration();
 	updateSideBar();
-
-	disableAction("record");
-//	resetNotificationLable("none");
-//	document.getElementById("expl-sent-message").innerHTML = "";
-	//playProgressBar.style.display = "none";
-	resetNotificationLable("hidden");
-	notificationSelector.style.visibility = "hidden";
-	removeExplorationPath();
-	document.getElementById("user-input").value = "";
-	document.getElementById("expl-sent-message").innerHTML = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -195,6 +186,7 @@ function saveFileToSharedUser(name){
 	if(name==currentUser.name) return;
 	if(selectedExploration==null) return;
 	console.log("save file to "+name+"'s folder");
+	console.log("select time: "+selectedExploration.timeStamp);
 
 	$.ajax({
 		type: 'POST',
@@ -223,30 +215,6 @@ function createAccount(name, pw){
 	window.close();
 }
 
-function setExplorationIsOld(expl){
-	$.ajax({
-		type: 'POST',
-		url: "setExplorationIsOld",
-		data: JSON.stringify({
-			currentUserName:currentUser.name,
-			otherUserName:expl.userName,
-			timeStamp: expl.timeStamp
-		}),
-		contentType: "application/json",
-		success: function(response){ console.log("exploration set to old"); }, //callback when ajax request finishes
-	});
-}
-
 function userLoggedOn(){
 	return currentUser;
-}
-
-function updateSelectedExploration(){
-	if (explChooser.selectedIndex === -1)
-		return;
-
-	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
-	var userExpl = currentUser.getExploration(explTimeStamp);
-	stopRecording();
-	selectExploration(userExpl);
 }

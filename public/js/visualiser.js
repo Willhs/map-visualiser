@@ -32,7 +32,7 @@ var active;
 //How far we should scale into a selection
 var SCALE_FACTOR = 1200;
 //How fast we should zoom. Lower numbers zoom faster.
-var ANIMATION_DELAY = 1.5;
+var ANIMATION_DELAY = 0.8;
 //How large the ping effect should be, in proportion to the height of the screen.
 var PING_SIZE = 0.2;
 //The ease function used for transitioning
@@ -105,12 +105,12 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	.attr("class", "place");
 
 	places.append("path")
-	.attr("id", function(d, i) { return i;} )
 	.attr("d", path);
 
 	// Assign labels to cities
 	places.append("text")
 	.attr("class", "place-label")
+	.attr("id", function(d, i) { return i;} )
 	.attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
 	.attr("dy", ".35em")
 	.text(function(d) { return d.properties.NAME; });
@@ -170,12 +170,8 @@ var start = [width / 2, height / 2, height],
 	end = [width / 2, height / 2, height];
 
 // smoothly transitions from current location to a city
-function move(city, cb) {
-	var callback = function() {
-		if (cb) {
-			cb();
-		}
-	};
+// if elapsedTime is specified, makes the transition from elapsedTime to end
+function move(city, elapsedTime) {
 
 	var b = path.centroid(city);
 	var x = b[0],
@@ -191,14 +187,14 @@ function move(city, cb) {
 
 	var center = [width / 2, height / 2],
 	i = d3.interpolateZoom(start, end);
+	var ease = elapsedTime ? resumed_ease(EASE_FUNCTION, elapsedTime) : EASE_FUNCTION;
 
 	g.transition()
 	.duration(i.duration * ANIMATION_DELAY)
-	.ease(EASE_FUNCTION)
+	.ease(ease)
 	.attrTween("transform", function() {
 		return function(t) { return transform(i(t)); };
 	})
-	.each("end.cb", callback)
 	.each("end.update", function(){
 		updateScaleAndTrans(); // updates global scale and transition variables});
 	});
@@ -214,6 +210,22 @@ function move(city, cb) {
 	}
 }
 
+function resumed_ease( ease, elapsed_time ) {
+    var y = typeof ease == "function" ? ease : d3.ease.call(d3, ease);
+    return function( x_resumed ) {
+        var x_original = d3.scale
+                        .linear()
+                        .domain([0,1])
+                        .range([elapsed_time,1])
+                        ( x_resumed );
+        return d3.scale
+                .linear()
+                .domain([ y(elapsed_time), 1 ])
+                .range([0,1])
+                ( y ( x_original ) );
+    };
+}
+
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
 	var scale = d3.transform(g.attr("transform")).scale[0];
@@ -222,7 +234,7 @@ function updateScaleAndTrans(){
 	zoom.translate(translate);
 }
 
-// A function to reset the map view.
+// A function to reset the map to the center, zoomed out.
 /*function reset(){
 	x = width / 2;
 	y = height / 2;
@@ -267,14 +279,14 @@ function cityClicked(d){
 
 // A function that takes you to a city
 // location can be number (city index) or string (city name)
-function goToLoc(location) {
+function goToLoc(location, elapsedTime) {
 	if (typeof location === "number")
 		location = cities[index];
 	if (typeof location === "string")
 		location = cities[getCityIndex(location)];
 
 	selectLocation(location);
-	move(location);
+	move(location, elapsedTime);
 }
 
 //Pings a country on the scren

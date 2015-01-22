@@ -24,7 +24,7 @@ function ProgressBar() {
 
 	//simple play, pause stuff
 	d3.select("#play-control")
-	.on("click",function() {
+	.on("click", function() {
 
 		var currentClass = $("#play-control").attr("class");
 
@@ -44,44 +44,37 @@ function ProgressBar() {
 
 	// updates the progress of the bar by displaying progression of an event of the exploration.
 	// eventTime: timestamp of event
-	// eventDuration: duration of the
-	this.updateProgress = function(eventTime, eventDuration){
+	// eventDuration: duration of the event
+	this.updateProgress = function(exploration, eventTime, eventDuration){
 		// the next bar position of the progress bar
-		var playExploration = new Exploration();
-		if(notificationSelector.selectedIndex>=0){
-			selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
-			playExploration = selected;
-		}
-		else if(selectedExploration){
-			playExploration = selectedExploration;
-		}
-		else{
-			return;
-		}
-		var currentPosition =  eventTime / playExploration.getDuration() * progressWidth;
-		var nextPosition = ((eventTime + eventDuration) /
-				playExploration.getDuration()) * progressWidth;
-
+		var currentPosition = eventTime / exploration.getDuration() * progressWidth,
+			nextPosition = ((eventTime + eventDuration) / exploration.getDuration()) * progressWidth;
 		bar.attr("x", currentPosition);
+
 		bar.transition()
 		.duration(eventDuration)
 		.ease("linear in-out")
 		.attr("x", nextPosition);
 	}
-	this.pause = function(){
+
+	this.pause = function(cb){
 		bar.transition()
-		.duration(0);
+		.duration(0)
+		.each("end", cb);
+	}
+
+	this.setPosition = function(time){
+		bar.attr("x", time / selectedExploration.getDuration() * progressWidth);
 	}
 
 	this.resetProgress = function(){
 		// replace current transition with dummy one to stop it
-		bar.transition().duration(0);
-		bar.attr("x", progressLeft);
+		bar.transition().duration(0).each("end", function(){
+			bar.attr("x", progressLeft);
+		});
 	}
 
-	this.updateState = function(){
-		console.log("paused: " + paused);
-
+	this.updateButton = function(){
 		if (playing && !paused)
 			$("#play-control").removeClass().addClass("pause");
 		else if (!playing && !paused)
@@ -101,16 +94,17 @@ function ProgressBar() {
 				travelEvents.push(event);
 		}
 
+		// add event markers
 		progress.selectAll(".event-marker")
 			.data(travelEvents)
 			.enter()
-				.append("g")
+			.append("g")
 				.attr({
 					// id is city name
 					id: function(d){ return d.body; },
 					class: "event-marker",
 				})
-					.append("rect")
+				.append("rect")
 					.attr({
 						x: function(d){ return getEventPosition(d.time) - barWidth/2; },
 						y: 0,
@@ -144,6 +138,9 @@ function ProgressBar() {
 			d3.select("#" + d.body + "-text").remove();
 		}
 
+		// add mouse listener to bar
+		d3.select("#play-svg").on("click", triggerPlayFromPosition);
+
 		progress.style.visibility = "visible";
 	}
 
@@ -152,5 +149,19 @@ function ProgressBar() {
 		progress.style.visibility = "hidden";
 		// remove all event markers
 		d3.selectAll(".event-marker").remove();
+		// remove mouse event listener
+		d3.select("progress-bar").on("click", null);
+	}
+
+	function triggerPlayFromPosition(e){
+		var rect = d3.select("#play-svg");
+		// figure out x position of mouse
+      	var offset = $(this).offset();
+      	var xpos = d3.mouse(this)[0]; // 36 ?
+
+      	// what percent (as decimal) across the rect is the mouse?
+      	var progress = xpos/progressWidth;
+
+      	playFromTime(selectedExploration, selectedExploration.getDuration() * progress);
 	}
 }

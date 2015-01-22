@@ -12,7 +12,7 @@ userNameInput = document.getElementById("username-input"),
 passwordInput = document.getElementById("password-input"),
 logonButton = document.getElementById("logon-button"),
 messageBar = document.getElementById("percent"),
-notificationContainer = document.getElementById("notification"),
+notificationContainer = document.getElementById("notification-container"),
 removeNotification = document.getElementById("remove-notification"),
 quickplayNotification = document.getElementById("quickplay-notification"),
 notificationSelector = document.getElementById("notification-selector");
@@ -73,6 +73,7 @@ logonButton.onclick = function(){
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("user-input").value;
+	console.log(userLabelValue);
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
 		saveFileToSharedUser(userLabelValue);
 		var selectedExplName = selectedExploration.name;
@@ -83,9 +84,14 @@ document.getElementById("submit-shared-file").addEventListener('click',function(
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
 	if(showListNotifications()){
-		removeNotification.style.visibility = "visible";
-		quickplayNotification.style.visibility = "visible";
+		resetVisibility(notificationSelector, "visible");
 
+
+	}
+	else{
+		resetVisibility(notificationSelector, "hidden");
+		resetVisibility(removeNotification, "hidden");
+		resetVisibility(quickplayNotification, "hidden");
 	}
 
 });
@@ -113,20 +119,22 @@ removeNotification.addEventListener("click", function(){
 	var selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
 	selected.isNew = false;
 	setExplorationIsOld(selected);
-	notificationSelector.style.visibility = "hidden";
-	removeNotification.style.visibility = "hidden";
-	quickplayNotification.style.visibility = "hidden";
+
+	resetVisibility(notificationSelector, "hidden");
+	resetVisibility(removeNotification, "hidden");
+	resetVisibility(quickplayNotification, "hidden");
 	updateNotifications();
 	deselectExploration();
 });
 quickplayNotification.addEventListener("click", function(){
 	selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
-	var quickPlayExploration = new Exploration();
-	quickPlayExploration = selected;
-	//quickPlayExploration.events = selected.events;
-	//console.log(quickPlayExploration);
-	startPlayback(quickPlayExploration);
-	//selected.isNew = ture;
+	//var quickPlayExploration = new Exploration();
+	//quickPlayExploration = selected;
+	startPlayback(selected);
+	selected.isNew = true;
+	updateNotifications();
+
+
 });
 
 resetExplorations();
