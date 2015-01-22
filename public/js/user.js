@@ -112,10 +112,6 @@ function logout(){
 	currentUser = null;
 	deselectExploration();
 	updateSideBar();
-
-	disableAction("record");
-//	resetNotificationLable("none");
-//	document.getElementById("expl-sent-message").innerHTML = "";
 }
 
 function attemptCreateAccount(name, pw){
@@ -144,7 +140,7 @@ function loadAllExplorations(userName, cb){
 		url: "/getUserExplorations",
 		data: userName,
 		success: function(data) { dealWithExplorations(data, cb); },
-		contentType: "application/json",		
+		contentType: "application/json",
 	});
 
 	function dealWithExplorations(explorations, cb){

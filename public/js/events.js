@@ -12,7 +12,7 @@ userNameInput = document.getElementById("username-input"),
 passwordInput = document.getElementById("password-input"),
 logonButton = document.getElementById("logon-button"),
 messageBar = document.getElementById("percent"),
-notificationLabel = document.getElementById("notification"),
+notificationContainer = document.getElementById("notification-container"),
 removeNotification = document.getElementById("remove-notification"),
 quickplayNotification = document.getElementById("quickplay-notification"),
 notificationSelector = document.getElementById("notification-selector");
@@ -73,7 +73,7 @@ logonButton.onclick = function(){
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("user-input").value;
-	console.log("user-input: "+userLabelValue);
+	console.log(userLabelValue);
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
 		saveFileToSharedUser(userLabelValue);
 		var selectedExplName = selectedExploration.name;
@@ -81,10 +81,19 @@ document.getElementById("submit-shared-file").addEventListener('click',function(
 	}
 });
 //notifications
-notificationLabel.addEventListener('click',function(){
-	notificationLabel.display = "none";
+notificationContainer.addEventListener('click',function(){
 	stopRecording();
-	showListNotifications();
+	if(showListNotifications()){
+		resetVisibility(notificationSelector, "visible");
+
+
+	}
+	else{
+		resetVisibility(notificationSelector, "hidden");
+		resetVisibility(removeNotification, "hidden");
+		resetVisibility(quickplayNotification, "hidden");
+	}
+
 });
 
 //new account
@@ -96,6 +105,12 @@ newAccount.onclick = function(){
 
 //remove current choice exploration
 deleteExplButton.onclick = function(){
+	if(selectedExploration==null){
+		return;
+	}
+	if(currentUser.explorations.indexOf(selectedExploration)<0){
+		return;
+	}
 	deleteExploration(selectedExploration);
 	deselectExploration();
 };
@@ -104,13 +119,22 @@ removeNotification.addEventListener("click", function(){
 	var selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
 	selected.isNew = false;
 	setExplorationIsOld(selected);
-	notificationSelector.style.display = "none";
-	removeNotification.style.display = "none";
-	quickplayNotification.style.display = "none";
+
+	resetVisibility(notificationSelector, "hidden");
+	resetVisibility(removeNotification, "hidden");
+	resetVisibility(quickplayNotification, "hidden");
 	updateNotifications();
+	deselectExploration();
 });
 quickplayNotification.addEventListener("click", function(){
-	playExploration(currentUser.getCurrentExploration());
+	selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
+	//var quickPlayExploration = new Exploration();
+	//quickPlayExploration = selected;
+	startPlayback(selected);
+	selected.isNew = true;
+	updateNotifications();
+
+
 });
 
 resetExplorations();

@@ -74,6 +74,7 @@ var svg = d3.select("body").append("svg")
 .on("dblclick.zoom", null); // disable double-click zoom
 
 var g = svg.append("g")
+	.attr("id","map_area")
 	.attr("transform", "translate(0,0)scale(1)");
 
 // Read country outline from file
@@ -109,6 +110,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	// Assign labels to cities
 	places.append("text")
 	.attr("class", "place-label")
+	.attr("id", function(d, i) { return i;} )
 	.attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
 	.attr("dy", ".35em")
 	.text(function(d) { return d.properties.NAME; });
@@ -116,7 +118,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	// Align labels to minimize overlaps
 	g.selectAll(".place-label")
 	.attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
-	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });	
+	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
 });
 
 // updates info bar to show information about the location and allows user to add annotations

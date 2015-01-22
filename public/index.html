@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 					src="data/image/userImage/lorde.jpeg" alt="javascript button">
 				<input type="image" id='will' class="user-button"
 					src="data/image/userImage/will.jpeg" alt="javascript button">
-			</div>	
+			</div>
 			<h3>Or...</h3>
 			<div id="user-inputs">
 				<input type="text" id="username-input" placeholder='user-name'>
@@ -82,6 +82,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 				<input type="image" id="save-exploration-button"
 					class="exploration-button" src="data/image/save_off.jpeg"
 					alt="javascript button">
+				<input type="image" id="delete-exploration-button"
+					class="exploration-button" src="data/image/delete_off.jpeg"
+					alt="javascript button">
 				<input type="image" id="reset-exploration-button"
 					class="exploration-button" src="data/image/reset_on.jpeg"
 					alt="javascript button">
@@ -98,11 +101,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			</div>
 			<div id="exploration-container">
 				<select id="exploration-selector" size="0"></select>
-			</div>			
-			<div>
-				<input id="delete-exploration-button" type="button" value="delete" />
 			</div>
-
 			<div>
 				<p id="files-loaded">no exploration loaded</p>
 			</div>
@@ -113,6 +112,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			</h3>
 			<input type="text" id="user-input" name="user" placeholder="Username" />
 			<button type='button' id="submit-shared-file">Send</button>
+			<p id = "expl-sent-message"></p>
+
 		</div>
 		<div class='select-device'>
 			<label for='audio-source'>Audio source: </label> <select id='audio-source'></select>
@@ -131,33 +132,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 	</div>
 
-	<div id="notifications">
-		<div id="notification" class="notification-container"
-			style="display: none"></div>
+		<div id="notification-container" class="notification-container"></div>
 		<div>
-			<select id="notification-selector" class="notification-selectors" size="5"></select>
+		<input id="remove-notification"    type="image" src="data/image/delete.png" alt="javascript button">
 		</div>
-	</div>
-	<div id="notification" class="notification-container"></div>
-	<div>
-		<input id="remove-notification" class="remove-notification"
-			type="image" src="data/image/delete.png" alt="javascript button">
-	</div>
-	<div>
-		<input id="quickplay-notification" class="quickplay-notification"
-			type="image" src="data/image/play.jpeg" alt="javascript button">
-	</div>
-	<div>
-		<select id="notification-selector" class="notification-selectors"
-			size="5"></select>
-	</div>
+		<div>
+		<input id="quickplay-notification" type="image" src="data/image/play.jpeg"  alt="javascript button">
+		</div>
+		<div>
+			<select id="notification-selector" class="notification-selectors" size="3"></select>
+		</div>
+
 	<div id="play-progress">
 		<div id="play-control" class="start"></div>
 		<!--<div id="scrubber"></div>-->
 	</div>
-
 	<div id="display-data"></div>
-
 	<audio id="exploration-audio">
 	</audio>
 
@@ -166,8 +156,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 	<script src="js/paths.js"></script>
 	<script src="js/user.js"></script>
 	<script src="js/progressBar.js"></script>
+	<script src="js/PathMove.js"></script>
 	<script src="js/explorations.js"></script>
 	<script src="js/events.js"></script>
+	<script src="js/GUI.js"></script>
 	<script src="js/audio/audio.js"></script>
 	<script src="js/audio/recorder/recorder.js"></script>
 	<script src="js/audio/recorder/recorderWorker.js"></script>
