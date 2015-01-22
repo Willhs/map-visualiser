@@ -163,13 +163,13 @@ function deleteAnnotation(annotation){
 	})
 }
 
-// The movement function
+// Defaults for the travelTo function?
 var start = [width / 2, height / 2, height],
 	end = [width / 2, height / 2, height];
 
 // smoothly transitions from current location to a city
 // if elapsedTime is specified, makes the transition from elapsedTime to end
-function move(city, elapsedTime) {
+function travelTo(city, duration, elapsedTime) {
 
 	var b = path.centroid(city);
 	var x = b[0],
@@ -186,10 +186,11 @@ function move(city, elapsedTime) {
 	var center = [width / 2, height / 2],
 	i = d3.interpolateZoom(start, end);
 
-	var ease = elapsedTime ? resumed_ease(EASE_FUNCTION, elapsedTime) : EASE_FUNCTION;
+	var duration = duration ? duration : i.duration * ANIMATION_DELAY,
+		ease = elapsedTime ? resumed_ease(EASE_FUNCTION, elapsedTime) : EASE_FUNCTION;
 
 	g.transition()
-	.duration(i.duration * ANIMATION_DELAY)
+	.duration(duration)
 	.ease(ease)
 	.attrTween("transform", function() {
 		return function(t) { return transform(i(t)); };
@@ -273,19 +274,21 @@ function getCityIndex(name){
 }
 
 function cityClicked(d){
-	move(d);
+	travelTo(d);
 }
 
 // A function that takes you to a city
-// location can be number (city index) or string (city name)
-function goToLoc(location, elapsedTime) {
+// location: number (city index) or string (city name)
+// duration: duration of transition
+// elapsedTime: continue transition from this time
+function goToLoc(location, duration, elapsedTime) {
 	if (typeof location === "number")
 		location = cities[index];
 	if (typeof location === "string")
 		location = cities[getCityIndex(location)];
 
-	selectLocation(location);
-	move(location, elapsedTime);
+	selectLocation(location); // so that information appears in sidebar
+	travelTo(location, duration, elapsedTime);
 }
 
 //Pings a country on the scren

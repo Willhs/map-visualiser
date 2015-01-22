@@ -154,7 +154,8 @@ function ProgressBar() {
 
 	// unloads an exploration
 	this.unload = function(){
-		progress.style.visibility = "hidden";
+		//progress.style.visibility = "hidden";
+		this.resetProgress();
 		// remove all event markers
 		d3.selectAll(".event-marker").remove();
 		// remove mouse event listener
@@ -170,6 +171,6 @@ function ProgressBar() {
       	// what percent (as decimal) across the rect is the mouse?
       	var progress = xpos/progressWidth;
 
-      	playFromTime(selectedExploration, selectedExploration.getDuration() * progress);
+      	setPlaybackPosition(selectedExploration, selectedExploration.getDuration() * progress);
 	}
 }

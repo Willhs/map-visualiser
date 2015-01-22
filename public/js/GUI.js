@@ -69,8 +69,58 @@ function updateNotifications(){
 	}
 }
 
-function updateExplorationControls(){
-	resetExplorations();
+function updateExplorationControls(specialCase){
+	if (!selectedExploration){
+		disableAction("save");
+		disableAction("play");
+		disableAction("stop");
+		disableAction("pause");
+		disableAction("reset");
+		enableAction("record");
+
+		if (userLoggedOn()){
+			enableAction("record");
+		}
+		else {
+			disableAction("record");
+		}
+	}
+	else if (!playing){
+		enableAction("play");
+		enableAction("reset");
+		enableAction("record");
+		disableAction("pause");
+		disableAction("stop");
+		changeButtonColour("record", false);
+	}
+	else if (playing){
+		enableAction("stop");
+		enableAction("pause");
+		disableAction("record");
+		disableAction("play");
+	}
+	if (recording){
+		disableAction("stop");
+		disableAction("pause");
+		disableAction("save");
+		disableAction("play");
+		changeButtonColour("record", true);
+	}
+
+	if (specialCase){
+		if (specialCase === "stopped-recording"){
+			enableAction("play");
+			enableAction("reset");
+			enableAction("record");
+			disableAction("pause");
+			disableAction("stop");
+			changeButtonColour("record", false);
+			enableAction("save");
+		}
+		if (specialCase === "saved"){
+			disableAction("save");
+		}
+	}
 }
 
 function updateLogonElements(){
