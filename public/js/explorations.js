@@ -11,11 +11,10 @@ var audioElem = document.getElementById("exploration-audio");
 var progressBar = new ProgressBar;
 //var pathMove = new PathMove;
 
-//constructor for Event objects
 function Event(type, body, time){
 	this.type = type;
 	this.body = body;
-	this.time = time; // time that event occured at
+	this.time = time;
 }
 
 // an exploration of the visualisation
@@ -254,7 +253,7 @@ function stopPlayback(exploration){
 
 	updatePlaybackStopped();
 	progressBar.resetProgress();
-	pathMove.reset(exploration);
+	//pathMove.reset(exploration);
 	currentEventIndex = 0;
 	playing = false;
 	updatePlaybackStopped();
@@ -263,6 +262,7 @@ function stopPlayback(exploration){
 // pauses the current playback. cb will happen after progress bar updates
 function pausePlayback(exploration, cb){
 	clearTimeout(playTimeout);
+	g.transition().duration(0); // stops any current transitions
 	elapsedEventTime = new Date() - lastEventTime;
 	paused = true;
 
@@ -381,7 +381,7 @@ function selectExploration(exploration){
 function deselectExploration(){
 	selectedExploration = null;
 	progressBar.unload();
-	pathMove.unload();
+//	pathMove.unload();
 	disableAction("delete");
 }
 
