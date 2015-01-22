@@ -254,7 +254,7 @@ function stopPlayback(exploration){
 
 	updatePlaybackStopped();
 	progressBar.resetProgress();
-	pathMove.reset(exploration);
+	//pathMove.reset(exploration);
 	currentEventIndex = 0;
 	playing = false;
 	updatePlaybackStopped();
@@ -263,6 +263,7 @@ function stopPlayback(exploration){
 // pauses the current playback. cb will happen after progress bar updates
 function pausePlayback(exploration, cb){
 	clearTimeout(playTimeout);
+	g.transition().duration(0); // stops any current transitions
 	elapsedEventTime = new Date() - lastEventTime;
 	paused = true;
 
