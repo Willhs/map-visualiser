@@ -9,7 +9,7 @@ var	playTimeout = -1; // id for setTimeout used while playing an exploration
 var audioElem = document.getElementById("exploration-audio");
 
 var progressBar = new ProgressBar;
-//var pathMove = new PathMove;
+var pathMove = new PathMove;
 
 //constructor for Event objects
 function Event(type, body, time){
@@ -184,7 +184,7 @@ var currentEventIndex = 0,
 // plays an exploration from the start
 // PRE: no other exploration is being played
 function startPlayback(exploration){
-	//pathMove.movePath(exploration);
+	
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
@@ -238,7 +238,7 @@ function launchEvents(exploration, i, elapsedTime){
 	// if resumeTime is specified, remove it from delay
 	delay = elapsedTime ? delay - elapsedTime : delay;
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
-//	pathMove.updatePathMove(exploration, currentEvent.time, delay);
+	pathMove.updatePathMove(exploration, currentEvent.time, delay);
 
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
@@ -254,7 +254,7 @@ function stopPlayback(exploration){
 
 	updatePlaybackStopped();
 	progressBar.resetProgress();
-	//pathMove.reset(exploration);
+	pathMove.reset(exploration);
 	currentEventIndex = 0;
 	playing = false;
 	updatePlaybackStopped();
@@ -272,7 +272,7 @@ function pausePlayback(exploration, cb){
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
-///	pathMove.pause(exploration, cb);
+	pathMove.pause(exploration, cb);
 }
 
 // waits until next event before executing playExploration
@@ -370,7 +370,7 @@ function selectExploration(exploration){
 		deselectExploration();
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
-	//pathMove.load(selectedExploration);
+	pathMove.load(selectedExploration);
 	if(currentUser.getExplorations().indexOf(exploration)>-1 ||selectedExploration){
 		enableAction("delete");
 	}
