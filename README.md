@@ -4,6 +4,6 @@ Code built from Sivan Fesherman's ENGR-489 project.
 TO USE:
 -------
 run local server by executing:
-node server.js
+`node server.js`
 
 then, open Chrome browser and navigate to localhost:3000
