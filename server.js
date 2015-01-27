@@ -174,10 +174,10 @@ app.post("/deleteExploration", function(req, res){
 			// delete audio file if there is one
 			if (hasAudio){
 				fs.unlinkSync(exploration.audio);
-			}
-			res.sendStatus(200);
+			}			
 		}
 	});
+	res.sendStatus(200);
 });
 
 function saveAudio(audioString, path, timeStamp){

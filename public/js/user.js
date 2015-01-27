@@ -1,5 +1,3 @@
-
-var selectedExploration = null; // currently selected exploration
 var currentUser = null; // the user who is currently logged in
 
 function User(name, explorations){

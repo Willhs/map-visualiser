@@ -115,11 +115,6 @@ function Exploration() {
 	// changes the time property of certain events according to the time provided
 	this.insertEvents = function(newEvents, afterIndex, time){
 
-		console.log(time, afterIndex);
-
-		console.log("exploration is", this.getDuration(), "ms"
-			, "and", this.numEvents(), "events");
-
 		// duration of new exploration to be inserted
 		var insertDuration = newEvents[newEvents.length-1].time;
 
@@ -139,10 +134,7 @@ function Exploration() {
 		this.events = this.events.slice(0, afterIndex)
 						.concat(newEvents)
 						.concat(this.events.slice(afterIndex));
-		
-		/*console.log("exploration is now", this.getDuration(), "ms and", 
-			this.numEvents(), "events long");*/
-	}
+	}		
 }
 
 //makes a default name for an exploration
@@ -230,7 +222,6 @@ var currentEventIndex = 0,
 // plays an exploration from the start
 // PRE: no other exploration is being played
 function startPlayback(exploration){
-	console.log("playing!");
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
@@ -269,7 +260,6 @@ function launchEvents(exploration, i, elapsedTime){
 	   	break;
 	case ("start"):
 	case ("movement"):
-		console.log(currentEvent.type, currentEvent.body);
 		var transform = currentEvent.body;
 		g.attr("transform", transform);
 		updateScaleAndTrans();
@@ -303,6 +293,7 @@ function stopPlayback(exploration){
 	//pathMove.reset(exploration);
 	currentEventIndex = 0;
 	playing = false;
+	//paused = false;
 	updatePlaybackStopped();
 }
 
@@ -501,8 +492,15 @@ function saveExploration(exploration) {
 			url: "/postExploration",
 			data: JSON.stringify(exploration),
 			success: function(response){
-				currentUser.explorations.push(selectedExploration);
-				enableAction("delete");
+
+				loadAllExplorations(currentUser.name, gotExplorations);
+
+				function gotExplorations(allExplorations){
+					currentUser.setExplorations(allExplorations);
+					updateExplorationChooser();
+				}
+
+				enableAction("delete");				
 				updateExplorationChooser();
 			},
 			contentType: "application/json"
@@ -553,8 +551,12 @@ function deleteExploration(expl){
 	});
 
 	function deletedExploration(response){
-		currentUser.removeExploration(expl);
-		updateExplorationChooser();
+		loadAllExplorations(currentUser.name, gotExplorations);
+
+		function gotExplorations(allExplorations){
+			currentUser.setExplorations(allExplorations);
+			updateExplorationChooser();
+		}
 	}
 }
 
