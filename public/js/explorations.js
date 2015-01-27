@@ -155,8 +155,8 @@ var generateDefaultExplName = function(){
 	};
 }();
 
-// begins recording of certain user navigation actions
-// insert is true if this recording will be inserted into another event
+// begins recording of user navigation actions
+// insert is true if this recording will be inserted into another exploration
 function startRecording() {
 	if (!inserting)
 		resetExplorations();
@@ -170,15 +170,18 @@ function startRecording() {
 		city.addEventListener("dblclick", recordTravel(city.id));
 	}
 
-	currentUser.setCurrentExploration(new Exploration());
-	//selectExploration(currentUser.currentExpl); // the current recording
+	var newExpl = new Exploration();
 
 	// add start event
-	currentUser.getCurrentExploration().addEvent("start", "");
+	newExpl.addEvent("start", g.attr("transform"));
+	//newExpl.addEvent("start", "");
+
+	currentUser.setCurrentExploration(newExpl);	
 
 	// starts recording audio
 	if (audioRecorder)
 		startAudioRecording();
+
 	// shows that recording is in progess
 	addRecordingGraphics();
 	recording = true;
@@ -227,7 +230,7 @@ var currentEventIndex = 0,
 // plays an exploration from the start
 // PRE: no other exploration is being played
 function startPlayback(exploration){
-	//pathMove.movePath(exploration);
+	console.log("playing!");
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
@@ -264,7 +267,9 @@ function launchEvents(exploration, i, elapsedTime){
 		var location = currentEvent.body;
 		goToLoc(location, elapsedTime);
 	   	break;
+	case ("start"):
 	case ("movement"):
+		console.log(currentEvent.type, currentEvent.body);
 		var transform = currentEvent.body;
 		g.attr("transform", transform);
 		updateScaleAndTrans();
@@ -272,7 +277,6 @@ function launchEvents(exploration, i, elapsedTime){
 	case ("end"):
 		stopPlayback(exploration);
 		return;
-	case ("start"):		
 	}
 
 	var nextEvent = exploration.getEvent(i+1);
