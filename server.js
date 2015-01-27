@@ -109,9 +109,8 @@ app.get("/getUserExplorations", function(req, res){
 //post exploration on the map for loading
 app.post('/postExploration', function(req, res){
 
-	var save = req.body;
-	var exploration = save.expl;
-	var timeStamp = save.timeStamp;
+	var exploration = req.body;
+	var timeStamp = exploration.timeStamp;
 	var userName = exploration.userName;
 	// makes directory for files if none exist.
 	var path = USER_PATH;

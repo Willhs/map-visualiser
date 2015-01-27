@@ -238,7 +238,6 @@ function showListNotifications(){
 }
 
 function divHideShow(div){
-	console.log("a");
 	if (div.style.visibility.localeCompare("visible")==0){
 		div.style.visibility= "hidden";
 	}
@@ -353,4 +352,13 @@ function changeButtonColour(name, state){
 		button.src = IMAGE_PATH + name + "_on.jpeg";
 	else
 		button.src = IMAGE_PATH + name + "_off.jpeg";
+}
+
+function showInsertButton(){
+	insertButton.show();
+	//button.style.left = $("play-progress");
+}
+
+function hideInsertButton(){
+	insertButton.hide();
 }

@@ -8,6 +8,7 @@ function ProgressBar() {
 		progressTop = 0,
 		progressLeft = 0;
 
+	
 	// add the progress bar svg
 	var progress = d3.select("#play-progress").append("svg")
 	.attr("id","play-svg")
@@ -42,6 +43,31 @@ function ProgressBar() {
 		}
 	});
 
+	/*this.showInsertButton = function(){
+
+		(function makeInsertButton(){
+			var button = document.
+
+		})();
+
+		return function showInsertButton(){
+			var x = bar.attr("x");
+
+			insertGroup.select("rect")
+			.attr("x", x - buttonWidth/2);
+
+			insertGroup.select("text")
+			.attr("x", x);
+
+			insertGroup.style("visibility", "visible");
+		};
+	}();
+
+	this.hideInsertButton = function(){
+		d3.select("#insert-button")
+		.style("visibility", "hidden");
+	}*/
+
 	// updates the progress of the bar by displaying progression of an event of the exploration.
 	// eventTime: timestamp of event
 	// eventDuration: duration of the event
@@ -60,7 +86,8 @@ function ProgressBar() {
 	this.pause = function(cb){
 		bar.transition()
 		.duration(0)
-		.each("end", cb);
+		.each("end.cb", cb);
+//		.each("end.insert-button", this.showInsertButton);
 	}
 
 	this.setPosition = function(time){
@@ -164,5 +191,14 @@ function ProgressBar() {
       	var progress = xpos/progressWidth;
 
       	setPlaybackPosition(selectedExploration, selectedExploration.getDuration() * progress);
+	}
+
+	// returns the x position of the bar at this time
+	this.getXPosOfTime = function(time){
+		return time / selectedExploration.getDuration() * progressWidth;
+	}
+
+	this.getTop = function(){
+		return 0;
 	}
 }

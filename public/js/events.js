@@ -1,30 +1,35 @@
 //-------------- event handling for DOM elements ----------------
 
 var recordExplButton = document.getElementById("record-exploration-button"),
-playExplButton = document.getElementById("play-exploration-button"),
-pauseExplButton = document.getElementById("pause-exploration-button"),
-stopExplButton = document.getElementById("stop-exploration-button"),
-saveExplButton = document.getElementById('save-exploration-button'),
-deleteExplButton = document.getElementById('delete-exploration-button'),
-resetExplButton = document.getElementById("reset-exploration-button"),
-explChooser = document.getElementById("exploration-selector"),
-userNameInput = document.getElementById("username-input"),
-passwordInput = document.getElementById("password-input"),
-logonButton = document.getElementById("logon-button"),
-messageBar = document.getElementById("percent"),
-notificationContainer = document.getElementById("notification-container"),
-removeNotification = document.getElementById("remove-notification"),
-quickplayNotification = document.getElementById("quickplay-notification"),
-notificationSelector = document.getElementById("notification-selector");
+	playExplButton = document.getElementById("play-exploration-button"),
+	pauseExplButton = document.getElementById("pause-exploration-button"),
+	stopExplButton = document.getElementById("stop-exploration-button"),
+	saveExplButton = document.getElementById('save-exploration-button'),
+	deleteExplButton = document.getElementById('delete-exploration-button'),
+	resetExplButton = document.getElementById("reset-exploration-button"),
+	explChooser = document.getElementById("exploration-selector"),
+	userNameInput = document.getElementById("username-input"),
+	passwordInput = document.getElementById("password-input"),
+	logonButton = document.getElementById("logon-button"),
+	messageBar = document.getElementById("percent"),
+	notificationContainer = document.getElementById("notification-container"),
+	removeNotification = document.getElementById("remove-notification"),
+	quickplayNotification = document.getElementById("quickplay-notification"),
+	notificationSelector = document.getElementById("notification-selector"),
+	insertButton = $("#insert-button");
 
 
-//explorations
+// ---- explorations
 
 recordExplButton.addEventListener("click", function(){
-	if (recording)
-		stopRecording();
+	if (recording){
+		if (inserting)
+			insertIntoSelectedExploration(currentUser.getCurrentExploration());
+		else
+			stopRecording();	
+	}
 	else
-		startRecording();
+		startRecording();	
 });
 
 playExplButton.addEventListener('click', function () {
@@ -41,7 +46,9 @@ stopExplButton.addEventListener('click', function(){
 	stopPlayback(selectedExploration);
 });
 
-saveExplButton.onclick = saveExploration;
+saveExplButton.onclick = function(){ 
+	saveExploration(currentUser.getCurrentExploration());
+}
 
 resetExplButton.onclick = resetExplorations;
 
@@ -69,6 +76,7 @@ logonButton.onclick = function(){
 		attemptLogon(userNameInput.value, passwordInput.value);
 	}
 };
+
 //share button
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 
@@ -80,21 +88,6 @@ document.getElementById("submit-shared-file").addEventListener('click',function(
 		document.getElementById("expl-sent-message").innerHTML = "Sent to: "+userLabelValue+ "     ExplName:"+ selectedExplName;
 	}
 });
-//notifications
-notificationContainer.addEventListener('click',function(){
-	stopRecording();
-	if(showListNotifications()){
-		resetVisibility(notificationSelector, "visible");
-
-
-	}
-	else{
-		resetVisibility(notificationSelector, "hidden");
-		resetVisibility(removeNotification, "hidden");
-		resetVisibility(quickplayNotification, "hidden");
-	}
-
-});
 
 //new account
 var myWindow;
@@ -103,7 +96,7 @@ newAccount.onclick = function(){
 	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
 
-//remove current choice exploration
+// delete button
 deleteExplButton.onclick = function(){
 	if(selectedExploration==null){
 		return;
@@ -114,6 +107,19 @@ deleteExplButton.onclick = function(){
 	deleteExploration(selectedExploration);
 	deselectExploration();
 };
+
+// ---- NOTIFICATIONS ----
+notificationContainer.addEventListener('click',function(){
+	stopRecording();
+	if(showListNotifications()){
+		resetVisibility(notificationSelector, "visible");
+	}
+	else{
+		resetVisibility(notificationSelector, "hidden");
+		resetVisibility(removeNotification, "hidden");
+		resetVisibility(quickplayNotification, "hidden");
+	}
+});
 
 removeNotification.addEventListener("click", function(){
 	var selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
@@ -126,6 +132,7 @@ removeNotification.addEventListener("click", function(){
 	updateNotifications();
 	deselectExploration();
 });
+
 quickplayNotification.addEventListener("click", function(){
 	selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
 	//var quickPlayExploration = new Exploration();
@@ -133,8 +140,12 @@ quickplayNotification.addEventListener("click", function(){
 	startPlayback(selected);
 	selected.isNew = true;
 	updateNotifications();
-
-
 });
 
+// ---- insert button
+insertButton.click(function(){
+	inserting = true;
+});
+
+// ---- INIT
 resetExplorations();

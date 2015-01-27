@@ -99,10 +99,10 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	.data(cities)
 	.enter()
 	.append("g")
-	.attr("id", function(d, i) { return d.properties.NAME; })
-	.on("dblclick.zoom", cityClicked)
-	.on("click", selectLocation)
-	.attr("class", "place");
+		.attr("id", function(d, i) { return d.properties.NAME; })
+		.on("dblclick.zoom", cityClicked)
+		.on("click", selectLocation)
+		.attr("class", "place");
 
 	places.append("path")
 	.attr("d", path);
