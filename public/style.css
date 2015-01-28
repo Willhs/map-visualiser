@@ -214,7 +214,7 @@ input,label {
 #player-panel {	
   	position: fixed;
   	left: 20%;
-  	top: 75%;
+  	top: 85%;
 }
 
 #above-bar {
@@ -307,7 +307,7 @@ input,label {
 }
 
 #duration-text {
-	left: 400px;
+	left: 800px;
 }
 
 #below-bar p {

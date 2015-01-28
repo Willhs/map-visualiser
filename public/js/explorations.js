@@ -447,6 +447,7 @@ function deselectExploration(){
 	if (!selectedExploration)
 		return;
 	selectedExploration = null;
+	console.log("unloading");
 	progressBar.unload();
 	disableAction("delete");
 }
@@ -460,7 +461,8 @@ function resetExplorations() {
 	if (currentUser)
 		currentUser.resetCurrentExploration();
 
-	deselectExploration();	
+	deselectExploration();
+	progressBar.unload();
 	updateExplorationControls();
 }
 

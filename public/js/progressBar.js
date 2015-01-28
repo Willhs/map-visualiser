@@ -24,24 +24,7 @@ function ProgressBar() {
 	.attr("y",progressTop);
 
 	//simple play, pause stuff
-	d3.select("#play-control")
-	.on("click", function() {
-
-		var currentClass = $("#play-control").attr("class");
-
-		if (currentClass == "start") {
-			startPlayback(selectedExploration);
-		}
-		else if (currentClass == "resume"){
-			resumePlayback(selectedExploration);
-		}
-		else if (currentClass == "pause") {
-			pausePlayback(selectedExploration);
-		}
-		else if (currentClass == "replay") {
-			startPlayback(selectedExploration);
-		}
-	});
+	var playControl = d3.select("#play-control");
 
 	// updates the progress of the bar by displaying progression of an event of the exploration.
 	// eventTime: timestamp of event
@@ -74,8 +57,11 @@ function ProgressBar() {
 	}
 
 	this.setPosition = function(time){
-		// if selectedExploration is null, just return
-		if (!selectedExploration) return;
+		// if selectedExploration is null, set position to 0 and return
+		if (!selectedExploration){
+			bar.attr("x", 0);
+			return;	
+		} 
 		var progress = time / selectedExploration.getDuration();
 		bar.attr("x", progress * progressWidth);
 		showTimeText(getCurrentPlaybackTime());
@@ -152,6 +138,24 @@ function ProgressBar() {
 			d3.select("#" + d.body + "-text").remove();
 		}
 
+		// add listener to play control
+		playControl.on("click", function() {
+			var currentClass = $("#play-control").attr("class");
+
+			if (currentClass == "start") {
+				startPlayback(selectedExploration);
+			}
+			else if (currentClass == "resume"){
+				resumePlayback(selectedExploration);
+			}
+			else if (currentClass == "pause") {
+				pausePlayback(selectedExploration);
+			}
+			else if (currentClass == "replay") {
+				startPlayback(selectedExploration);
+			}
+		})
+
 		// add mouse listener to bar
 		progressSVG.on("click", triggerPlayFromPosition);
 		// add hover listener
@@ -164,7 +168,7 @@ function ProgressBar() {
 		// show title and duration text elements
 		explorationTitle.text(exploration.name + ", " + exploration.timeStamp);
 		explorationTitle.show();
-		durationText.show();
+		showDurationText();
 	}
 
 	// unloads an exploration
@@ -179,6 +183,8 @@ function ProgressBar() {
 		progressSVG.on("mousemove", null);
 		// remove mouseoff listener
 		progressSVG.on("mouseout", null);
+		// remove playControl listener
+		playControl.on("click", null);
 		// hide text and insert button		
 		timeText.hide();
 		insertButton.css("visibility", "hidden");
@@ -216,9 +222,9 @@ function ProgressBar() {
 	function showTimeText(millis){
 		// convert millis to ss:mm
 		var date = new Date(millis);
-		var minutes = date.getMinutes().toString()
-		var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds().toString()
-											: date.getSeconds();
+		var minutes = date.getMinutes().toString();
+		var seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
+												: date.getSeconds();
 
 		var progressPosition = getXPosOfTime(millis);
 		var	padding = 10;
@@ -231,6 +237,11 @@ function ProgressBar() {
 		timeText.show(); // jquery
 		timeText.text(minutes + ":" + seconds);
 		timeText.css(timePosition); // sets position relative to parent		
+	}
+
+	function showDurationText(){
+		durationText.text(selectedExploration.getDuration());
+		durationText.show();
 	}
 	// used in explorations
 	this.hideTimeText = function(){
