@@ -199,14 +199,14 @@ var currentEventIndex = 0,
 // plays an exploration from the start
 // PRE: no other exploration is being played
 function startPlayback(exploration){
-	
+
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
 	}
 
 	// launch the first event
-	launchEvents(exploration, 0); 
+	launchEvents(exploration, 0);
 
 	if (exploration.hasAudio()){
 		playAudio(exploration.getAudio());
@@ -260,7 +260,7 @@ function launchEvents(exploration, i, elapsedTime){
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
 
-// stops playback and resets position to the start
+//stops playback and resets position to the start
 function stopPlayback(exploration){
 	clearTimeout(playTimeout);
 
@@ -272,7 +272,6 @@ function stopPlayback(exploration){
 	updatePlaybackStopped();
 	progressBar.resetProgress();
 	pathMove.reset(exploration);
-	pathMove.resetText(exploration);
 	currentEventIndex = 0;
 	elapsedEventTime = 0;
 	playing = false;
@@ -280,7 +279,7 @@ function stopPlayback(exploration){
 	updatePlaybackStopped();
 }
 
-// pauses the current playback. cb will happen after progress bar updates
+//pauses the current playback. cb will happen after progress bar updates
 function pausePlayback(exploration, cb){
 	elapsedEventTime = new Date() - lastEventTime;
 	clearTimeout(playTimeout);
@@ -419,7 +418,7 @@ function updatePlaybackStarted(){
 	progressBar.hideTimeText();
 }
 
-// makes an exploration selected
+//makes an exploration selected
 function selectExploration(exploration){
 	if (selectedExploration)
 		deselectExploration();
@@ -464,6 +463,10 @@ function resetExplorations() {
 // PRE: current exploration != null
 function saveExploration(exploration) {
 	updateExplorationControls("saved");
+
+	// sets the time that this exploration was finished recording
+	var expl = currentUser.getCurrentExploration();
+
 	// if the exploration has no audio, go ahead and send
 	if (!exploration.audio){
 		sendExploration(exploration);
