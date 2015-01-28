@@ -100,9 +100,9 @@ function attemptLogon(name, pw){
 		}
 	}
 }
-
+var logoned =false;
 function logon(name){
-
+	logoned = true;
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
 
@@ -113,6 +113,7 @@ function logon(name){
 }
 
 function logout(){
+	logoned =false;
 	currentUser = null;
 	deselectExploration();
 	updateSideBar();

@@ -76,6 +76,7 @@ var svg = d3.select("body").append("svg")
 var g = svg.append("g")
 	.attr("id","map_area")
 	.attr("transform", "translate(0,0)scale(1)");
+svg.style('cursor','move');
 
 // Read country outline from file
 d3.json("data/map/kaz.json", function(error, json) {
@@ -90,7 +91,6 @@ d3.json("data/map/kaz.json", function(error, json) {
 	.attr("fill","#D0FA58")
 	.attr("stroke", "#FF0040");
 });
-svg.style('cursor','hand');
 
 // Add cities
 d3.json("data/map/kaz_places.json", function(error, json){
@@ -115,6 +115,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	.attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
 	.attr("dy", ".35em")
 	.text(function(d) { return d.properties.NAME; });
+	places.style('cursor','hand');
 
 	// Align labels to minimize overlaps
 	g.selectAll(".place-label")

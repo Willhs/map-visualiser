@@ -7,6 +7,7 @@ function updateSideBar(){
 	updateNotifications();
 	updateLogonElements();
 	updateUserInputElements();
+	updateUserImage();
 }
 
 //updates the exploration chooser (drop down box)
@@ -70,10 +71,14 @@ function updateNotifications(){
 		$("#notification-container").html("have "+ newCount + " new explorations.");
 		resetVisibility(notificationSelector,"hidden");
 		resetVisibility(notificationContainer,"visible");
+		notificationContainer.style.cursor = "pointer";
+
 	}
 	else{
 		resetVisibility(notificationContainer,"visible");
 		$("#notification-container").html("have no new explorations.");
+		notificationContainer.style.cursor = "not-allowed";
+
 	}
 }
 
@@ -122,6 +127,9 @@ function updateLogonElements(){
 		logonButton.value = "Log off";
 		userNameInput.disabled = true;
 		passwordInput.disabled = true;
+		userNameInput.style.cursor = "not-allowed";
+		passwordInput.style.cursor = "not-allowed";
+
 	}
 	// if no users logged on
 	else {
@@ -131,12 +139,32 @@ function updateLogonElements(){
 
 		userNameInput.value = "";
 		passwordInput.value = "";
+		userNameInput.style.cursor = "default";
+		passwordInput.style.cursor = "default";
+
+
 	}
 }
 
 function updateUserInputElements(){
 	document.getElementById("user-input").value = "";
 	document.getElementById("expl-sent-message").innerHTML = "";
+}
+
+function updateUserImage(){
+	var elems = document.getElementsByClassName("user-button");
+	if(logoned)	{
+		for(var i = 0; i<elems.length; i++){
+			elems[i].disabled = true;
+			elems[i].style.cursor = "not-allowed";
+		}
+	}
+	else{
+		for(var j = 0; j<elems.length; j++){
+			elems[j].disabled = false;
+			elems[j].style.cursor = "pointer";
+		}
+	}
 }
 
 function changeButtonColour(name, state){
@@ -177,7 +205,7 @@ function addRecordingGraphics(){
 	.transition().duration();
 }
 
-// remove recording related graphics
+//remove recording related graphics
 function removeRecordingGraphics(){
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();
@@ -232,7 +260,7 @@ function resetVisibility(idVar, state){
 	idVar.style.visibility = state;
 }
 
-// displays information about the location selected
+//displays information about the location selected
 function displayLocationInfo(city){
 
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
@@ -269,51 +297,51 @@ function displayLocationInfo(city){
 			var timestamp = new Date(annotation.timestamp);
 			var time = timestamp.getHours() + ":" + timestamp.getMinutes();
 			var date = timestamp.getDate() + "/" + timestamp.getMonth();
-		 	var annInfo = "<i> – " + userName + " " + date + " " + time + "</i>";
+			var annInfo = "<i> – " + userName + " " + date + " " + time + "</i>";
 
-		 	// make necessary DOM elements
-		 	var rowDiv = document.createElement("div");
-		 	var textDiv = document.createElement("div");
-		 	var controlsDiv = document.createElement("div");
-		 	var content = document.createElement("p");
-		 	var info = document.createElement("p");
+			// make necessary DOM elements
+			var rowDiv = document.createElement("div");
+			var textDiv = document.createElement("div");
+			var controlsDiv = document.createElement("div");
+			var content = document.createElement("p");
+			var info = document.createElement("p");
 
-		 	// set class (styles are applied in styles.css)
-		 	content.className = "annotation-text annotation-content";
-		 	info.className = "annotation-text annotation-info";
-		 	controlsDiv.className ="annotation-inner-container annotation-controls";
-		 	textDiv.className ="annotation-inner-container annotation-text-container";
-		 	rowDiv.className = "annotation-row";
+			// set class (styles are applied in styles.css)
+			content.className = "annotation-text annotation-content";
+			info.className = "annotation-text annotation-info";
+			controlsDiv.className ="annotation-inner-container annotation-controls";
+			textDiv.className ="annotation-inner-container annotation-text-container";
+			rowDiv.className = "annotation-row";
 
-		 	content.innerHTML = annotation.text;
-		 	info.innerHTML = annInfo;
+			content.innerHTML = annotation.text;
+			info.innerHTML = annInfo;
 
-		 	// display delete button if user owns the annotation
-		 	// TODO: more reliable equality check
-		 	if (currentUser != null && currentUser.name === userName){
-			 	var deleteButton = document.createElement("input");
-			 	deleteButton.type = "image";
-			 	deleteButton.src = IMAGE_PATH + "delete.png";
-			 	deleteButton.id = "delete-button";
-			 	deleteButton.onclick = function () { deleteAnnotation(annotation); }
-		 		controlsDiv.appendChild(deleteButton);
-		 	}
+			// display delete button if user owns the annotation
+			// TODO: more reliable equality check
+			if (currentUser != null && currentUser.name === userName){
+				var deleteButton = document.createElement("input");
+				deleteButton.type = "image";
+				deleteButton.src = IMAGE_PATH + "delete.png";
+				deleteButton.id = "delete-button";
+				deleteButton.onclick = function () { deleteAnnotation(annotation); }
+				controlsDiv.appendChild(deleteButton);
+			}
 
-		 	textDiv.appendChild(content);
-		 	textDiv.appendChild(info);
+			textDiv.appendChild(content);
+			textDiv.appendChild(info);
 
-		 	rowDiv.appendChild(textDiv);
-		 	rowDiv.appendChild(controlsDiv);
+			rowDiv.appendChild(textDiv);
+			rowDiv.appendChild(controlsDiv);
 
 			container.appendChild(rowDiv);
 		});
 		// TODO: load all annotations at once
 		document.getElementById("annotation-container")
-			.appendChild(container);
+		.appendChild(container);
 	}
 }
 
-// makes an annotation text input element.
+//makes an annotation text input element.
 function makeAnnotationInput(container){
 	var annInput = document.createElement("input");
 	annInput.type = "text";

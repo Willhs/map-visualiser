@@ -185,7 +185,6 @@ function PathMove(){
 	this.setTexted = false;
 	this.setText = function(expl){
 		this.setTexted = true;
-		console.log(this.setTexted);
 		for(var i = 0; i<this.citiesDisplay(expl).length; i++){
 			var cityNames = this.citiesDisplay(expl);
 			var pathed = false;

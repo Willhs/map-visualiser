@@ -307,7 +307,7 @@ function resumePlayback(exploration){
 	progressBar.updateProgress(exploration, position, timeTilNextEvent);
 	progressBar.updateButton();
 	//while(!getCityIndex(currentEvent.body))currentEvent = exploration.getEvent(currentEventIndex++);
-	pathMove.updatePathMove(exploration, currentEvent.time, timeTilNextEvent, currentEvent);
+	//pathMove.updatePathMove(exploration, currentEvent.time, timeTilNextEvent, currentEvent);
 
 }
 
@@ -461,6 +461,7 @@ function disableAction(names){
 	names.forEach(function(name){
 		var button = document.getElementById(name + "-exploration-button");
 		button.disabled = true;
+		button.style.cursor = "not-allowed";
 		changeButtonColour(name, false);
 	});
 
@@ -471,7 +472,7 @@ function enableAction(names){
 	names.forEach(function(name){
 		var button = document.getElementById(name + "-exploration-button");
 		button.disabled = false;
-
+		button.style.cursor = "pointer";
 		// change the colour if it's not the record button
 		if (!name.localeCompare("record") == 0)
 			changeButtonColour(name, true);
