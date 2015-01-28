@@ -1,24 +1,5 @@
 //-------------- event handling for DOM elements ----------------
 
-var recordExplButton = document.getElementById("record-exploration-button"),
-	playExplButton = document.getElementById("play-exploration-button"),
-	pauseExplButton = document.getElementById("pause-exploration-button"),
-	stopExplButton = document.getElementById("stop-exploration-button"),
-	saveExplButton = document.getElementById('save-exploration-button'),
-	deleteExplButton = document.getElementById('delete-exploration-button'),
-	resetExplButton = document.getElementById("reset-exploration-button"),
-	explChooser = document.getElementById("exploration-selector"),
-	userNameInput = document.getElementById("username-input"),
-	passwordInput = document.getElementById("password-input"),
-	logonButton = document.getElementById("logon-button"),
-	messageBar = document.getElementById("percent"),
-	notificationContainer = document.getElementById("notification-container"),
-	removeNotification = document.getElementById("remove-notification"),
-	quickplayNotification = document.getElementById("quickplay-notification"),
-	notificationSelector = document.getElementById("notification-selector"),
-	insertButton = $("#insert-button");
-
-
 // ---- explorations
 
 recordExplButton.addEventListener("click", function(){
@@ -98,14 +79,8 @@ newAccount.onclick = function(){
 
 // delete button
 deleteExplButton.onclick = function(){
-	if(selectedExploration==null){
-		return;
-	}
-	if(currentUser.explorations.indexOf(selectedExploration)<0){
-		return;
-	}
-	deleteExploration(selectedExploration);
-	deselectExploration();
+	if (selectedExploration)
+		deleteExploration(selectedExploration);
 };
 
 // ---- NOTIFICATIONS ----
@@ -145,6 +120,7 @@ quickplayNotification.addEventListener("click", function(){
 // ---- insert button
 insertButton.click(function(){
 	inserting = true;
+	insertButton.hide();
 });
 
 // ---- INIT

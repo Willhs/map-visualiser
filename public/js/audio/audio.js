@@ -89,14 +89,14 @@ if (typeof MediaStreamTrack === 'undefined'){
 function gotMedia(stream) {
     // makes input, gain and analyser AudioNodes
     var audioInput = audioContext.createMediaStreamSource(stream);
-    var gainNode = audioContext.createGain();
+    var source = audioContext.createGain(); // gain node
 
-    audioInput.connect(gainNode);
-    audioRecorder = new Recorder( gainNode );
+    audioInput.connect(source);
+    audioRecorder = new Recorder( source );
 
     var zeroGain = audioContext.createGain();
     zeroGain.gain.value = 0.0;
-    gainNode.connect( zeroGain );
+    source.connect( zeroGain );
     zeroGain.connect( audioContext.destination );
 }
 

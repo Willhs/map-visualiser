@@ -43,31 +43,6 @@ function ProgressBar() {
 		}
 	});
 
-	/*this.showInsertButton = function(){
-
-		(function makeInsertButton(){
-			var button = document.
-
-		})();
-
-		return function showInsertButton(){
-			var x = bar.attr("x");
-
-			insertGroup.select("rect")
-			.attr("x", x - buttonWidth/2);
-
-			insertGroup.select("text")
-			.attr("x", x);
-
-			insertGroup.style("visibility", "visible");
-		};
-	}();
-
-	this.hideInsertButton = function(){
-		d3.select("#insert-button")
-		.style("visibility", "hidden");
-	}*/
-
 	// updates the progress of the bar by displaying progression of an event of the exploration.
 	// eventTime: timestamp of event
 	// eventDuration: duration of the event
@@ -75,8 +50,14 @@ function ProgressBar() {
 		// the next bar position of the progress bar
 		var currentPosition = eventTime / exploration.getDuration() * progressWidth,
 			nextPosition = ((eventTime + eventDuration) / exploration.getDuration()) * progressWidth;
+
+		// update bar with current position	
 		bar.attr("x", currentPosition);
 
+		// hide button
+		hideInsertButton();
+
+		// start transition
 		bar.transition()
 		.duration(eventDuration)
 		.ease("linear in-out")
@@ -86,8 +67,8 @@ function ProgressBar() {
 	this.pause = function(cb){
 		bar.transition()
 		.duration(0)
-		.each("end.cb", cb);
-//		.each("end.insert-button", this.showInsertButton);
+		.each("end.cb", cb)
+		.each("end.insert-button", showInsertButton);
 	}
 
 	this.setPosition = function(time){
@@ -155,7 +136,7 @@ function ProgressBar() {
 				.attr({
 					id: travelId + "-text",
 					dx: function(d){ return getEventPosition(d.time); },
-					dy: -12,
+					dy: 12,
 					fill: "steelblue",
 					"text-anchor": "middle"
 				})
@@ -179,6 +160,8 @@ function ProgressBar() {
 		d3.selectAll(".event-marker").remove();
 		// remove mouse event listener
 		d3.select("progress-bar").on("click", null);
+		// hide insert button
+		hideInsertButton();
 	}
 
 	function triggerPlayFromPosition(e){
@@ -198,7 +181,31 @@ function ProgressBar() {
 		return time / selectedExploration.getDuration() * progressWidth;
 	}
 
+	// returns the x position of the bar as it is now
+	this.getCurrentProgressX = function(){
+		return parseInt(bar.attr("x"));
+	}
+
 	this.getTop = function(){
 		return 0;
+	}
+
+	// displays insert button above the current playback position
+	function showInsertButton(){	
+		var barPosition = $("#play-progress").offset();
+		var progressPosition = progressBar.getCurrentProgressX();
+		var	padding = 10;
+
+		var insertPosition = {
+			top: barPosition.top - (insertButton.outerHeight() + padding), // place button above bar
+			left: barPosition.left + (progressPosition - insertButton.outerWidth()/2)
+		};
+
+		insertButton.show(); // jquery
+		insertButton.offset(insertPosition);
+	}
+
+	function hideInsertButton(){
+		insertButton.hide();
 	}
 }

@@ -162,21 +162,23 @@ app.post("/deleteExploration", function(req, res){
 	var explFiles = fs.readdirSync(path);
 
 	// find and delete the file corresponding to the annotation specified.
-	explFiles.forEach(function(filename){
+	for (var i = 0; i < explFiles.length; i++){
+		var filename = explFiles[i];
 		var filePath = path + filename;
 		if (fs.lstatSync(filePath).isDirectory())
 			return; // if the file is a directory
 		var exploration = JSON.parse(fs.readFileSync(filePath));
-		if (timeStamp.localeCompare(exploration.timeStamp)==0){
 			// found match
+		if (timeStamp.localeCompare(exploration.timeStamp)==0){
+			// delete exploration file.
 			fs.unlinkSync(filePath);
-
 			// delete audio file if there is one
 			if (hasAudio){
 				fs.unlinkSync(exploration.audio);
-			}			
+			}
+			break;
 		}
-	});
+	}
 	res.sendStatus(200);
 });
 

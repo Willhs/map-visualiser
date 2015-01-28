@@ -173,8 +173,8 @@ function loadAllExplorations(userName, cb){
 
 			exploration.transferPropertiesFrom(data);
 			allExplorations.push(exploration);
-
 		});
+
 		// send back explorations
 		cb(allExplorations);
 	}
