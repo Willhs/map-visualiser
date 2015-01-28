@@ -11,6 +11,7 @@ var audioElem = document.getElementById("exploration-audio");
 
 var progressBar = new ProgressBar;
 var pathMove = new PathMove;
+//var iframeWindow = new IframePath;
 
 var selectedExploration = null; // currently selected exploration
 //var pathMove = new PathMove;
@@ -95,7 +96,7 @@ function Exploration() {
 	this.equals = function(exploration){
 		if (exploration == null) return false;
 		return this.userName === exploration.userName
-			&& this.timeStamp === exploration.timeStamp;
+		&& this.timeStamp === exploration.timeStamp;
 	}
 	this.getDuration = function(){
 		if(this.events.length == 0)
@@ -111,31 +112,6 @@ function Exploration() {
 				return this.getEvent(i-1);
 		}
 	}
-
-	// inserts all new events into events array after afterIndex
-	// changes the time property of certain events according to the time provided
-	this.insertEvents = function(newEvents, afterIndex, time){
-
-		// duration of new exploration to be inserted
-		var insertDuration = newEvents[newEvents.length-1].time;
-
-		// remove start and end events
-		newEvents = newEvents.slice(1, newEvents.length-2);
-
-		// change time of events being added
-		for (var i = 0; i < newEvents.length; i++){
-			newEvents[i].time += time;
-		}
-		// increment time of all events after the insert
-		for (var i = afterIndex; i < selectedExploration.numEvents(); i++){
-			var event = selectedExploration.getEvent(i);
-			event.time += insertDuration;
-		}
-		// insert new events into events array
-		this.events = this.events.slice(0, afterIndex)
-						.concat(newEvents)
-						.concat(this.events.slice(afterIndex));
-	}		
 }
 
 //makes a default name for an exploration
@@ -364,7 +340,7 @@ function setPlaybackPosition(exploration, time){
 
 		// if already playing, continue
 		if (wasPlaying)
-			resumePlayback(exploration);	
+			resumePlayback(exploration);
 	});
 
 	// changes (transforms) map to be aftermath of event
@@ -481,7 +457,6 @@ function resetExplorations() {
 		currentUser.resetCurrentExploration();
 
 	deselectExploration();
-	progressBar.unload();
 	updateExplorationControls();
 }
 
@@ -489,7 +464,6 @@ function resetExplorations() {
 // PRE: current exploration != null
 function saveExploration(exploration) {
 	updateExplorationControls("saved");
-
 	// if the exploration has no audio, go ahead and send
 	if (!exploration.audio){
 		sendExploration(exploration);
@@ -534,6 +508,7 @@ function disableAction(names){
 	names.forEach(function(name){
 		var button = document.getElementById(name + "-exploration-button");
 		button.disabled = true;
+		button.style.cursor = "not-allowed";
 		changeButtonColour(name, false);
 	});
 
@@ -544,7 +519,7 @@ function enableAction(names){
 	names.forEach(function(name){
 		var button = document.getElementById(name + "-exploration-button");
 		button.disabled = false;
-
+		button.style.cursor = "pointer";
 		// change the colour if it's not the record button
 		if (!name.localeCompare("record") == 0)
 			changeButtonColour(name, true);
@@ -621,7 +596,7 @@ function setExplorationIsOld(expl){
 			explUserName:expl.userName, // the user who made the exploration
 			timeStamp: expl.timeStamp
 		}),
-		contentType: "application/json"		
+		contentType: "application/json"	
 	});
 }
 
