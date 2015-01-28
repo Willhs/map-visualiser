@@ -10,13 +10,13 @@ function ProgressBar() {
 
 	
 	// add the progress bar svg
-	var progress = d3.select("#play-progress").append("svg")
+	var progressSVG = d3.select("#bar-container").append("svg")
 	.attr("id","play-svg")
 	.attr("width", progressWidth)
 	.attr("height", progressHeight);
 	// append a rect, which will move to the right as the animation plays
 	// this creates the progress bar effect
-	var bar = progress.append("rect")
+	var bar = progressSVG.append("rect")
 	.attr("id","progress-bar")
 	.attr("width", progressWidth)
 	.attr("height", progressHeight)
@@ -55,7 +55,7 @@ function ProgressBar() {
 		bar.attr("x", currentPosition);
 
 		// hide button
-		hideInsertButton();
+		insertButton.css("visibility", "hidden");
 
 		// start transition
 		bar.transition()
@@ -67,18 +67,25 @@ function ProgressBar() {
 	this.pause = function(cb){
 		bar.transition()
 		.duration(0)
-		.each("end.cb", cb)
-		.each("end.insert-button", showInsertButton);
+		.each("end.cb", cb);
+
+		insertButton.css("visibility", "visible");
+		showTimeText(getCurrentPlaybackTime());
 	}
 
 	this.setPosition = function(time){
-		bar.attr("x", time / selectedExploration.getDuration() * progressWidth);
+		// if selectedExploration is null, just return
+		if (!selectedExploration) return;
+		var progress = time / selectedExploration.getDuration();
+		bar.attr("x", progress * progressWidth);
+		showTimeText(getCurrentPlaybackTime());
 	}
 
 	this.resetProgress = function(){
+		var that = this; // store this
 		// replace current transition with dummy one to stop it
 		bar.transition().duration(0).each("end", function(){
-			bar.attr("x", progressLeft);
+			that.setPosition(0);
 		});
 	}
 
@@ -103,7 +110,7 @@ function ProgressBar() {
 		}
 
 		// add event markers
-		progress.selectAll(".event-marker")
+		progressSVG.selectAll(".event-marker")
 			.data(travelEvents)
 			.enter()
 			.append("g")
@@ -129,7 +136,6 @@ function ProgressBar() {
 		}
 
 		function showTravelText(d){
-			//console.log(d3.select(this));
 			var travelId = d.body;
 			d3.select("#"+travelId)
 				.insert("text")
@@ -147,21 +153,37 @@ function ProgressBar() {
 		}
 
 		// add mouse listener to bar
-		d3.select("#play-svg").on("click", triggerPlayFromPosition);
+		progressSVG.on("click", triggerPlayFromPosition);
+		// add hover listener
+		progressSVG.on("mousemove", function(){ showTimeText(getTimeOfXpos(d3.mouse(this)[0])); });
+		// mouseoff listener
+		progressSVG.on("mouseout", this.hideTimeText);
+		// show 
+		progressSVG.style.visibility = "visible";
 
-		progress.style.visibility = "visible";
+		// show title and duration text elements
+		explorationTitle.text(exploration.name + ", " + exploration.timeStamp);
+		explorationTitle.show();
+		durationText.show();
 	}
 
 	// unloads an exploration
 	this.unload = function(){
-		//progress.style.visibility = "hidden";
+		//progressSVG.style.visibility = "hidden";
 		this.resetProgress();
 		// remove all event markers
-		d3.selectAll(".event-marker").remove();
+		progressSVG.selectAll(".event-marker").remove();
 		// remove mouse event listener
-		d3.select("progress-bar").on("click", null);
-		// hide insert button
-		hideInsertButton();
+		progressSVG.on("click", null);
+		// remove mousemove listener
+		progressSVG.on("mousemove", null);
+		// remove mouseoff listener
+		progressSVG.on("mouseout", null);
+		// hide text and insert button		
+		timeText.hide();
+		insertButton.css("visibility", "hidden");
+		explorationTitle.hide();
+		durationText.hide();
 	}
 
 	function triggerPlayFromPosition(e){
@@ -170,42 +192,48 @@ function ProgressBar() {
       	var offset = $(this).offset();
       	var xpos = d3.mouse(this)[0]; // 36 ?
 
-      	// what percent (as decimal) across the rect is the mouse?
-      	var progress = xpos/progressWidth;
-
-      	setPlaybackPosition(selectedExploration, selectedExploration.getDuration() * progress);
+      	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 
 	// returns the x position of the bar at this time
-	this.getXPosOfTime = function(time){
-		return time / selectedExploration.getDuration() * progressWidth;
+	function getXPosOfTime(time){
+		var progress = time / selectedExploration.getDuration();
+		return progress * progressWidth;
+	}
+
+	function getTimeOfXpos(xpos){
+		// what percent (as decimal) across the rect is the mouse?
+		var progress = xpos / progressWidth;
+		return progress * selectedExploration.getDuration();
 	}
 
 	// returns the x position of the bar as it is now
-	this.getCurrentProgressX = function(){
+	function getCurrentProgressX(){
 		return parseInt(bar.attr("x"));
 	}
 
-	this.getTop = function(){
-		return 0;
-	}
-
 	// displays insert button above the current playback position
-	function showInsertButton(){	
-		var barPosition = $("#play-progress").offset();
-		var progressPosition = progressBar.getCurrentProgressX();
+	function showTimeText(millis){
+		// convert millis to ss:mm
+		var date = new Date(millis);
+		var minutes = date.getMinutes().toString()
+		var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds().toString()
+											: date.getSeconds();
+
+		var progressPosition = getXPosOfTime(millis);
 		var	padding = 10;
 
-		var insertPosition = {
-			top: barPosition.top - (insertButton.outerHeight() + padding), // place button above bar
-			left: barPosition.left + (progressPosition - insertButton.outerWidth()/2)
+		var timePosition = {
+			top: 0,
+			left: (progressPosition - timeText.outerWidth()/2)
 		};
 
-		insertButton.show(); // jquery
-		insertButton.offset(insertPosition);
+		timeText.show(); // jquery
+		timeText.text(minutes + ":" + seconds);
+		timeText.css(timePosition); // sets position relative to parent		
 	}
-
-	function hideInsertButton(){
-		insertButton.hide();
+	// used in explorations
+	this.hideTimeText = function(){
+		timeText.hide();
 	}
 }

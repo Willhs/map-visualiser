@@ -90,11 +90,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 					alt="javascript button">
 			</div>
 		</div>
-		<!-- <div>
-			<progress id="progress-bar" value="0" max=""></progress>
-			<span id="percent"> </span> <span id="messageBar"></span>
-
-		</div> -->
 		<div>
 			<div class="selected-exploration">
 				<p id="selected-exploration-name"></p>
@@ -143,10 +138,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		<select id="notification-selector" class="notification-selectors" size="3"></select>
 	</div>
 
-	<button id="insert-button">Insert</button>
-
-	<div id="play-progress">
-		<div id="play-control" class="start"></div>
+	<div id="player-panel">
+		<div id="above-bar">
+			<p id="time-text"></p>
+		</div>
+		<div id="play-progress">
+			<div id="bar-container">
+				<div id="play-control" class="start"></div>
+			</div>
+			<button id="insert-button">Insert</button>	
+		</div>
+		<div id="below-bar">
+			<p id="exploration-title"></p>
+			<p id="duration-text"></p>
+		</div>
 	</div>
 
 	<audio id="exploration-audio"></audio>

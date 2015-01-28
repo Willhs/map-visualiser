@@ -16,7 +16,10 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	removeNotification = document.getElementById("remove-notification"),
 	quickplayNotification = document.getElementById("quickplay-notification"),
 	notificationSelector = document.getElementById("notification-selector"),
-	insertButton = $("#insert-button");
+	insertButton = $("#insert-button"),
+	explorationTitle = $("#exploration-title")
+	timeText = $("#time-text"),
+	durationText = $("#duration-text");
 
 //updates elements in the side bar
 function updateSideBar(){

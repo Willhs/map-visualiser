@@ -211,45 +211,31 @@ input,label {
 
 /* ------ PROGRESS BAR ------------ */
 
-#progress {
-	position: relative;
-	width: 288px;
-	height: 20px;
-	border: 1px solid black;
-	padding: 3px;
-}
-
-#bar {
-	height: 10px;
-	background-color: green;
-	width: 30%;
-}
-
-#percent {
-	position: absolute;
-	left: 30%;
-}
-
-/* play progress bar */
-#play-progress {
+#player-panel {	
   	position: fixed;
-  	width: 910px;
-  	margin-bottom: 20px;
-  	background-color: #28AADE;
-  	height: 36px;
-  	border-radius: 20px;
   	left: 20%;
-  	top: 85%;
+  	top: 75%;
 }
 
-#play-svg {
+#above-bar {
+	height: 30px;
+	position: relative;
+}
+
+#play-progress {	
+  	width: 980px;
+  	height: 36px;
+}
+
+#bar-container {	
+  	display: inline-block;
+  	background-color: #28AADE;
   	border-radius: 20px;
+  	width: 910px;
+  	height: 36px;
 }
 
-#progress-bar {
-  	fill:#666;
-}
-
+/* button (play, pause) */
 #play-control {
   	width:37px;
   	height:36px;
@@ -258,6 +244,7 @@ input,label {
   	position: absolute;
 }
 
+/* --- progress bar button image (contains all button faces) -----*/
 #play-control.play {
   	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px 0px;
 }
@@ -277,30 +264,23 @@ input,label {
   	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -72px;
 }
 
-#path-play {
-  	fill: none;
-  	stroke: #0000FF;
-  	stroke-width: 2px;
+#play-svg {
+	display: inline-block;
+  	border-radius: 20px;
 }
 
-#circle {
-  	fill: steelblue;
-  	stroke: #fff;
-  	stroke-width: 2px;
-}
-#circle-move {
-  	fill: white;
-  	stroke: #fff;
-  	stroke-width: 3px;
+/* svg rect */
+#progress-bar {
+  	fill:#666;
 }
 
 #insert-button {
-	cursor: pointer;
-	padding: 2px 10px;
+	position: absolute;
+	padding: 10px 10px;
 	background: #35b128;
 	border: 1px solid #33842a;
 	border-radius: 10px;
-	/*box-shadow: 0 0 4px rgba(0,0,0, .75);*/
+	cursor: pointer;
 	/* text */
 	color: #f3f3f3;
 	font-size: 1.2em;
@@ -308,6 +288,49 @@ input,label {
 
 #insert-button:hover, #insert-button:focus {
 	background-color: #399630; /*make the background a little darker*/
+}
+
+#time-text {
+	position: absolute;
+	top: -5px;
+	padding: 4px 4px;
+	background: black;
+	opacity: 0.7;
+	border-radius: 10px;
+	/* text */
+	color: white;
+	font-size: 0.9em;
+}
+
+#exploration-title {
+	left: 36px;
+}
+
+#duration-text {
+	left: 400px;
+}
+
+#below-bar p {
+	font-size: 1.5em;
+	color: SteelBlue;
+	position: absolute;
+}
+
+#path-play {
+  	fill: none;
+  	stroke: #0000FF;
+  	stroke-width: 2px;
+}
+
+#circle {
+  	fill: SteelBlue;
+  	stroke: #fff;
+  	stroke-width: 2px;
+}
+#circle-move {
+  	fill: white;
+  	stroke: #fff;
+  	stroke-width: 3px;
 }
 
 .invisible {

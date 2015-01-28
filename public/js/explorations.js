@@ -291,6 +291,7 @@ function stopPlayback(exploration){
 	updatePlaybackStopped();
 	progressBar.resetProgress();
 	currentEventIndex = 0;
+	elapsedEventTime = 0;
 	playing = false;
 	updatePlaybackStopped();
 }
@@ -427,23 +428,24 @@ function updatePlaybackStarted(){
 	inserting = false;
 	updateExplorationControls();
 	progressBar.updateButton();
+	progressBar.hideTimeText();
 }
 
 // makes an exploration selected
 function selectExploration(exploration){
 	if (selectedExploration)
 		deselectExploration();
+
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
-	if(currentUser.getExplorations().indexOf(exploration)>-1 ||selectedExploration){
-		enableAction("delete");
-	}
 
 	updateExplorationControls();
 }
 
 // deselects current exploration
 function deselectExploration(){
+	if (!selectedExploration)
+		return;
 	selectedExploration = null;
 	progressBar.unload();
 	disableAction("delete");
@@ -535,6 +537,7 @@ function recordMovement(){
 	currentUser.getCurrentExploration().addEvent("movement", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
+// removes this exploration from the user's files
 function deleteExploration(expl){
 	$.ajax({
 		type: 'POST',
@@ -594,4 +597,9 @@ function setExplorationIsOld(expl){
 		}),
 		contentType: "application/json"		
 	});
+}
+
+// returns the time position in the current playback
+function getCurrentPlaybackTime(){
+	return selectedExploration.getEvent(currentEventIndex).time + elapsedEventTime;
 }
