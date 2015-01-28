@@ -63,9 +63,7 @@ function updateNotifications(){
 	var newCount = 0;
 
 	sharedExpl.forEach(function(expl){
-
 		if(expl.isNew) newCount++;
-		console.log(newCount);
 	});
 
 	if(newCount>0){
@@ -81,54 +79,39 @@ function updateNotifications(){
 
 function updateExplorationControls(specialCase){
 	if (!selectedExploration){
-		disableAction("save");
-		disableAction("play");
-		disableAction("stop");
-		disableAction("pause");
-		disableAction("reset");
-		enableAction("record");
+		disableAction(["save","play","stop","pause","reset","delete"]);
+		enableAction(["record"]);
 
 		if (userLoggedOn()){
-			enableAction("record");
+			enableAction(["record"]);
 		}
 		else {
-			disableAction("record");
+			disableAction(["record"]);
 		}
 	}
 	else if (!playing){
-		enableAction("play");
-		enableAction("reset");
-		enableAction("record");
-		disableAction("pause");
-		disableAction("stop");
+		enableAction(["record","play","reset"]);
+		disableAction(["stop","pause"]);
+
 		changeButtonColour("record", false);
 	}
 	else if (playing){
-		enableAction("stop");
-		enableAction("pause");
-		disableAction("record");
-		disableAction("play");
+		enableAction(["stop","pause"]);
+		disableAction(["record","play","delete"]);
 	}
 	if (recording){
-		disableAction("stop");
-		disableAction("pause");
-		disableAction("save");
-		disableAction("play");
+		disableAction(["save","play","stop","pause"]);
 		changeButtonColour("record", true);
 	}
 
 	if (specialCase){
 		if (specialCase === "stopped-recording"){
-			enableAction("play");
-			enableAction("reset");
-			enableAction("record");
-			disableAction("pause");
-			disableAction("stop");
+			enableAction(["record","play","reset","save"]);
+			disableAction(["stop","pause"]);
 			changeButtonColour("record", false);
-			enableAction("save");
 		}
 		if (specialCase === "saved"){
-			disableAction("save");
+			disableAction(["save","delete"]);
 		}
 	}
 }
@@ -220,8 +203,6 @@ function showListNotifications(){
 				newOption.innerHTML = explorationName;
 				newOption.onclick  = function(){
 					stopRecording();
-					enableAction("play");
-					enableAction("reset");
 					currentUser.setCurrentExploration(expl);
 					var pathMove = new PathMove;
 					pathMove.load(expl);
@@ -238,7 +219,6 @@ function showListNotifications(){
 }
 
 function divHideShow(div){
-	console.log("a");
 	if (div.style.visibility.localeCompare("visible")==0){
 		div.style.visibility= "hidden";
 	}

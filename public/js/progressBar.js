@@ -113,15 +113,14 @@ function ProgressBar() {
 						fill: "orange"
 					})
 					.on("mouseover", showTravelText)
+					//.on("mouseover", addIframe)
 					.on("mouseout", removeTravelText);
 
 
 		function getEventPosition(eventTime){
 			return eventTime / exploration.getDuration() * progressWidth;
 		}
-
 		function showTravelText(d){
-			//console.log(d3.select(this));
 			var travelId = d.body;
 			d3.select("#"+travelId)
 				.insert("text")

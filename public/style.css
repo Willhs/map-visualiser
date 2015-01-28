@@ -6,12 +6,19 @@ body {
 	/* The default font size will be 10 pixels with the default web browser font size setting*/
 	font: 0.625em/1em Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
+iframe:focus {
+    outline: none;
+}
 
+iframe[seamless] {
+    display: block;
+}
 .map {
 	position: absolute;
 	width: 80%;
 	height: 95%;
 	top: 3px;
+	cursor:pointer;
 }
 
 #side-bar {
@@ -122,8 +129,8 @@ input,label {
 	background-color: #ccc;
 	border: 3px solid rgb(0, 0, 1);
 	position: fixed;
-	left: 63%;
-	top: 74%;
+	left: 0%;
+	top: 0%;
 	width: 339px;
 	height: 200px;
 }
@@ -133,14 +140,16 @@ input,label {
 	margin: 1px left;
 	max-width: 339px;
 	max-height: 200px;
+	cursor: pointer;
 }
 
-#minimap-iframe {
+#iframe {
 	border: 0px none;
 	margin-left: -185px;
 	height: 859px;
 	margin-top: -533px;
 	width: 926px;
+	cursor: pointer;
 }
 
 .notification-container {
@@ -153,6 +162,8 @@ input,label {
 	font-size: 150%;
 	background-color: #ccc;
 	visibility: hidden;
+	cursor: pointer;
+
 }
 
 .notification-selectors {
@@ -163,6 +174,8 @@ input,label {
 	height: 70px;
 	background-color: #fff;
 	visibility: hidden;
+	cursor: pointer;
+
 }
 
 #fileslist-container {
@@ -180,6 +193,8 @@ input,label {
 	width:20px;
 	height:20px;
 	visibility: hidden;
+	cursor: pointer;
+
 
 }
 
@@ -190,6 +205,8 @@ input,label {
 	width:20px;
 	height:20px;
 	visibility: hidden;
+	cursor: pointer;
+
 
 }
 
@@ -201,6 +218,8 @@ input,label {
 	height: 130px;
 	background-color: #ccc;
 	border: 3px solid black;
+	cursor: pointer;
+
 }
 
 #save-audio {

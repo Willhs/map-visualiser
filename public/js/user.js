@@ -26,6 +26,10 @@ function User(name, explorations){
 	this.resetCurrentExploration = function(){
 		this.currentExpl = null;
 	};
+	this.haveExploration = function(expl){
+		if(this.explorations.indexOf(expl)>=0) return true;
+		else return false;
+	};
 	// gets an exploration (given a timestamp) from the user's collection of explorations
 	this.getExploration = function(timeStamp){
 		var userExpl = null;
