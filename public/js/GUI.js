@@ -104,56 +104,40 @@ function updateNotifications(){
 
 function updateExplorationControls(specialCase){
 	if (!selectedExploration){
-		disableAction("save");
-		disableAction("play");
-		disableAction("stop");
-		disableAction("pause");
-		disableAction("reset");
-		disableAction("delete");
-		enableAction("record");
+		disableAction(["save","play","stop","pause","reset","delete"]);
+		enableAction(["record"]);
 
 		if (userLoggedOn()){
-			enableAction("record");
+			enableAction(["record"]);
 		}
 		else {
-			disableAction("record");
+			disableAction(["record"]);
 		}
 	}
 	else if (!playing){
-		enableAction("play");
-		enableAction("reset");
-		enableAction("record");
-		enableAction("delete");
-		disableAction("pause");
-		disableAction("stop");
+		enableAction(["record","play","reset","delete"]);
+		disableAction(["stop","pause"]);
+
 		changeButtonColour("record", false);
 	}
 	else if (playing){
-		enableAction("stop");
-		enableAction("pause");
-		disableAction("record");
-		disableAction("play");
+		enableAction(["stop","pause"]);
+		disableAction(["record","play","delete"]);
 	}
 	if (recording){
-		disableAction("stop");
-		disableAction("pause");
-		disableAction("save");
-		disableAction("play");
+		disableAction(["save","play","stop","pause","delete"]);
 		changeButtonColour("record", true);
 	}
 
 	if (specialCase){
 		if (specialCase === "stopped-recording"){
-			enableAction("play");
-			enableAction("reset");
-			enableAction("record");
-			disableAction("pause");
-			disableAction("stop");
+			enableAction(["record","play","reset","save"]);
+			disableAction(["stop","pause","delete"]);
 			changeButtonColour("record", false);
-			enableAction("save");
+			enableAction(["save"]);
 		}
 		if (specialCase === "saved"){
-			disableAction("save");
+			disableAction(["save","delete"]);
 		}
 	}
 }
@@ -245,8 +229,6 @@ function showListNotifications(){
 				newOption.innerHTML = explorationName;
 				newOption.onclick  = function(){
 					stopRecording();
-					enableAction("play");
-					enableAction("reset");
 					currentUser.setCurrentExploration(expl);
 					var pathMove = new PathMove;
 					pathMove.load(expl);

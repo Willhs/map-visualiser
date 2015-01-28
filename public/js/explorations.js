@@ -223,7 +223,7 @@ var currentEventIndex = 0,
 // plays an exploration from the start
 // PRE: no other exploration is being played
 function startPlayback(exploration){
-	//pathMove.movePath(exploration);
+	
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
@@ -245,6 +245,7 @@ function startPlayback(exploration){
 	updatePlaybackStarted();
 	// updates GUI
 	updateNotifications();
+	if(!pathMove.setTexted)pathMove.setText(exploration);
 }
 
 // launches the events of an exploration started at the ith event
@@ -254,6 +255,12 @@ function launchEvents(exploration, i, elapsedTime){
 	lastEventTime = new Date();
 	currentEventIndex = i;
 	var currentEvent = exploration.getEvent(i);
+	var nextEvent = exploration.getEvent(i+1);
+	var delay = null;
+	// if resumeTime is specified, remove it from delay	
+	if(nextEvent!=null) delay = nextEvent.time - currentEvent.time;
+	delay = elapsedTime ? delay - elapsedTime : delay;
+
 //	console.log("launching event at time:", currentEvent.time);
 
 	switch (currentEvent.type){
@@ -273,12 +280,7 @@ function launchEvents(exploration, i, elapsedTime){
 		return;
 	}
 
-	var nextEvent = exploration.getEvent(i+1);
-	var delay = nextEvent.time - currentEvent.time;
-	// if elapsedTime is specified, remove it from delay
-	delay = elapsedTime ? delay - elapsedTime : delay;
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
-
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
 
@@ -294,6 +296,7 @@ function stopPlayback(exploration){
 	updatePlaybackStopped();
 	progressBar.resetProgress();
 	pathMove.reset(exploration);
+	pathMove.resetText(exploration);
 	currentEventIndex = 0;
 	elapsedEventTime = 0;
 	playing = false;
@@ -337,6 +340,8 @@ function resumePlayback(exploration){
 
 	progressBar.updateProgress(exploration, position, timeTilNextEvent);
 	progressBar.updateButton();
+	pathMove.updatePathMove(exploration, currentEvent.time, timeTilNextEvent, currentEvent);
+
 }
 
 // sets playback position to time parameter, then plays from that position (if was playing before)
@@ -446,8 +451,10 @@ function selectExploration(exploration){
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
 	pathMove.load(selectedExploration);
-	if(currentUser.getExplorations().indexOf(exploration)>-1 ||selectedExploration){
-		enableAction("delete");
+	//iframeWindow.load(selectedExploration);
+
+	if(currentUser.haveExploration(exploration)){
+		enableAction(["delete"]);
 	}
 
 	updateExplorationControls();
@@ -457,11 +464,11 @@ function selectExploration(exploration){
 function deselectExploration(){
 	if (!selectedExploration)
 		return;
+	pathMove.unload(selectedExploration);
 	selectedExploration = null;
 	progressBar.unload();
-	pathMove.unload();
 	if (!currentUser || !currentUser.hasExplorations())
-		disableAction("delete");
+		disableAction(["delete"]);
 }
 
 // resets to original state (no explorations selected and no recordings in progress)
@@ -522,21 +529,26 @@ function saveExploration(exploration) {
 	}
 }
 
-// disables an action (currently button)
-function disableAction(name){
-	var button = document.getElementById(name + "-exploration-button");
-	button.disabled = true;
-	changeButtonColour(name, false);
+//disables an action (currently button)
+function disableAction(names){
+	names.forEach(function(name){
+		var button = document.getElementById(name + "-exploration-button");
+		button.disabled = true;
+		changeButtonColour(name, false);
+	});
+
 }
 
-// enable an action
-function enableAction(name){
-	var button = document.getElementById(name + "-exploration-button");
-	button.disabled = false;
+//enable an action
+function enableAction(names){
+	names.forEach(function(name){
+		var button = document.getElementById(name + "-exploration-button");
+		button.disabled = false;
 
-	// change the colour if it's not the record button
-	if (!name.localeCompare("record") == 0)
-		changeButtonColour(name, true);
+		// change the colour if it's not the record button
+		if (!name.localeCompare("record") == 0)
+			changeButtonColour(name, true);
+	});
 }
 
 //records an instance of a user action to travel to a place on the map

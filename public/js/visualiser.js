@@ -90,6 +90,7 @@ d3.json("data/map/kaz.json", function(error, json) {
 	.attr("fill","#D0FA58")
 	.attr("stroke", "#FF0040");
 });
+svg.style('cursor','hand');
 
 // Add cities
 d3.json("data/map/kaz_places.json", function(error, json){
