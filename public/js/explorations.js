@@ -246,7 +246,6 @@ function launchEvents(exploration, i, elapsedTime){
 		break;
 	}
 
-
 	// if resumeTime is specified, remove it from delay
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
@@ -264,7 +263,6 @@ function stopPlayback(exploration){
 	updatePlaybackStopped();
 	progressBar.resetProgress();
 	pathMove.reset(exploration);
-	pathMove.resetText(exploration);
 	currentEventIndex = 0;
 	playing = false;
 	updatePlaybackStopped();

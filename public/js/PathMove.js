@@ -4,7 +4,7 @@ function PathMove(){
 	var svg = d3.select("#svg_map");
 	var g = svg.select("#map_area");
 	var pathLine = null;
-	var line = null;
+	var pathMove= null;
 	this.exploration = null;
 	this.citiesDisplay = function(expl){
 		if(expl==null)return;
@@ -68,8 +68,6 @@ function PathMove(){
 	};
 	var currentCityIndex = -1;
 	this.updatePathMove = function(expl, eventTime, eventDuration, currentEvent){
-		console.log("aaa");
-
 		if(this.citiesDisplay(expl).length==0)return;
 		if(this.cityEventTimes(expl).indexOf(eventTime)<0){
 			return;
@@ -115,7 +113,6 @@ function PathMove(){
 		.attr("stroke-width", 2)
 		.attr("fill", "none");
 		var totalLength = pathMove.node().getTotalLength();
-		console.log(totalLength);
 
 		pathMove
 		.attr("stroke-dasharray", totalLength + " " + totalLength)
@@ -152,16 +149,17 @@ function PathMove(){
 
 		d3.select("path#path-play").remove();
 		d3.select("g").selectAll("circle").remove();
-		d3.select("g").selectAll("#animationPath").remove();
+		d3.selectAll("#animationPath").remove();
 		this.resetText(expl);
 	};
 
 	this.reset = function(expl){
 		currentCityIndex = -1;
 		if(this.citiesDisplay(expl).length==0)return;
-		d3.select("g").selectAll("#animationPath").remove();
+		d3.selectAll("#animationPath").remove();
 		circle.attr("cx", this.translates(expl)[0][0]);
 		circle.attr("cy", this.translates(expl)[0][1]);
+		this.resetText(expl);
 	};
 
 	function getTranslate(data){
