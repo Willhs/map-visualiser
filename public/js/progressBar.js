@@ -53,7 +53,6 @@ function ProgressBar() {
 		.each("end.cb", cb);
 
 		insertButton.css("visibility", "visible");
-		showTimeText(getCurrentPlaybackTime());
 	}
 
 	this.setPosition = function(time){
@@ -64,7 +63,6 @@ function ProgressBar() {
 		} 
 		var progress = time / selectedExploration.getDuration();
 		bar.attr("x", progress * progressWidth);
-		showTimeText(getCurrentPlaybackTime());
 	}
 
 	this.resetProgress = function(){
@@ -219,12 +217,9 @@ function ProgressBar() {
 	}
 
 	// displays insert button above the current playback position
-	function showTimeText(millis){
-		// convert millis to ss:mm
-		var date = new Date(millis);
-		var minutes = date.getMinutes().toString();
-		var seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
-												: date.getSeconds();
+	function showTimeText(millis){		
+
+		var formattedTime = formatTime(millis);	
 
 		var progressPosition = getXPosOfTime(millis);
 		var	padding = 10;
@@ -235,16 +230,26 @@ function ProgressBar() {
 		};
 
 		timeText.show(); // jquery
-		timeText.text(minutes + ":" + seconds);
+		timeText.text(formattedTime);
 		timeText.css(timePosition); // sets position relative to parent		
 	}
 
-	function showDurationText(){
-		durationText.text(selectedExploration.getDuration());
+function showDurationText(){
+		var formattedTime = formatTime(selectedExploration.getDuration());
+		durationText.text(formattedTime);
 		durationText.show();
 	}
 	// used in explorations
 	this.hideTimeText = function(){
 		timeText.hide();
 	}
+
+	function formatTime(millis){
+			// convert millis to mm:ss
+			var date = new Date(millis);
+			var minutes = date.getMinutes().toString();
+			var seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
+													: date.getSeconds();
+			return minutes + ":" + seconds;
+		}
 }

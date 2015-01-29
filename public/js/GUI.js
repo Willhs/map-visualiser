@@ -109,6 +109,7 @@ function updateExplorationControls(specialCase){
 		disableAction("stop");
 		disableAction("pause");
 		disableAction("reset");
+		disableAction("delete");
 		enableAction("record");
 
 		if (userLoggedOn()){
@@ -122,6 +123,7 @@ function updateExplorationControls(specialCase){
 		enableAction("play");
 		enableAction("reset");
 		enableAction("record");
+		enableAction("delete");
 		disableAction("pause");
 		disableAction("stop");
 		changeButtonColour("record", false);

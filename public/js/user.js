@@ -71,6 +71,10 @@ function User(name, explorations){
 				return true;
 		}
 	}
+	// has the user got any explorations?
+	this.hasExplorations = function(){
+		return this.explorations.length > 0;
+	}
 }
 
 //logs on a user

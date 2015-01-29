@@ -271,10 +271,9 @@ function launchEvents(exploration, i, elapsedTime){
 
 	var nextEvent = exploration.getEvent(i+1);
 	var delay = nextEvent.time - currentEvent.time;
-	// if resumeTime is specified, remove it from delay
+	// if elapsedTime is specified, remove it from delay
 	delay = elapsedTime ? delay - elapsedTime : delay;
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
-//	pathMove.updatePathMove(exploration, currentEvent.time, delay);
 
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
@@ -303,8 +302,10 @@ function pausePlayback(exploration, cb){
 	elapsedEventTime = new Date() - lastEventTime;
 	paused = true;
 
-	if (exploration.hasAudio())
-		audioElem.pause();
+	if (exploration.hasAudio()){
+		audioElem.pause();	
+		console.log("pausing at", audioElem.currentTime);
+	}
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
@@ -348,6 +349,8 @@ function setPlaybackPosition(exploration, time){
 		elapsedEventTime = time - newEvent.time;
 
 		progressBar.setPosition(time);
+
+		// set audio		
 
 		// if already playing, continue
 		if (wasPlaying)
@@ -411,7 +414,8 @@ function playAudio(audioBlob){
 // assumes there is aleady audio data loaded into audioElem
 // resumes from current position + skipped time (in seconds)
 function resumeAudio(position){
-	audioElem.position = position;
+	console.log("resuming at", position);
+	audioElem.currentTime = position;
 	audioElem.play();
 }
 
@@ -447,9 +451,9 @@ function deselectExploration(){
 	if (!selectedExploration)
 		return;
 	selectedExploration = null;
-	console.log("unloading");
 	progressBar.unload();
-	disableAction("delete");
+	if (!currentUser || !currentUser.hasExplorations())
+		disableAction("delete");
 }
 
 // resets to original state (no explorations selected and no recordings in progress)
@@ -522,7 +526,7 @@ function enableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = false;
 
-	// change the colour if it's not the record button
+	// change the colour itf it's not the record button
 	if (!name.localeCompare("record") == 0)
 		changeButtonColour(name, true);
 }
