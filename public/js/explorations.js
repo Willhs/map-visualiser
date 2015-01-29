@@ -1,5 +1,5 @@
 
-// TODO: don't use global variable for these?
+//TODO: don't use global variable for these?
 var recording = false,
 	playing = false,
 	paused = false
