@@ -55,24 +55,33 @@ function PathMove(){
 		this.setText(expl);
 
 
-		circle = g.append("circle")
-		.attr("r", 5)
-		.attr("fill","black")
-		.attr("id", "circle-move")
-		.attr("cx", this.translates(expl)[0][0])
-		.attr("cy", this.translates(expl)[0][1]);
+//		circle = g.append("circle")
+//		.attr("r", 5)
+//		.attr("fill","black")
+//		.attr("id", "circle-move")
+//		.attr("cx", this.translates(expl)[0][0])
+//		.attr("cy", this.translates(expl)[0][1]);
 
 		goToLoc(this.citiesDisplay(expl)[0]);
 		//var iframeWindow = new IframePath;
 		//iframeWindow.load(expl);
 	};
 	var currentCityIndex = -1;
-	var totalLength = -1;
 	var pausedX = -1;
 	var pausedY = -1;
-	this.updatePathMove = function(expl, eventTime, eventDuration, resume){
-		console.log("resume: "+ resume);
+	var currentCityEventTime = null;
+	this.updatePathMove = function(expl, eventTime, eventDuration, resumed){
+		if(eventTime!=null)currentCityEventTime = eventTime;
+		var currentCityIndex = this.cityEventTimes(expl).indexOf(currentCityEventTime);
+		if(currentCityIndex>this.cityEventTimes(expl).length-2) return;
+		nextCityEventTime = this.cityEventTimes(expl)[currentCityIndex+1];
+		eventDuration = nextCityEventTime - currentCityEventTime;
+		console.log("eventDuration: "+ eventDuration);
 		var datas =[];
+		var ncx = -1;
+		var ncy = -1;
+		var totalLength = -1;
+		var nextCityIndex = currentCityIndex+1;
 		if(this.citiesDisplay(expl).length==0)return;
 		var line = d3.svg.line()
 		.x(function(d) {
@@ -82,112 +91,104 @@ function PathMove(){
 			return d.y;
 		});
 
-		if(resume==true){
-			console.log("true");
-			console.log(currentCityIndex+1);
+		if(resumed==true){
+			//circle.attr("cx", pausedX);
+			//circle.attr("cy", pausedY);
+			//if(currentCityIndex+1>this.translates(expl).length-1)return;
+			console.log("resumed currentCityIndex: "+ currentCityIndex);
 
-			if(currentCityIndex+1<this.translates(expl).length-1){
-				console.log("true2");
+			var ncx = this.translates(expl)[nextCityIndex][0];
+			var ncy = this.translates(expl)[nextCityIndex][1];
+			datas = [{x:pausedX,y:pausedY},{x:ncx,y:ncy}];
 
-				circle.attr("cx", pausedX);
-				circle.attr("cy", pausedY);
-				var ncx = this.translates(expl)[currentCityIndex+1][0];
-				var ncy = this.translates(expl)[currentCityIndex+1][1];
-				datas = [{x:pausedX,y:pausedY},{x:ncx,y:ncy}];
-				console.log(datas);
-				eventDuration = eventDuration*lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:this.translates(expl)[currentCityIndex][0],y:this.translates(expl)[currentCityIndex][1]},{x:ncx,y:ncy});
-				console.log(eventDuration);
-				pathMove= g.select("#animationPath"+currentCityIndex)
-				pathMove= g.append("path")
-				.attr("id","#animationPath"+currentCityIndex)
-				.attr("d", line(datas))
-				.attr("stroke", "blue")
-				.attr("stroke-width", 2)
-				.attr("fill", "none");
-				totalLength = pathMove.node().getTotalLength();
-				console.log(totalLength);
-				pathMove
-				.attr("stroke-dasharray", totalLength + " " + totalLength)
-				.attr("stroke-dashoffset", totalLength)
-				.transition()
-				.duration(eventDuration)
-				.ease(EASE_FUNCTION)
-				.attr("stroke-dashoffset", 0)
-				.delay(ANIMATION_DELAY);
+			eventDuration = eventDuration*(lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:this.translates(expl)[currentCityIndex][0],y:this.translates(expl)[currentCityIndex][1]},{x:ncx,y:ncy}));
+			console.log(eventDuration);
 
-
-			}
 		}
-		else if(resume==false){
-			currentCityIndex = this.cityIndex(this.cityEventTimes(expl),eventTime, expl, currentCityIndex);
+		else if(resumed==false){
+			//currentCityIndex = this.cityIndex(this.cityEventTimes(expl),eventTime, expl, currentCityIndex);
 			if(currentCityIndex==null)return;
 			var cx = this.translates(expl)[currentCityIndex][0];
 			var cy = this.translates(expl)[currentCityIndex][1];
-			circle.attr("cx", cx);
-			circle.attr("cy", cy);
+			//circle.attr("cx", cx);
+			//circle.attr("cy", cy);
 			if(currentCityIndex==this.citiesDisplay(expl).length-1)return;
 			var ncx = this.translates(expl)[currentCityIndex+1][0];
 			var ncy = this.translates(expl)[currentCityIndex+1][1];
 			datas = [{x:cx,y:cy},{x:ncx,y:ncy}];
+
+		}
+
+//		circle.transition()
+//		.duration(eventDuration*ANIMATION_DELAY)
+//		.ease(EASE_FUNCTION)
+//		.delay(ANIMATION_DELAY*this.cityEventTimes(expl)[0])
+//		.attr("cx", ncx)
+//		.attr("cy", ncy);
+		appendPath(datas, currentCityIndex);
+		totalLength = pathMove.node().getTotalLength();
+		pathMove
+		.attr("stroke-dasharray", totalLength + " " + totalLength)
+		.attr("stroke-dashoffset", totalLength)
+		.transition()
+			.duration(eventDuration)
+			.ease(EASE_FUNCTION)
+			.attr("stroke-dashoffset", 0)
+			.attrTween("point", translateAlong(pathMove.node()))
+			.delay(resumed ? 0: ANIMATION_DELAY*this.cityEventTimes(expl)[0]);
+
+		function translateAlong(path) {
+			var l = path.getTotalLength();
+			return function(d, i, a) {
+				return function(t) {
+					var p = path.getPointAtLength(t * l);
+					pausedX = p.x;
+					pausedY = p.y;
+					return {x:p.x ,y:p.y};
+				};
+			};
+		}
+		function appendPath(datas, currentCityIndex){
 			pathMove= g.append("path")
+			.attr("id","animationPath")
 			.attr("d", line(datas))
 			.attr("stroke", "blue")
 			.attr("stroke-width", 2)
 			.attr("fill", "none");
-			totalLength = pathMove.node().getTotalLength();
-			pathMove
-			.attr("stroke-dasharray", totalLength + " " + totalLength)
-			.attr("stroke-dashoffset", totalLength)
-			.transition()
-			.duration(eventDuration*(ANIMATION_DELAY))
-			.ease(EASE_FUNCTION)
-			.attr("stroke-dashoffset", 0)
-			.attrTween("point", translateAlong(pathMove.node()))
-			.delay(ANIMATION_DELAY*this.cityEventTimes(expl)[0]);
-
-			function translateAlong(path) {
-				var l = path.getTotalLength();
-				return function(d, i, a) {
-					return function(t) {
-						var p = path.getPointAtLength(t * l);
-						pausedX = p.x;
-						pausedY = p.y;
-						return {x:p.x ,y:p.y};
-					};
-				};
-			}
 		}
 
 	};
 
 	this.pause = function(expl,cb){
 		if(this.citiesDisplay(expl).length==0)return;
-		circle.transition()
-		.duration(0)
-		.each("end", cb);
+//		circle.transition()
+//		.duration(0)
+//		.each("end", cb);
 		pathMove.transition()
-		.duration(0)
-		.each("end", cb);
+		.duration(0);
+	//	.each("end");
 	};
 
 	this.unload = function(expl){
 		if(!this.citiesDisplay(expl))return;
 		d3.select("path#path-play").remove();
 		d3.select("g").selectAll("circle").remove();
-		for(var i= 0; i< this.citiesDisplay(expl).length; i++){
-			d3.select("#animationPath"+i).remove();
-		}
+		//for(var i= 0; i< this.citiesDisplay(expl).length; i++){
+			d3.selectAll("#animationPath").remove();
+		//}
 		this.resetText(expl);
 	};
 
 	this.reset = function(expl){
 		if(this.citiesDisplay(expl).length==0)return;
-		for(var i= 0; i< this.citiesDisplay(expl).length; i++){
-			d3.select("#animationPath"+i).remove();
-		}
 
-		circle.attr("cx", this.translates(expl)[0][0]);
-		circle.attr("cy", this.translates(expl)[0][1]);
+		//for(var i= 0; i< this.citiesDisplay(expl).length; i++){
+		//	console.log("remove"+i);
+			d3.selectAll("#animationPath").remove();
+		//}
+
+		//circle.attr("cx", this.translates(expl)[0][0]);
+		//circle.attr("cy", this.translates(expl)[0][1]);
 		this.resetText(expl);
 		currentCityIndex = -1;
 		elapsedCityEventTime = -1;
