@@ -30,7 +30,10 @@ recordExplButton.addEventListener("click", function(){
 playExplButton.addEventListener('click', function () {
 	if (!paused)
 		startPlayback(selectedExploration);
-	else resumePlayback(selectedExploration);
+	else {
+		elapsedCityEventTime = -1;
+		resumePlayback(selectedExploration);
+	}
 });
 
 pauseExplButton.addEventListener('click', function(){

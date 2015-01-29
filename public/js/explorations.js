@@ -180,7 +180,7 @@ function stopRecording() {
 
 //index of last event which was played
 var currentEventIndex = 0,
-// for pausePlayback
+//for pausePlayback
 lastEventTime = -1, // the time which the last playback started
 elapsedEventTime = -1; // how much time elapsed since event before pausing
 
@@ -230,18 +230,21 @@ function launchEvents(exploration, i, elapsedTime){
 	case ("travel"):
 		var location = currentEvent.body;
 		goToLoc(location, elapsedTime);
-		pathMove.updatePathMove(exploration, currentEvent.time, delay, null);
+		//TODO: move this part to PathMove.js
+		pathMove.updatePathMove(exploration, currentEvent.time, delay, false);
+
+
 		break;
 	case ("movement"):
 		var transform = currentEvent.body;
-		g.attr("transform", transform);
-		updateScaleAndTrans();
-		break;
+	g.attr("transform", transform);
+	updateScaleAndTrans();
+	break;
 	case ("end"):
 		enableAction(["delete"]);
 		stopPlayback(exploration);
 
-		return;
+	return;
 	case ("start"):
 		break;
 	}
@@ -280,7 +283,7 @@ function pausePlayback(exploration, cb){
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
-	//pathMove.pause(exploration, cb);
+	pathMove.pause(exploration, cb);
 }
 
 //waits until next event before executing playExploration
@@ -304,8 +307,7 @@ function resumePlayback(exploration){
 
 	progressBar.updateProgress(exploration, position, timeTilNextEvent);
 	progressBar.updateButton();
-	//while(!getCityIndex(currentEvent.body))currentEvent = exploration.getEvent(currentEventIndex++);
-	//pathMove.updatePathMove(exploration, currentEvent.time, timeTilNextEvent, currentEvent);
+	pathMove.updatePathMove(exploration, null,eventDur, true);
 
 }
 
@@ -325,8 +327,10 @@ function setPlaybackPosition(exploration, time){
 		progressBar.setPosition(time);
 
 		// if already playing, continue
-		if (wasPlaying)
+		if (wasPlaying){
 			resumePlayback(exploration);
+
+		}
 	});
 
 	// changes (transforms) map to be aftermath of event
@@ -505,7 +509,7 @@ function deleteExploration(expl){
 	function deletedExploration(response){
 		currentUser.removeExploration(expl);
 		updateExplorationChooser();
-		updateDeleteButton();
+		//updateDeleteButton();
 	}
 }
 
