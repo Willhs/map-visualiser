@@ -228,7 +228,7 @@ function startPlayback(exploration){
 	}
 
 	// launch the first event
-	launchEvents(exploration, 0); 
+	launchEvents(exploration, 0);
 
 	if (exploration.hasAudio()){
 		playAudio(exploration.getAudio());
@@ -287,24 +287,23 @@ function stopPlayback(exploration){
 		audioElem.currentTime = 0; // in seconds
 	}
 
-	updatePlaybackStopped();
 	progressBar.resetProgress();
 	currentEventIndex = 0;
 	elapsedEventTime = 0;
 	playing = false;
+	paused = false;
 	updatePlaybackStopped();
 }
 
 // pauses the current playback. cb will happen after progress bar updates
 function pausePlayback(exploration, cb){
+	elapsedEventTime = new Date() - lastEventTime;
 	clearTimeout(playTimeout);
 	g.transition().duration(0); // stops any current transitions
-	elapsedEventTime = new Date() - lastEventTime;
 	paused = true;
 
 	if (exploration.hasAudio()){
-		audioElem.pause();	
-		console.log("pausing at", audioElem.currentTime);
+		audioElem.pause();
 	}
 
 	updatePlaybackStopped();
@@ -375,10 +374,10 @@ function setPlaybackPosition(exploration, time){
 }
 
 // inserts 'exploration' into the currently selected exploration at the time of the last pause
-function insertIntoSelectedExploration(exploration){
+function insertIntoSelectedExploration(insertee){
 
-	stopRecording();
-	stopPlayback(selectedExploration);
+	//stopRecording();
+	//stopPlayback(selectedExploration);
 
 	// save the current event before it is reset
 	var eventIndex = currentEventIndex;
@@ -387,13 +386,13 @@ function insertIntoSelectedExploration(exploration){
 	var time = selectedExploration.getEvent(eventIndex).time + elapsedEventTime;
 
 	// insert the events
-	selectedExploration.insertEvents(exploration.getEvents(), eventIndex+1, time);
+	selectedExploration.insertEvents(insertee.getEvents(), eventIndex+1, time);
 
 	// put the new exploration into currentExporation so it will be saved next
 	currentUser.setCurrentExploration(selectedExploration);
 
 	// TODO: insert into audio
-	if (exploration.hasAudio()){
+	if (insertee.hasAudio()){
 //		var samplePosition = (time/1000) * 44100;
 //		var oldLeft = exploration.getAudio().slice(0, )
 //		exploration.setAudio(new Blob([)
@@ -414,7 +413,6 @@ function playAudio(audioBlob){
 // assumes there is aleady audio data loaded into audioElem
 // resumes from current position + skipped time (in seconds)
 function resumeAudio(position){
-	console.log("resuming at", position);
 	audioElem.currentTime = position;
 	audioElem.play();
 }

@@ -237,16 +237,13 @@ app.post("/setExplorationIsOld", function(req, res){
 		var filePath = path + filename;
 		if (fs.lstatSync(filePath).isDirectory())
 			return; // if the file is a directory
-		var exploration = JSON.parse(fs.readFileSync(filePath));
-		console.log("index: " +index+" username:"+explUserName + "  timeStamp: "+timeStamp);
-		console.log("exploration.userName:"+exploration.userName + "  exploration.timeStamp: "+exploration.timeStamp);
+		var exploration = JSON.parse(fs.readFileSync(filePath));		
 
 		if(explUserName === exploration.userName &&
 				timeStamp === exploration.timeStamp){
 			// set the property
 			exploration.isNew = false;
 			fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
-			console.log("matched");
 			res.sendStatus(200);
 			found = true;
 			return;

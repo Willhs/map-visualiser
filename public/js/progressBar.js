@@ -111,7 +111,8 @@ function ProgressBar() {
 						height: progressHeight,
 						fill: "orange"
 					})
-					.on("mouseover", showTravelText)
+					.on("mouseover.travelText", showTravelText)
+					.on("mouseover.ping", function(d){ ping(d.body); })
 					.on("mouseout", removeTravelText);
 
 

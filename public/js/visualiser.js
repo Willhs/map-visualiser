@@ -293,10 +293,13 @@ function goToLoc(location, duration, elapsedTime) {
 	travelTo(location, duration, elapsedTime);
 }
 
-//Pings a country on the scren
-function ping(index) {
-
-	var source = cities[index];
+// Pings a country on the scren
+function ping(location) {
+	var source;
+	if (typeof location === "number")
+		source = cities[location];
+	if (typeof location === "string")
+		source = cities[getCityIndex(location)];
 
 	var center = path.centroid(source);
 	var screenvars = getAbsoluteBounds();

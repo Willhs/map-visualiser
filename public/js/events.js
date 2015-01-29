@@ -4,10 +4,9 @@
 
 recordExplButton.addEventListener("click", function(){
 	if (recording){
+		stopRecording();
 		if (inserting)
 			insertIntoSelectedExploration(currentUser.getCurrentExploration());
-		else
-			stopRecording();	
 	}
 	else
 		startRecording();	
@@ -120,7 +119,7 @@ quickplayNotification.addEventListener("click", function(){
 // ---- insert button
 insertButton.click(function(){
 	inserting = true;
-	insertButton.hide();
+	insertButton.css("visibility", "hidden");
 });
 
 // ---- INIT
