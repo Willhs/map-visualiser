@@ -120,6 +120,9 @@ quickplayNotification.addEventListener("click", function(){
 insertButton.click(function(){
 	inserting = true;
 	insertButton.css("visibility", "hidden");
+	var time = getCurrentPlaybackTime();
+	var xpos = progressBar.getXPosOfTime(time);
+	progressBar.showInsertBar(xpos);
 });
 
 // ---- INIT

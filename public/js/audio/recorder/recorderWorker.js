@@ -125,6 +125,7 @@ function writeString(view, offset, string){
 }
 
 function encodeWAV(samples, mono){
+  console.log(samples.length, sampleRate);
   var buffer = new ArrayBuffer(44 + samples.length * 2);
   var view = new DataView(buffer);
 

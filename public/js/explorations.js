@@ -373,33 +373,32 @@ function setPlaybackPosition(exploration, time){
 	}
 }
 
-// inserts 'exploration' into the currently selected exploration at the time of the last pause
+// inserts 'insertee' into the currently selected exploration at the time of the last pause
 function insertIntoSelectedExploration(insertee){
 
-	//stopRecording();
-	//stopPlayback(selectedExploration);
-
+	var exploration = selectedExploration;
 	// save the current event before it is reset
 	var eventIndex = currentEventIndex;
 
 	// time to insert newly recorded events
-	var time = selectedExploration.getEvent(eventIndex).time + elapsedEventTime;
+	var time = exploration.getEvent(eventIndex).time + elapsedEventTime;
 
 	// insert the events
-	selectedExploration.insertEvents(insertee.getEvents(), eventIndex+1, time);
+	exploration.insertEvents(insertee.getEvents(), eventIndex+1, time);
 
 	// put the new exploration into currentExporation so it will be saved next
-	currentUser.setCurrentExploration(selectedExploration);
+	currentUser.setCurrentExploration(exploration);
 
 	// TODO: insert into audio
-	if (insertee.hasAudio()){
-//		var samplePosition = (time/1000) * 44100;
+	/*if (insertee.hasAudio()){
+		var sampleRate = 44100;
+		var samplePosition = (time/1000) * sampleRate;
 //		var oldLeft = exploration.getAudio().slice(0, )
 //		exploration.setAudio(new Blob([)
-	}
+	}*/
 
 	progressBar.unload();
-	progressBar.load(selectedExploration);
+	progressBar.load(exploration);
 
 	inserting = false;
 }

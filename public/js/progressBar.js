@@ -184,7 +184,7 @@ function ProgressBar() {
 		progressSVG.on("mouseout", null);
 		// remove playControl listener
 		playControl.on("click", null);
-		// hide text and insert button		
+		// hide text and insert button
 		timeText.hide();
 		insertButton.css("visibility", "hidden");
 		explorationTitle.hide();
@@ -201,7 +201,7 @@ function ProgressBar() {
 	}
 
 	// returns the x position of the bar at this time
-	function getXPosOfTime(time){
+	this.getXPosOfTime = function(time){
 		var progress = time / selectedExploration.getDuration();
 		return progress * progressWidth;
 	}
@@ -222,20 +222,19 @@ function ProgressBar() {
 
 		var formattedTime = formatTime(millis);	
 
-		var progressPosition = getXPosOfTime(millis);
+		var progressPosition = progressBar.getXPosOfTime(millis);													
 		var	padding = 10;
 
 		var timePosition = {
-			top: 0,
 			left: (progressPosition - timeText.outerWidth()/2)
 		};
 
 		timeText.show(); // jquery
 		timeText.text(formattedTime);
-		timeText.css(timePosition); // sets position relative to parent		
+		timeText.css(timePosition); // sets position relative to parent
 	}
 
-function showDurationText(){
+	function showDurationText(){
 		var formattedTime = formatTime(selectedExploration.getDuration());
 		durationText.text(formattedTime);
 		durationText.show();
@@ -246,11 +245,81 @@ function showDurationText(){
 	}
 
 	function formatTime(millis){
-			// convert millis to mm:ss
-			var date = new Date(millis);
-			var minutes = date.getMinutes().toString();
-			var seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
-													: date.getSeconds();
-			return minutes + ":" + seconds;
-		}
+		// convert millis to mm:ss
+		var date = new Date(millis);
+		var minutes = date.getMinutes().toString();
+		var seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
+												: date.getSeconds();
+		return minutes + ":" + seconds;
+	}
+
+	// creates a bar, like the progress bar to show a currently recording exploration
+	this.showInsertBar = function(insertX){
+		var insertBarDiv = d3.select("#above-bar");
+
+		var divHeight = parseInt(insertBarDiv.style("height"), 10),
+			divWidth = parseInt(insertBarDiv.style("width"), 10),
+			barHeight = 36,
+			barWidth = 500,
+			barLeft = (progressWidth - barWidth) / 2,
+			barTop = 0;
+
+		var insertText = "Inserting";
+
+		console.log(divHeight, divWidth, barTop);
+
+		var insertSVG = insertBarDiv.append("svg")
+			.attr({
+				id: "insert-svg",
+				width: divWidth,
+				height: divHeight
+			});
+
+		var insertGroup = insertSVG.append("g");
+
+		// line from insert point to left bottom side of insert bar
+		insertGroup.append("line")
+			.attr({
+				x1: insertX,
+				y1: divHeight,
+				x2: barLeft,
+				y2: barTop + barHeight,
+				stroke: "black",
+				"stroke-width": 2
+			});
+		// "                       " right "                     "
+		insertGroup.append("line")
+			.attr({
+				x1: insertX,
+				y1: divHeight,
+				x2: barLeft + barWidth,
+				y2: barTop + barHeight,
+				stroke: "black",
+				"stroke-width": 2
+			});
+		// insert bar
+		insertGroup.append("rect")
+			.attr({
+				x: barLeft,
+				y: barTop,
+				width: barWidth,
+				height: barHeight,
+				rx: 20,
+				ry: 20,
+				fill: "#28AADE"
+			});
+		// ** recording ** text
+		insertGroup.append("text")
+			.text(insertText)
+			.attr({
+				x: barLeft + (barWidth/2),
+				y: barTop + barHeight - 10,
+				"font-size": "1.5em",
+				"text-anchor": "middle"
+			});
+	}
+
+	function hideInsertBar(){
+		d3.select("#insert-svg").remove();
+	}
 }
