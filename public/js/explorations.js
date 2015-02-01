@@ -14,7 +14,6 @@ var pathMove = new PathMove;
 //var iframeWindow = new IframePath;
 
 var selectedExploration = null; // currently selected exploration
-//var pathMove = new PathMove;
 
 function Event(type, body, time){
 	this.type = type;
@@ -145,7 +144,7 @@ function startRecording() {
 	newExpl.addEvent("start", g.attr("transform"));
 	//newExpl.addEvent("start", "");
 
-	currentUser.setCurrentExploration(newExpl);	
+	currentUser.setCurrentExploration(newExpl);
 
 	// starts recording audio
 	if (audioRecorder)
@@ -233,7 +232,7 @@ function launchEvents(exploration, i, elapsedTime){
 	var currentEvent = exploration.getEvent(i);
 	var nextEvent = exploration.getEvent(i+1);
 	var delay = null;
-	// if resumeTime is specified, remove it from delay	
+	// if resumeTime is specified, remove it from delay
 	if(nextEvent!=null) delay = nextEvent.time - currentEvent.time;
 	delay = elapsedTime ? delay - elapsedTime : delay;
 
@@ -299,9 +298,9 @@ function resumePlayback(exploration){
 	var currentEvent = exploration.getEvent(currentEventIndex);
 	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time,
 		timeTilNextEvent = eventDur - elapsedEventTime,
-		// playback position in time 
+		// playback position in time
 		position = currentEvent.time + elapsedEventTime;
-	
+
 	// skips the rest of the event and goes to the next one.
 	// TODO: play the rest of the event, don't skip
 	playTimeout = setTimeout(function(){
@@ -335,7 +334,7 @@ function setPlaybackPosition(exploration, time){
 
 		progressBar.setPosition(time);
 
-		// set audio		
+		// set audio
 
 		// if already playing, continue
 		if (wasPlaying)
@@ -498,7 +497,7 @@ function saveExploration(exploration) {
 					updateExplorationChooser();
 				}
 
-				enableAction("delete");				
+				enableAction("delete");
 				updateExplorationChooser();
 			},
 			contentType: "application/json"
@@ -579,8 +578,8 @@ function updateSelectedExploration(){
 
 // ensures that an exploration is selected by selecting the first in the list
 function ensureExplorationSelected(){
-	if (!selectedExploration 
-		&& userLoggedOn() 
+	if (!selectedExploration
+		&& userLoggedOn()
 		&& currentUser.explorations.length > 0){
 
 		var explTimeStamp = explChooser.options[0].id;
@@ -599,7 +598,7 @@ function setExplorationIsOld(expl){
 			explUserName:expl.userName, // the user who made the exploration
 			timeStamp: expl.timeStamp
 		}),
-		contentType: "application/json"	
+		contentType: "application/json"
 	});
 }
 
