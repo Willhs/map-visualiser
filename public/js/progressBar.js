@@ -8,7 +8,6 @@ function ProgressBar() {
 		progressTop = 0,
 		progressLeft = 0;
 
-	
 	// add the progress bar svg
 	var progressSVG = d3.select("#bar-container").append("svg")
 	.attr("id","play-svg")
@@ -121,6 +120,7 @@ function ProgressBar() {
 		}
 
 		function showTravelText(d){
+			//console.log(d3.select(this));
 			var travelId = d.body;
 			d3.select("#"+travelId)
 				.insert("text")

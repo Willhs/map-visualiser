@@ -163,7 +163,6 @@ input,label {
 	background-color: #ccc;
 	visibility: hidden;
 	cursor: pointer;
-
 }
 
 .notification-selectors {
@@ -175,7 +174,6 @@ input,label {
 	background-color: #fff;
 	visibility: hidden;
 	cursor: pointer;
-
 }
 
 #fileslist-container {
@@ -194,8 +192,6 @@ input,label {
 	height:20px;
 	visibility: hidden;
 	cursor: pointer;
-
-
 }
 
 #quickplay-notification{
@@ -206,8 +202,6 @@ input,label {
 	height:20px;
 	visibility: hidden;
 	cursor: pointer;
-
-
 }
 
 #newAccount {
@@ -220,6 +214,10 @@ input,label {
 	border: 3px solid black;
 	cursor: pointer;
 
+#save-audio {
+	position: fixed;
+	left: 90%;
+	top: 70%;
 }
 
 /* ------ PROGRESS BAR ------------ */
@@ -260,22 +258,22 @@ input,label {
 
 /* --- progress bar button image (contains all button faces) -----*/
 #play-control.play {
-  	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px 0px;
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px 0px;
 }
 #play-control.play:hover {
-  	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px 0px;
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px 0px;
 }
 #play-control.pause {
-  	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px -36px;
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px -36px;
 }
 #play-control.pause:hover {
-  	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -36px;
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -36px;
 }
 #play-control.replay {
-  	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px -72px;
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 37px -72px;
 }
 #play-control.replay:hover {
-  	background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -72px;
+  background:url("http://www.bloomberg.com/image/idAx.BJxL1Lc.png") 0px -72px;
 }
 
 #play-svg {
@@ -345,12 +343,4 @@ input,label {
   	fill: white;
   	stroke: #fff;
   	stroke-width: 3px;
-}
-
-.invisible {
-	visibility: hidden;
-}
-
-.visible {
-	visibility: visible;
 }

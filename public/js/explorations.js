@@ -95,7 +95,7 @@ function Exploration() {
 	this.equals = function(exploration){
 		if (exploration == null) return false;
 		return this.userName === exploration.userName
-		&& this.timeStamp === exploration.timeStamp;
+			&& this.timeStamp === exploration.timeStamp;
 	}
 	this.getDuration = function(){
 		if(this.events.length == 0)
@@ -220,7 +220,8 @@ function startPlayback(exploration){
 	updatePlaybackStarted();
 	// updates GUI
 	updateNotifications();
-	if(!pathMove.setTexted)pathMove.setText(exploration);
+	if(!pathMove.setTexted)
+		pathMove.setText(exploration);
 }
 
 // launches the events of an exploration started at the ith event
@@ -252,14 +253,14 @@ function launchEvents(exploration, i, elapsedTime){
 		break;
 	case ("end"):
 		stopPlayback(exploration);
-		return;
+		return;	
 	}
 
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
 }
 
-//stops playback and resets position to the start
+// stops playback and resets position to the start
 function stopPlayback(exploration){
 	clearTimeout(playTimeout);
 
@@ -278,7 +279,7 @@ function stopPlayback(exploration){
 	updatePlaybackStopped();
 }
 
-//pauses the current playback. cb will happen after progress bar updates
+// pauses the current playback. cb will happen after progress bar updates
 function pausePlayback(exploration, cb){
 	elapsedEventTime = new Date() - lastEventTime;
 	clearTimeout(playTimeout);
@@ -298,9 +299,9 @@ function resumePlayback(exploration){
 	var currentEvent = exploration.getEvent(currentEventIndex);
 	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time,
 		timeTilNextEvent = eventDur - elapsedEventTime,
-		// playback position in time
+		// playback position in time 
 		position = currentEvent.time + elapsedEventTime;
-
+	
 	// skips the rest of the event and goes to the next one.
 	// TODO: play the rest of the event, don't skip
 	playTimeout = setTimeout(function(){
@@ -327,7 +328,6 @@ function setPlaybackPosition(exploration, time){
 
 		// go to translation and scale of the last event
 		transformToAfterEvent(newEvent);
-
 		currentEventIndex = exploration.events.indexOf(newEvent);
 		// set the elapsed time since the last event
 		elapsedEventTime = time - newEvent.time;
@@ -417,7 +417,7 @@ function updatePlaybackStarted(){
 	progressBar.hideTimeText();
 }
 
-//makes an exploration selected
+// makes an exploration selected
 function selectExploration(exploration){
 	if (selectedExploration)
 		deselectExploration();
@@ -540,7 +540,6 @@ function recordMovement(){
 	currentUser.getCurrentExploration().addEvent("movement", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
-// removes this exploration from the user's files
 function deleteExploration(expl){
 	$.ajax({
 		type: 'POST',

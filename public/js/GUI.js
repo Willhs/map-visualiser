@@ -87,9 +87,7 @@ function updateNotifications(){
 	var newCount = 0;
 
 	sharedExpl.forEach(function(expl){
-
 		if(expl.isNew) newCount++;
-		console.log(newCount);
 	});
 
 	if(newCount>0){
@@ -231,7 +229,7 @@ function addRecordingGraphics(){
 	.transition().duration();
 }
 
-//remove recording related graphics
+// remove recording related graphics
 function removeRecordingGraphics(){
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();
@@ -363,11 +361,11 @@ function displayLocationInfo(city){
 		});
 		// TODO: load all annotations at once
 		document.getElementById("annotation-container")
-		.appendChild(container);
+			.appendChild(container);
 	}
 }
 
-//makes an annotation text input element.
+// makes an annotation text input element.
 function makeAnnotationInput(container){
 	var annInput = document.createElement("input");
 	annInput.type = "text";
