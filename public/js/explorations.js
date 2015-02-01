@@ -10,6 +10,7 @@ var	playTimeout = -1; // id for setTimeout used while playing an exploration
 var audioElem = document.getElementById("exploration-audio");
 
 var progressBar = new ProgressBar;
+var pathMove = new PathMove;
 
 var selectedExploration = null; // currently selected exploration
 //var pathMove = new PathMove;
@@ -222,13 +223,14 @@ var currentEventIndex = 0,
 // plays an exploration from the start
 // PRE: no other exploration is being played
 function startPlayback(exploration){
+	//pathMove.movePath(exploration);
 	if (!exploration || exploration.numEvents() == 0) {
 		alert("nothing to play");
 		return; // if no events, do nothing.
 	}
 
 	// launch the first event
-	launchEvents(exploration, 0);
+	launchEvents(exploration, 0); 
 
 	if (exploration.hasAudio()){
 		playAudio(exploration.getAudio());
@@ -252,11 +254,13 @@ function launchEvents(exploration, i, elapsedTime){
 	lastEventTime = new Date();
 	currentEventIndex = i;
 	var currentEvent = exploration.getEvent(i);
+//	console.log("launching event at time:", currentEvent.time);
 
 	switch (currentEvent.type){
 	case ("travel"):
 		var location = currentEvent.body;
 		goToLoc(location, elapsedTime);
+		pathMove.updatePathMove(exploration, currentEvent.time, delay);
 	   	break;
 	case ("start"):
 	case ("movement"):
@@ -287,7 +291,9 @@ function stopPlayback(exploration){
 		audioElem.currentTime = 0; // in seconds
 	}
 
+	updatePlaybackStopped();
 	progressBar.resetProgress();
+	pathMove.reset(exploration);
 	currentEventIndex = 0;
 	elapsedEventTime = 0;
 	playing = false;
@@ -302,12 +308,12 @@ function pausePlayback(exploration, cb){
 	g.transition().duration(0); // stops any current transitions
 	paused = true;
 
-	if (exploration.hasAudio()){
+	if (exploration.hasAudio())
 		audioElem.pause();
-	}
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
+	pathMove.pause(exploration, cb);
 }
 
 // waits until next event before executing playExploration
@@ -439,6 +445,10 @@ function selectExploration(exploration){
 
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
+	pathMove.load(selectedExploration);
+	if(currentUser.getExplorations().indexOf(exploration)>-1 ||selectedExploration){
+		enableAction("delete");
+	}
 
 	updateExplorationControls();
 }
@@ -449,6 +459,7 @@ function deselectExploration(){
 		return;
 	selectedExploration = null;
 	progressBar.unload();
+	pathMove.unload();
 	if (!currentUser || !currentUser.hasExplorations())
 		disableAction("delete");
 }
@@ -523,7 +534,7 @@ function enableAction(name){
 	var button = document.getElementById(name + "-exploration-button");
 	button.disabled = false;
 
-	// change the colour itf it's not the record button
+	// change the colour if it's not the record button
 	if (!name.localeCompare("record") == 0)
 		changeButtonColour(name, true);
 }
