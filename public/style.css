@@ -213,16 +213,11 @@ input,label {
 	background-color: #ccc;
 	border: 3px solid black;
 	cursor: pointer;
-
-#save-audio {
-	position: fixed;
-	left: 90%;
-	top: 70%;
 }
 
 /* ------ PROGRESS BAR ------------ */
 
-#player-panel {	
+#player-panel {
   	position: fixed;
   	left: 20%;
   	top: 80%;
@@ -234,12 +229,12 @@ input,label {
 	position: relative;
 }
 
-#play-progress {	
+#play-progress {
   	width: 980px;
   	height: 36px;
 }
 
-#bar-container {	
+#bar-container {
   	display: inline-block;
   	background-color: #28AADE;
   	border-radius: 20px;

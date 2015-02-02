@@ -186,6 +186,8 @@ function stopRecording() {
 	recording = false;
 	updateExplorationControls("stopped-recording");
 	progressBar.load(currentUser.getCurrentExploration());
+	pathMove.setExploration(currentUser.getCurrentExploration());
+	pathMove.load();
 	console.log("Recorded " + currentUser.currentExpl.numEvents() + " events");
 }
 
@@ -243,7 +245,7 @@ function launchEvents(exploration, i, elapsedTime){
 	case ("travel"):
 		var location = currentEvent.body;
 		goToLoc(location, elapsedTime);
-		pathMove.updatePathMove(exploration, currentEvent.time, delay);
+		pathMove.updatePathMove(currentEvent.time);
 	   	break;
 	case ("start"):
 	case ("movement"):
@@ -253,7 +255,7 @@ function launchEvents(exploration, i, elapsedTime){
 		break;
 	case ("end"):
 		stopPlayback(exploration);
-		return;	
+		return;
 	}
 
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
@@ -291,7 +293,7 @@ function pausePlayback(exploration, cb){
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
-	pathMove.pause(exploration, cb);
+	pathMove.pause(exploration);
 }
 
 // waits until next event before executing playExploration
@@ -299,9 +301,9 @@ function resumePlayback(exploration){
 	var currentEvent = exploration.getEvent(currentEventIndex);
 	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time,
 		timeTilNextEvent = eventDur - elapsedEventTime,
-		// playback position in time 
+		// playback position in time
 		position = currentEvent.time + elapsedEventTime;
-	
+
 	// skips the rest of the event and goes to the next one.
 	// TODO: play the rest of the event, don't skip
 	playTimeout = setTimeout(function(){
@@ -315,7 +317,7 @@ function resumePlayback(exploration){
 
 	progressBar.updateProgress(exploration, position, timeTilNextEvent);
 	progressBar.updateButton();
-	pathMove.updatePathMove(exploration, currentEvent.time, timeTilNextEvent, currentEvent);
+	pathMove.resumePathMove(eventDur);
 
 }
 
@@ -424,7 +426,9 @@ function selectExploration(exploration){
 
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
-	pathMove.load(selectedExploration);
+	pathMove.setExploration(selectedExploration);
+
+	pathMove.load();
 	//iframeWindow.load(selectedExploration);
 
 	if(currentUser.haveExploration(exploration)){
