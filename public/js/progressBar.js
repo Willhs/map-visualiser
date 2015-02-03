@@ -33,7 +33,7 @@ function ProgressBar() {
 		var currentPosition = eventTime / exploration.getDuration() * progressWidth,
 			nextPosition = ((eventTime + eventDuration) / exploration.getDuration()) * progressWidth;
 
-		// update bar with current position	
+		// update bar with current position
 		bar.attr("x", currentPosition);
 
 		// hide button
@@ -58,8 +58,8 @@ function ProgressBar() {
 		// if selectedExploration is null, set position to 0 and return
 		if (!selectedExploration){
 			bar.attr("x", 0);
-			return;	
-		} 
+			return;
+		}
 		var progress = time / selectedExploration.getDuration();
 		bar.attr("x", progress * progressWidth);
 	}
@@ -161,7 +161,7 @@ function ProgressBar() {
 		progressSVG.on("mousemove", function(){ showTimeText(getTimeOfXpos(d3.mouse(this)[0])); });
 		// mouseoff listener
 		progressSVG.on("mouseout", this.hideTimeText);
-		// show 
+		// show
 		progressSVG.style.visibility = "visible";
 
 		// show title and duration text elements
@@ -196,7 +196,7 @@ function ProgressBar() {
 		// figure out x position of mouse
       	var offset = $(this).offset();
       	var xpos = d3.mouse(this)[0]; // 36 ?
-
+      	pathMove.setPausedTime(getTimeOfXpos(xpos));
       	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 
@@ -218,11 +218,11 @@ function ProgressBar() {
 	}
 
 	// displays insert button above the current playback position
-	function showTimeText(millis){		
+	function showTimeText(millis){
 
-		var formattedTime = formatTime(millis);	
+		var formattedTime = formatTime(millis);
 
-		var progressPosition = progressBar.getXPosOfTime(millis);													
+		var progressPosition = progressBar.getXPosOfTime(millis);
 		var	padding = 10;
 
 		var timePosition = {

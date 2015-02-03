@@ -6,6 +6,7 @@ function PathMove(){
 	var pathLine = null;
 	var pathMove= null;
 	this.expl = null;
+	this.pausedTime = null;
 	// set Exploration when selectExploration called or stop recording
 	this.setExploration = function(expl){
 		this.expl = expl;
@@ -20,6 +21,11 @@ function PathMove(){
 			}
 		});
 		return cities;
+	}
+
+	this.setPausedTime = function(time){
+		console.log("paused time: "+time);
+		this.pausedTime = time;
 	}
 
 	// get the set of citie's x, y coordinates
@@ -64,20 +70,22 @@ function PathMove(){
 		this.setText();
 		appendCircle();
 
-		goToLoc(this.citiesDisplay()[0]);
+		//goToLoc(this.citiesDisplay()[0]);
 		//var iframeWindow = new IframePath;
 		//iframeWindow.load(this.expl);
 	};
 
 	var pausedX = -1, pausedY = -1; //value set when click pause button
 	var ncx = -1, ncy = -1, ctx = -1, cty = -1;//ct: current city position, nc: next city position
-
+	var currentCityIndex = -1;
 	//this function called at launchevents function if it is a travel event then move
+
 	this.updatePathMove = function(eventTime){
-		var currentCityIndex = this.cityEventTimes().indexOf(eventTime);
+		this.pausedTime = null;
+		currentCityIndex = this.cityEventTimes().indexOf(eventTime);
 		console.log(currentCityIndex);
+
 		if(currentCityIndex===-1){
-			console.log("reutrn");
 			return;
 		}
 		if(currentCityIndex+1===this.cityEventTimes().length){
@@ -92,14 +100,7 @@ function PathMove(){
 		if(this.citiesDisplay().length==0){
 			return;
 		}
-		var line =
-			d3.svg.line()
-			.x(function(d) {
-				return d.x;
-			})
-			.y(function(d) {
-				return d.y;
-			});
+
 
 		ctx = this.translates()[currentCityIndex][0];
 		cty = this.translates()[currentCityIndex][1];
@@ -141,20 +142,69 @@ function PathMove(){
 		}
 
 		// append a new path on the map
-		function appendPath(datas){
-			pathMove= g.append("path")
-			.attr("id","animationPath")
-			.attr("d", line(datas))
-			.attr("stroke", "blue")
-			.attr("stroke-width", 2)
-			.style("fill", "none");
-		}
+
 	};
+	function appendPath(datas){
+		pathMove= g.append("path")
+		.attr("id","animationPath")
+		.attr("d", line(datas))
+		.attr("stroke", "blue")
+		.attr("stroke-width", 2)
+		.style("fill", "none");
+	}
+
+	var line =
+		d3.svg.line()
+		.x(function(d) {
+			return d.x;
+		})
+		.y(function(d) {
+			return d.y;
+		});
 
 	// resume from pause
 	this.resumePathMove = function(eventDur){
-		if(pausedX===-1)return;
-		var dur = eventDur*(lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:ctx,y:cty},{x:ncx,y:ncy}));
+		if(pathMove==null)return;
+		var dur = -1;
+		if(this.pausedTime!=null){
+			d3.selectAll("#animationPath").remove();
+			for(var i = 0; i<this.cityEventTimes().length; i++){
+
+				//if(this.pausedTime<=this.cityEventTimes()[i+1]){
+				if(this.pausedTime>=this.cityEventTimes()[0]){
+				var line = g.append("line")
+					.attr("id","animationPath")
+					.attr("x1", this.translates()[i][0])
+					.attr("y1", this.translates()[i][1]);
+
+					if(i+1==this.cityEventTimes.length-1)return;
+					line
+					.attr("x2", this.translates()[i+1][0])
+					.attr("y2", this.translates()[i+1][1])
+					.attr("stroke", "blue")
+					.attr("stroke-width", 2)
+					.style("fill", "none");
+				}
+				if(this.cityEventTimes()[i+1]>this.pausedTime && this.cityEventTimes()[i]<this.pausedTime) {
+					currentCityIndex = i;
+					console.log(this.cityEventTimes()[i+1] + " "+this.pausedTime+"   "+this.cityEventTimes()[i]);
+
+					console.log("circle current position: "+currentCityIndex);
+					circle
+					.attr("cx", this.translates()[currentCityIndex][0])
+					.attr("cy", this.translates()[currentCityIndex][1]);
+					ncx = this.translates()[currentCityIndex+1][0];
+					ncy = this.translates()[currentCityIndex+1][1];
+					dur = this.cityEventTimes()[currentCityIndex+1]-this.pausedTime;
+
+					break;
+				}
+			}
+		}
+		else{
+			if(pausedX===-1)return;
+			dur = eventDur*(lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:ctx,y:cty},{x:ncx,y:ncy}));
+		}
 		pathMove
 		.transition()
 		.duration(dur)
@@ -186,6 +236,7 @@ function PathMove(){
 		d3.selectAll("#circle-move").remove();
 		d3.selectAll("#animationPath").remove();
 		this.resetText();
+		this.pausedTime = null;
 	};
 
 	this.reset = function(){
@@ -197,7 +248,7 @@ function PathMove(){
 		.attr("cx", this.translates()[0][0])
 		.attr("cy", this.translates()[0][1]);
 		this.resetText();
-		//currentCityIndex = -1;
+		this.pausedTime = null;
 	};
 
 	function getTranslate(data){

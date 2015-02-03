@@ -188,6 +188,7 @@ function stopRecording() {
 	progressBar.load(currentUser.getCurrentExploration());
 	pathMove.setExploration(currentUser.getCurrentExploration());
 	pathMove.load();
+//	iframeWindow.load();
 	console.log("Recorded " + currentUser.currentExpl.numEvents() + " events");
 }
 
@@ -335,6 +336,14 @@ function setPlaybackPosition(exploration, time){
 		elapsedEventTime = time - newEvent.time;
 
 		progressBar.setPosition(time);
+		var eventDuration = -1;
+		pathMove.cityEventTimes().forEach(function(time,index){
+			if(newEvent.time>=time && newEvent.time<=pathMove.cityEventTimes()[index+1]){
+				eventDuration = pathMove.cityEventTimes()[index+1]-time;
+				pathMove.resumePathMove(eventDuration);
+			}
+		});
+
 
 		// set audio
 
