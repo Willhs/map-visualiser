@@ -510,7 +510,7 @@ function saveExploration(exploration) {
 					updateExplorationChooser();
 				}
 
-				enableAction("delete");
+				enableAction(["delete"]);
 				updateExplorationChooser();
 			},
 			contentType: "application/json"

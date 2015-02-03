@@ -16,8 +16,8 @@ function IframePath(){
 //	$('some selector', frames['iframe'].document).doStuff();
 //	});
 //	})
-	var pathLine1 = null;
-	var line1 = null;
+	var pathLine = null;
+	var line = null;
 	this.expl = selectedExploration;
 	this.citiesDisplay = function(){
 		if(selectedExploration==null)return;
@@ -54,7 +54,7 @@ function IframePath(){
 
 	this.load = function(){
 		if(this.citiesDisplay().length==0)return;
-		pathLine1 =gg.append("path")
+		pathLine =gg.append("path")
 		.data([this.translates()])
 		.attr("id","path-play")
 		.attr("stroke-dasharray","4,4")

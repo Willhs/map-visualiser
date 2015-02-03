@@ -1,5 +1,5 @@
 
-// ------ Dom elements -------- 
+// ------ Dom elements --------
 var recordExplButton = document.getElementById("record-exploration-button"),
 	playExplButton = document.getElementById("play-exploration-button"),
 	pauseExplButton = document.getElementById("pause-exploration-button"),
@@ -91,15 +91,14 @@ function updateNotifications(){
 	});
 
 	if(newCount>0){
-		$("#notification-container").html("have "+ newCount + " new explorations.");
-		resetVisibility(notificationSelector,"hidden");
+		$("#notification-container").html("  have "+ newCount + " new explorations.");
 		resetVisibility(notificationContainer,"visible");
 		notificationContainer.style.cursor = "pointer";
 
 	}
 	else{
 		resetVisibility(notificationContainer,"visible");
-		$("#notification-container").html("have no new explorations.");
+		$("#notification-container").html("  have no new explorations.");
 		notificationContainer.style.cursor = "not-allowed";
 
 	}
@@ -234,20 +233,15 @@ function removeRecordingGraphics(){
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();
 }
-
 function showListNotifications(){
 	while(notificationSelector.firstChild){//remove old labels
 		notificationSelector.removeChild(notificationSelector.firstChild);
 	}
 	var newSharedExpls = currentUser.getSharedExploration();
-	divHideShow(notificationSelector);
-	divHideShow(removeNotification);
-	divHideShow(quickplayNotification);
-
 	var hasNewExpl = false;
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
-			if(expl.isNew){
+			if(expl.isNew==true){
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
@@ -256,8 +250,10 @@ function showListNotifications(){
 				newOption.onclick  = function(){
 					stopRecording();
 					currentUser.setCurrentExploration(expl);
-					var pathMove = new PathMove;
-					pathMove.load(expl);
+					pathMove.unload();
+					progressBar.unload();
+					pathMove.setExploration(expl);
+					pathMove.load();
 					progressBar.load(expl);
 				}
 				notificationSelector.appendChild(newOption);
@@ -271,7 +267,7 @@ function showListNotifications(){
 }
 
 function divHideShow(div){
-	if (div.style.visibility.localeCompare("visible")==0){
+	if (div.style.visibility==="visible"){
 		div.style.visibility= "hidden";
 	}
 	else{

@@ -1,6 +1,6 @@
 //-------------- event handling for DOM elements ----------------
 
-// ---- explorations
+//---- explorations
 
 recordExplButton.addEventListener("click", function(){
 	if (recording){
@@ -9,7 +9,7 @@ recordExplButton.addEventListener("click", function(){
 			insertIntoSelectedExploration(currentUser.getCurrentExploration());
 	}
 	else
-		startRecording();	
+		startRecording();
 });
 
 playExplButton.addEventListener('click', function () {
@@ -29,7 +29,7 @@ stopExplButton.addEventListener('click', function(){
 	stopPlayback(selectedExploration);
 });
 
-saveExplButton.onclick = function(){ 
+saveExplButton.onclick = function(){
 	saveExploration(currentUser.getCurrentExploration());
 }
 
@@ -79,24 +79,28 @@ newAccount.onclick = function(){
 	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
 
-// delete button
+//delete button
 deleteExplButton.onclick = function(){
 	if (selectedExploration)
 		deleteExploration(selectedExploration);
 };
 
-// ---- NOTIFICATIONS ----
+//---- NOTIFICATIONS ----
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
+
 	if(showListNotifications()){
-		resetVisibility(notificationSelector, "visible");
+		divHideShow(notificationSelector);
+		divHideShow(removeNotification);
+		divHideShow(quickplayNotification);
+
 	}
 	else{
 		resetVisibility(notificationSelector, "hidden");
 		resetVisibility(removeNotification, "hidden");
 		resetVisibility(quickplayNotification, "hidden");
 	}
-});
+		});
 
 removeNotification.addEventListener("click", function(){
 	var selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
@@ -112,14 +116,12 @@ removeNotification.addEventListener("click", function(){
 
 quickplayNotification.addEventListener("click", function(){
 	selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
-	//var quickPlayExploration = new Exploration();
-	//quickPlayExploration = selected;
 	startPlayback(selected);
 	selected.isNew = true;
 	updateNotifications();
 });
 
-// ---- insert button
+//---- insert button
 insertButton.click(function(){
 	inserting = true;
 	insertButton.css("visibility", "hidden");
@@ -128,5 +130,5 @@ insertButton.click(function(){
 	progressBar.showInsertBar(xpos);
 });
 
-// ---- INIT
+//---- INIT
 resetExplorations();

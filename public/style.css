@@ -168,7 +168,7 @@ input,label {
 .notification-selectors {
 	position: fixed;
 	left: 67.7%;
-	top: 83%;
+	top: 84%;
 	width: 250px;
 	height: 70px;
 	background-color: #fff;
@@ -186,8 +186,8 @@ input,label {
 
 #remove-notification{
 	position: fixed;
-	left: 67.7%;
-	top: 79.2%;
+	left: 78.5%;
+	top: 80.6%;
 	width:20px;
 	height:20px;
 	visibility: hidden;
@@ -196,8 +196,8 @@ input,label {
 
 #quickplay-notification{
 	position: fixed;
-	left: 68.8%;
-	top: 79.2%;
+	left: 79.8%;
+	top: 80.6%;
 	width:20px;
 	height:20px;
 	visibility: hidden;
@@ -219,8 +219,8 @@ input,label {
 
 #player-panel {
   	position: fixed;
-  	left: 20%;
-  	top: 80%;
+  	left: 15%;
+  	top: 85%;
 }
 
 #above-bar {
