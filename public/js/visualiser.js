@@ -336,10 +336,11 @@ function ping(location) {
 	var endR = startR + screenvars[1][1] * PING_SIZE;
 
 	g.append("circle")
-	.attr("class", "ping")
-	.attr("cx", center[0])
-	.attr("cy", center[1])
-	.attr("r", startR)
+	.attr({
+		class: "ping",
+		cx: center[0],
+		cy: center[1],
+		r: startR})
 	.transition()
 	.duration(750)
 	.style("stroke-opacity", 0.25)
