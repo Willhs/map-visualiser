@@ -252,9 +252,7 @@ function showListNotifications(){
 					currentUser.setCurrentExploration(expl);
 					pathMove.unload();
 					progressBar.unload();
-					pathMove.setExploration(expl);
-					pathMove.load();
-					progressBar.load(expl);
+					selectExploration(expl);
 				}
 				notificationSelector.appendChild(newOption);
 
