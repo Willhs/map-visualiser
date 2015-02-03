@@ -392,6 +392,7 @@ function insertIntoSelectedExploration(insertee){
 	exploration.insertEvents(insertee.getEvents(), eventIndex+1, time);
 
 	// put the new exploration into currentExporation so it will be saved next
+	// TODO: save as the older exploration, not a new one
 	currentUser.setCurrentExploration(exploration);
 
 	// TODO: insert into audio

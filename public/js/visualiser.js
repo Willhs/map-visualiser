@@ -240,7 +240,6 @@ function updateScaleAndTrans(){
 function goToFirstLocation(exploration){
 	var firstLocation = exploration.getEvent(0).body;
 	var translate = d3.transform(firstLocation).translate;
-	console.log(translate);
 	var scale = d3.transform(firstLocation).scale;
 	// TODO: don't have -1 multipliers
 	transitionTo(	[translate[0]*-1 + (width/2), translate[1]*-1 + (height/2)], 

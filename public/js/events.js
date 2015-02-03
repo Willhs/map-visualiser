@@ -126,8 +126,15 @@ insertButton.click( function(){
 stopInsertButton.click( function(){
 	stopRecording();
 	inserting = false;
-	progressBar.hideInsertGraphics();
+
+	var insertionDuration = currentUser.getCurrentExploration().getDuration();
+	var currentTime = getCurrentPlaybackTime();
+
 	insertIntoSelectedExploration(currentUser.getCurrentExploration());
+
+	// gui stuff
+	progressBar.hideInsertGraphics();
+	progressBar.showInsertedChunk(currentTime, insertionDuration);
 });
 
 // ---- INIT

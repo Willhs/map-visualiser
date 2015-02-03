@@ -260,13 +260,11 @@ function ProgressBar() {
 		var divHeight = parseInt(insertDiv.style("height"), 10),
 			divWidth = parseInt(insertDiv.style("width"), 10),
 			barHeight = 36,
-			barWidth = 500,
+			barWidth = 400,
 			barLeft = (progressWidth - barWidth) / 2,
 			barTop = 0;
 
 		var insertText = "Inserting";
-
-		console.log(divHeight, divWidth, barTop);
 
 		var insertSVG = insertDiv.append("svg")
 			.attr({
@@ -275,21 +273,9 @@ function ProgressBar() {
 				height: divHeight
 			});
 
-		var insertGroup = insertSVG.append("g");
+		var insertGroup = insertSVG.append("g")
+			.attr("id", "insert-bar");
 
-		// lines from insert point to bottom of insert bar
-		var points = [	{x: insertX, y: divHeight}, 
-						{x: barLeft, y: barTop + barHeight},
-						{x: barLeft + barWidth, y: barTop + barHeight}	];
-
-		insertGroup.append("polygon")
-			.data(points)
-			.attr({
-				points: function(d) {
-					return [d.x, d.y].join(",");
-				},
-				fill: "green"
-			});
 		// insert bar
 		insertGroup.append("rect")
 			.attr({
@@ -310,15 +296,74 @@ function ProgressBar() {
 				"font-size": "1.5em",
 				"text-anchor": "middle"
 			});
+		// lines from insert point to bottom of insert bar
+		var points = [	{x: insertX, y: divHeight}, 
+						{x: barLeft, y: barTop + barHeight},
+						{x: barLeft + barWidth, y: barTop + barHeight}	];
+
+		insertGroup.append("polygon")
+			.data(points)
+			.attr({
+				points: function(d) {
+					return [d.x, d.y].join(",");
+				},
+				fill: "green"
+			});
 		// record stop button
 		$("#stop-insert-button").show();
 	}
 
 	this.hideInsertGraphics = function(){
-		console.log("hiding insert");
 		var insertSVG = d3.select("#insert-svg");
-		if (insertSVG)
-			insertSVG.remove();
+		if (insertSVG){
+			insertSVG.select("#insert-bar")
+			.transition()
+				.duration(1000)
+				.ease("cubic-in-out")
+				.attr("transform", "translate(0, "+(progressHeight + 10)+")")
+				.style("opacity", 0)
+				.each("end", function() {insertSVG.remove();});
+		}
 		$("#stop-insert-button").hide();
+	}
+
+	this.showInsertedChunk = function(startTime, duration){
+		console.log(startTime, duration);
+		var startX = this.getXPosOfTime(startTime);
+		var endX = this.getXPosOfTime(startTime + duration);
+
+		var chunk = progressSVG.append("rect")
+			.attr({
+				x: startX,
+				y: 0,
+				width: endX - startX,
+				height: progressHeight,
+				fill: "#28AADE",
+				stroke: "black",
+				"stroke-width": "3px"
+			})
+			.style("opacity", 0);
+
+		var fadeOutDelay = 2000; // ms
+
+		fadeIn();
+
+		function fadeIn(){
+			chunk.transition()
+				.duration(300)
+				.ease("cubic-in-out")
+				.style("opacity", 0.8)
+				.each("end", function(){
+					setTimeout( fadeOut, fadeOutDelay); 
+				});
+		}
+
+		function fadeOut(){
+			chunk.transition()
+				.duration(1000)
+				.ease("cubic-in-out")
+				.style("opacity", 0);
+		}
+
 	}
 }

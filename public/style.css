@@ -284,6 +284,7 @@ input,label {
 #stop-insert-button {
 	display: none;
 	position: absolute;
+	left: 80%;
 	border-radius: 20px;
 	background-color: red;
 	padding: 10px;
