@@ -36,9 +36,11 @@ function PathMove(){
 //	get the set of cities in the exploration return list of names
 	this.citiesDisplay = function(){
 		var cities=[];
-		for(var i = 0; i<this.cityEvents().length; i++){
-				cities.push(this.cityEvents()[i].body);
+		this.cityEvents().forEach(function(event){
+			if(event.type.localeCompare("travel")==0){
+				cities.push(event.body);
 			}
+		});
 		return cities;
 	}
 
@@ -49,20 +51,14 @@ function PathMove(){
 //	get the set of citie's x, y coordinates
 	this.translates = function(){
 		trans = [];
-			for(var i=0; i<this.citiesDisplay().length; i++){
-			var index = getCityIndex(this.citiesDisplay()[i]);
+		this.citiesDisplay().forEach(function(cityName){
+			var index = getCityIndex(cityName);
 			var paths = document.getElementById(index);
 			var data = paths.getAttribute('transform');
 			var translate = getTranslate(data);
 			trans.push(translate);
-		}
+		});
 		return trans;
-
-		function getTranslate(data){
-			var translationX = data.slice(data.indexOf("translate(")+10, data.indexOf(","));
-			var translationY = data.slice(data.indexOf(",")+1, data.indexOf(")"));
-			return [parseFloat(translationX), parseFloat(translationY)];
-		}
 	};
 
 //	get the set of cities event time
@@ -83,7 +79,6 @@ function PathMove(){
 		.attr("stroke-dasharray","4,4")
 		.attr("d", d3.svg.line()
 				.tension(0));
-
 		g.selectAll(".point")
 		.data(this.translates())
 		.enter().append("circle")
@@ -91,14 +86,7 @@ function PathMove(){
 		.attr("r",4)
 		.attr("transform", function(d) { return "translate(" + d + ")"; });
 		this.setText();
-
-		g.append("circle")
-		.attr("r", 5)
-		.style("stroke", "gray")
-		.style("fill","red")
-		.attr("id", "circle-move")
-		.attr("cx", pathMove.translates()[0][0])
-		.attr("cy", pathMove.translates()[0][1]);
+		appendCircle();
 
 		//goToLoc(this.citiesDisplay()[0]);
 		//var iframeWindow = new IframePath;
@@ -119,16 +107,6 @@ function PathMove(){
 		if(currentCityIndex+1===this.cityEventTimes().length){
 			return;
 		}
-
-		var line =
-			d3.svg.line()
-			.x(function(d) {
-				return d.x;
-			})
-			.y(function(d) {
-				return d.y;
-			});
-
 		nextCityEventTime = this.cityEventTimes()[currentCityIndex+1];
 		var eventDuration = nextCityEventTime - eventTime;
 
@@ -159,7 +137,7 @@ function PathMove(){
 			d: line(datas),
 			stroke: "blue",
 			"stroke-width": 2})
-			.style("fill", "none");
+		.style("fill", "none");
 
 		var totalLength = pathLineMove.node().getTotalLength();
 		pathLineMove
@@ -171,6 +149,7 @@ function PathMove(){
 		.attr("stroke-dashoffset", 0)
 		.attrTween("point", translateAlong(pathLineMove.node()));
 		//.delay(eventTime==null ? 0: ANIMATION_DELAY*this.cityEventTimes(this.expl)[0]);
+
 		// return a point at each milisecond
 		function translateAlong(path) {
 			var l = path.getTotalLength();
@@ -186,13 +165,22 @@ function PathMove(){
 	};
 
 
+	var line =
+		d3.svg.line()
+		.x(function(d) {
+			return d.x;
+		})
+		.y(function(d) {
+			return d.y;
+		});
+
 //	resume from pause
 	this.resumePathMove = function(eventDur){
 		//the pathLineMove variable signed when the timeline pass through the fist city
 		//if click on the progress bar before the yellow bar(city event).
 		//will cause error: undefined is not a function (pathLineMove is undefined)
 		var dur = -1;
-		if(this.pausedTime<this.cityEventTimes()[0]){//pausedTime less then the first city event time
+		if(this.pausedTime<this.cityEventTimes()[0] && this.pausedTime!=null){//pausedTime less then the first city event time
 			d3.selectAll("#animationPath").remove();
 			d3.select("#circle-move")
 			.attr("cx", this.translates()[0][0])
@@ -203,7 +191,7 @@ function PathMove(){
 		}
 
 		//this.pausedTime set when click on the progress bar.
-		else if(this.pausedTime>=this.cityEventTimes()[0]){//case: pausedTime great then first city event time
+		else if(this.pausedTime>=this.cityEventTimes()[0] && this.pausedTime!=null){//case: pausedTime great then first city event time
 			d3.selectAll("#animationPath").remove();
 			//remove all path and redraw path
 			for(var i = 1; i<this.cityEventTimes().length; i++){
@@ -218,14 +206,14 @@ function PathMove(){
 						y2: this.translates()[i][1],
 						stroke: 'blue',
 						'stroke-width': 2})
-						.style("fill", "none");
+					.style("fill", "none");
 				}
 				if(this.cityEventTimes()[i]>this.pausedTime && this.cityEventTimes()[i-1]<this.pausedTime) {
 					currentCityIndex = i-1;
 					//reset circle FROM position and TO position
 					d3.select("#circle-move")
-					.attr("cx", this.translates()[currentCityIndex][0])
-					.attr("cy", this.translates()[currentCityIndex][1]);
+						.attr("cx", this.translates()[currentCityIndex][0])
+						.attr("cy", this.translates()[currentCityIndex][1]);
 					ncx = this.translates()[currentCityIndex+1][0];
 					ncy = this.translates()[currentCityIndex+1][1];
 					//duration from paused point to next city event time
@@ -235,35 +223,25 @@ function PathMove(){
 				}
 			}
 		}
-		else if(this.pausedTime == null){ //
+		else if(this.pausedTime== null){
 			if(pausedX===-1)return; //pausedX == -1 <==> paused == false
 			dur = eventDur*(lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:ctx,y:cty},{x:ncx,y:ncy}));
 		}
 
 		//ease function "cubic-out" will redraw from paused position
-		d3.select("#animationPath")
+		d3.selectAll("#animationPath")
 		.transition()
 		.duration(dur)
 		.ease("cubic-out")
 		.attr("stroke-dashoffset", 0);
 		//.delay(currentCityEventTime==null ? 0: ANIMATION_DELAY*this.cityEventTimes(this.expl)[0]);
+
 		d3.select("#circle-move")
 		.transition()
 		.duration(dur)
 		.ease("cubic-out")
 		.attr("cx", ncx)
 		.attr("cy", ncy);
-
-		function lineDistance( point1, point2 ){
-			var xs = 0;
-			var ys = 0;
-			xs = point2.x - point1.x;
-			xs = xs * xs;
-			ys = point2.y - point1.y;
-			ys = ys * ys;
-
-			return Math.sqrt( xs + ys );
-		}
 	};
 
 //	pause
@@ -298,6 +276,11 @@ function PathMove(){
 		this.pausedTime = null;
 	};
 
+	function getTranslate(data){
+		var translationX = data.slice(data.indexOf("translate(")+10, data.indexOf(","));
+		var translationY = data.slice(data.indexOf(",")+1, data.indexOf(")"));
+		return [parseFloat(translationX), parseFloat(translationY)];
+	}
 
 	this.cityIndex = function(cityEventTimes, eventTime, currentCityIndex){
 		var index = null;
@@ -342,4 +325,24 @@ function PathMove(){
 			$(this).attr("dx" , "0em");
 		});
 	};
+}
+function lineDistance( point1, point2 ){
+	var xs = 0;
+	var ys = 0;
+	xs = point2.x - point1.x;
+	xs = xs * xs;
+	ys = point2.y - point1.y;
+	ys = ys * ys;
+
+	return Math.sqrt( xs + ys );
+}
+
+function appendCircle(){
+	var circle = g.append("circle")
+	.attr("r", 5)
+	.style("stroke", "gray")
+	.style("fill","red")
+	.attr("id", "circle-move")
+	.attr("cx", pathMove.translates()[0][0])
+	.attr("cy", pathMove.translates()[0][1]);
 }
