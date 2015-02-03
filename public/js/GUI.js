@@ -17,7 +17,8 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	quickplayNotification = document.getElementById("quickplay-notification"),
 	notificationSelector = document.getElementById("notification-selector"),
 	insertButton = $("#insert-button"),
-	explorationTitle = $("#exploration-title")
+	stopInsertButton = $("#stop-insert-button"),
+	explorationTitle = $("#exploration-title"),
 	timeText = $("#time-text"),
 	durationText = $("#duration-text");
 

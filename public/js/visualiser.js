@@ -25,8 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
 var IMAGE_PATH = "data/image/";
 
 var width = $(window).width() * 0.8,
-	height = $(window).height(),
-	centered;
+	height = $(window).height();
 
 var active;
 //How far we should scale into a selection
@@ -165,67 +164,52 @@ function deleteAnnotation(annotation){
 	})
 }
 
-// Defaults for the travelTo function?
-var start = [width / 2, height / 2, height],
-	end = [width / 2, height / 2, height];
-
 // smoothly transitions from current location to a city
-// if elapsedTime is specified, makes the transition from elapsedTime to end
-function travelTo(city, duration, elapsedTime) {
+function travelToCity(city, duration, elapsedTime) {
+	var translate = path.centroid(city);
+	var scale = 4;
 
-	var b = path.centroid(city);
-	var x = b[0],
-	y = b[1],
-	scale = 200; // the scale at which a country is zoomed to
+	transitionTo(translate, null, duration, elapsedTime);
+}
 
-	end[0] = x;
-	end[1] = y;
-	end[2] = scale;
+// duration [optional] sets duration of transition
+// elapsedTime [optional] makes the transition from elapsedTime to end
+function transitionTo(translate, scale, duration, elapsedTime){
 
-	var sb = getRealBounds();
-	start = [sb[0][0], sb[0][1], height / d3.transform(g.attr("transform")).scale[0]];
+	var cx = translate[0],
+		cy = translate[1],
+		screenWidth = scale ? height / scale : 200;
+
+	var end = [];
+	end[0] = cx;
+	end[1] = cy;
+	end[2] = screenWidth;
+
+	var sb = getRealBounds(),
+		start = [sb[0][0], sb[0][1], height / d3.transform(g.attr("transform")).scale[0]];
 
 	var center = [width / 2, height / 2],
-	i = d3.interpolateZoom(start, end);
+		interpolator = d3.interpolateZoom(start, end);
 
-	var duration = duration ? duration : i.duration * ANIMATION_DELAY,
+	var duration = duration ? duration : interpolator.duration * ANIMATION_DELAY,
 		ease = elapsedTime ? resumed_ease(EASE_FUNCTION, elapsedTime) : EASE_FUNCTION;
 
 	g.transition()
 	.duration(duration)
 	.ease(ease)
 	.attrTween("transform", function() {
-		return function(t) { return transform(i(t)); };
-	})
+		return function(t) { return transformAt(interpolator(t)); };
+	})	
 	.each("end.update", function(){
-		updateScaleAndTrans(); // updates global scale and transition variables});
-	});
-
-	start = [x, y, scale];
-	centered = city;
+		updateScaleAndTrans();
+	}); // updates global scale and transition variables
 
 	// code from http://bl.ocks.org/mbostock/3828981
-	function transform(p) {
+	function transformAt(p) {
 		//k is the width of the selection we want to end with.
 		var k = height / p[2];
 		return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
 	}
-}
-
-function resumed_ease( ease, elapsed_time ) {
-    var y = typeof ease == "function" ? ease : d3.ease.call(d3, ease);
-    return function( x_resumed ) {
-        var x_original = d3.scale
-                        .linear()
-                        .domain([0,1])
-                        .range([elapsed_time,1])
-                        ( x_resumed );
-        return d3.scale
-                .linear()
-                .domain([ y(elapsed_time), 1 ])
-                .range([0,1])
-                ( y ( x_original ) );
-    };
 }
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
@@ -241,7 +225,6 @@ function updateScaleAndTrans(){
 	x = width / 2;
 	y = height / 2;
 	k = 1;
-	centered = null;
 
 	g.transition()
 	.duration(900 * ANIMATION_DELAY)
@@ -253,17 +236,16 @@ function updateScaleAndTrans(){
 	});
 }*/
 
-// sets the easing function and animation speed
-// from the information in the text file.
-function setEaseFunction(index){
-	var zoomIn = FROM_TEXT_FILE[index][0];
-	var zoomOut = FROM_TEXT_FILE[index][1];
-	var speed = FROM_TEXT_FILE[index][2];
-
-	// set the easing function
-	EASE_FUNCTION = (zoomIn == zoomOut ? zoomIn+"-in-out" : zoomIn+"-in"+zoomOut+"-out");
-	// set the animation delay
-	ANIMATION_DELAY = (speed == "slow" ? SLOW : FAST);
+// causes a transition to the exploration's start event
+function goToFirstLocation(exploration){
+	var firstLocation = exploration.getEvent(0).body;
+	var translate = d3.transform(firstLocation).translate;
+	console.log(translate);
+	var scale = d3.transform(firstLocation).scale;
+	// TODO: don't have -1 multipliers
+	transitionTo(	[translate[0]*-1 + (width/2), translate[1]*-1 + (height/2)], 
+					scale[0]
+				);
 }
 
 // A function to return the index of a given city
@@ -276,7 +258,7 @@ function getCityIndex(name){
 }
 
 function cityClicked(d){
-	travelTo(d);
+	travelToCity(d);
 }
 
 // A function that takes you to a city
@@ -290,7 +272,7 @@ function goToLoc(location, duration, elapsedTime) {
 		location = cities[getCityIndex(location)];
 
 	selectLocation(location); // so that information appears in sidebar
-	travelTo(location, duration, elapsedTime);
+	travelToCity(location, duration, elapsedTime);
 }
 
 // Pings a country on the scren

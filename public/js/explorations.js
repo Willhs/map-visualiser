@@ -227,6 +227,11 @@ function startPlayback(exploration){
 		return; // if no events, do nothing.
 	}
 
+	// print audio information
+	/*var audioBytes = exploration.audio.size;
+	console.log("audio size: ", audioBytes + " bytes");
+	console.log("duration: ", ((audioBytes/4)/44100));*/
+
 	// launch the first event
 	launchEvents(exploration, 0);
 
@@ -441,6 +446,8 @@ function selectExploration(exploration){
 	progressBar.load(selectedExploration);
 
 	updateExplorationControls();
+
+	goToFirstLocation(exploration);
 }
 
 // deselects current exploration

@@ -153,7 +153,7 @@ function ProgressBar() {
 			else if (currentClass == "replay") {
 				startPlayback(selectedExploration);
 			}
-		})
+		});
 
 		// add mouse listener to bar
 		progressSVG.on("click", triggerPlayFromPosition);
@@ -218,7 +218,7 @@ function ProgressBar() {
 	}
 
 	// displays insert button above the current playback position
-	function showTimeText(millis){		
+	function showTimeText(millis){
 
 		var formattedTime = formatTime(millis);	
 
@@ -254,11 +254,11 @@ function ProgressBar() {
 	}
 
 	// creates a bar, like the progress bar to show a currently recording exploration
-	this.showInsertBar = function(insertX){
-		var insertBarDiv = d3.select("#above-bar");
+	this.showInsertGraphics = function(insertX){
+		var insertDiv = d3.select("#above-bar");
 
-		var divHeight = parseInt(insertBarDiv.style("height"), 10),
-			divWidth = parseInt(insertBarDiv.style("width"), 10),
+		var divHeight = parseInt(insertDiv.style("height"), 10),
+			divWidth = parseInt(insertDiv.style("width"), 10),
 			barHeight = 36,
 			barWidth = 500,
 			barLeft = (progressWidth - barWidth) / 2,
@@ -268,7 +268,7 @@ function ProgressBar() {
 
 		console.log(divHeight, divWidth, barTop);
 
-		var insertSVG = insertBarDiv.append("svg")
+		var insertSVG = insertDiv.append("svg")
 			.attr({
 				id: "insert-svg",
 				width: divWidth,
@@ -277,25 +277,18 @@ function ProgressBar() {
 
 		var insertGroup = insertSVG.append("g");
 
-		// line from insert point to left bottom side of insert bar
-		insertGroup.append("line")
+		// lines from insert point to bottom of insert bar
+		var points = [	{x: insertX, y: divHeight}, 
+						{x: barLeft, y: barTop + barHeight},
+						{x: barLeft + barWidth, y: barTop + barHeight}	];
+
+		insertGroup.append("polygon")
+			.data(points)
 			.attr({
-				x1: insertX,
-				y1: divHeight,
-				x2: barLeft,
-				y2: barTop + barHeight,
-				stroke: "black",
-				"stroke-width": 2
-			});
-		// "                       " right "                     "
-		insertGroup.append("line")
-			.attr({
-				x1: insertX,
-				y1: divHeight,
-				x2: barLeft + barWidth,
-				y2: barTop + barHeight,
-				stroke: "black",
-				"stroke-width": 2
+				points: function(d) {
+					return [d.x, d.y].join(",");
+				},
+				fill: "green"
 			});
 		// insert bar
 		insertGroup.append("rect")
@@ -317,9 +310,15 @@ function ProgressBar() {
 				"font-size": "1.5em",
 				"text-anchor": "middle"
 			});
+		// record stop button
+		$("#stop-insert-button").show();
 	}
 
-	function hideInsertBar(){
-		d3.select("#insert-svg").remove();
+	this.hideInsertGraphics = function(){
+		console.log("hiding insert");
+		var insertSVG = d3.select("#insert-svg");
+		if (insertSVG)
+			insertSVG.remove();
+		$("#stop-insert-button").hide();
 	}
 }

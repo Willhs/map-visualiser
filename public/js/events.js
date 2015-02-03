@@ -3,11 +3,8 @@
 // ---- explorations
 
 recordExplButton.addEventListener("click", function(){
-	if (recording){
+	if (recording)
 		stopRecording();
-		if (inserting)
-			insertIntoSelectedExploration(currentUser.getCurrentExploration());
-	}
 	else
 		startRecording();	
 });
@@ -117,12 +114,20 @@ quickplayNotification.addEventListener("click", function(){
 });
 
 // ---- insert button
-insertButton.click(function(){
+insertButton.click( function(){
 	inserting = true;
+	startRecording();
 	insertButton.css("visibility", "hidden");
 	var time = getCurrentPlaybackTime();
 	var xpos = progressBar.getXPosOfTime(time);
-	progressBar.showInsertBar(xpos);
+	progressBar.showInsertGraphics(xpos);
+});
+
+stopInsertButton.click( function(){
+	stopRecording();
+	inserting = false;
+	progressBar.hideInsertGraphics();
+	insertIntoSelectedExploration(currentUser.getCurrentExploration());
 });
 
 // ---- INIT
