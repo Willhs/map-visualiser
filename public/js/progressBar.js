@@ -235,6 +235,7 @@ function ProgressBar() {
 	}
 
 	function showDurationText(){
+		if(!selectedExploration)return;
 		var formattedTime = formatTime(selectedExploration.getDuration());
 		durationText.text(formattedTime);
 		durationText.show();

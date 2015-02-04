@@ -12,7 +12,7 @@ recordExplButton.addEventListener("click", function(){
 		startRecording();
 });
 
-playExplButton.addEventListener('click', function () {
+playExplButton.on('click', function () {
 	if (!paused)
 		startPlayback(selectedExploration);
 	else {
@@ -21,21 +21,27 @@ playExplButton.addEventListener('click', function () {
 	}
 });
 
-pauseExplButton.addEventListener('click', function(){
+pauseExplButton.on('click', function(){
 	pausePlayback(selectedExploration);
 });
 
-stopExplButton.addEventListener('click', function(){
+stopExplButton.on('click', function(){
 	stopPlayback(selectedExploration);
 });
 
-saveExplButton.onclick = function(){
+saveExplButton.click(function(){
 	saveExploration(currentUser.getCurrentExploration());
-}
+});
 
-resetExplButton.onclick = resetExplorations;
+//delete button
+deleteExplButton.click(function(){
+	if (selectedExploration)
+		deleteExploration(selectedExploration);
+});
 
-explChooser.onclick = updateSelectedExploration;
+resetExplButton.click(resetExplorations);
+
+explChooser.click(updateSelectedExploration);
 
 //users
 var guestUsers = ["obama", "john", "lorde", "will"];
@@ -79,12 +85,6 @@ newAccount.onclick = function(){
 	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
 
-//delete button
-deleteExplButton.onclick = function(){
-	if (selectedExploration)
-		deleteExploration(selectedExploration);
-};
-
 //---- NOTIFICATIONS ----
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
@@ -96,9 +96,7 @@ notificationContainer.addEventListener('click',function(){
 
 	}
 	else{
-		resetVisibility(notificationSelector, "hidden");
-		resetVisibility(removeNotification, "hidden");
-		resetVisibility(quickplayNotification, "hidden");
+		setNotificationButtonOff();
 	}
 		});
 
@@ -107,9 +105,7 @@ removeNotification.addEventListener("click", function(){
 	selected.isNew = false;
 	setExplorationIsOld(selected);
 
-	resetVisibility(notificationSelector, "hidden");
-	resetVisibility(removeNotification, "hidden");
-	resetVisibility(quickplayNotification, "hidden");
+	setNotificationButtonOff();
 	updateNotifications();
 	deselectExploration();
 });
