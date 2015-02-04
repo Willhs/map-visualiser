@@ -384,6 +384,5 @@ function ProgressBar() {
 				.ease("cubic-in-out")
 				.style("opacity", 0);
 		}
-
 	}
 }

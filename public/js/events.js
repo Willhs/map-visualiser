@@ -24,7 +24,7 @@ stopExplButton.addEventListener('click', function(){
 });
 
 saveExplButton.onclick = function(){ 
-	saveExploration(currentExpl);
+	saveExploration(currentUser.getCurrentExploration());
 }
 
 resetExplButton.onclick = resetExplorations;

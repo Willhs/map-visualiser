@@ -391,13 +391,17 @@ function insertIntoSelectedExploration(insertee){
 		if (!insertee.hasAudio() || !exploration.hasAudio())
 			return null;
 
-		var currentTimeAudio = audioElem.currentTime;
-		var sampleRate = 44100;
+		// find the byte position of the current time
+		var currentTimeAudio = audioElem.currentTime,
+			sampleRate = 44100,
+			bytesPerFrame = 4,
+			headerSize = 44;
+
 		var framePosition = (currentTime/1000) * sampleRate;
-		var bytesPerFrame = 4;
-		var headerSize = 44;
-		var dataBytePos = (framePosition * bytesPerFrame) - ((framePosition * bytesPerFrame) % 4);
-		var bytePosition = headerSize + dataBytePos;
+		var dataBytePos = framePosition * bytesPerFrame;
+		// get the last frame before the bytePosition (so bytePosition isn't in middle of sample)
+		var lastFrameStart = (dataBytePos - (dataBytePos % bytesPerFrame));
+		var bytePosition = headerSize + lastFrameStart;
 
 		var explAudio = exploration.getAudio();
 		var inserteeAudio = insertee.getAudio();
@@ -407,15 +411,9 @@ function insertIntoSelectedExploration(insertee){
 		var insert = inserteeAudio.slice(headerSize, inserteeAudio.size);
 		var right = explAudio.slice(bytePosition, explAudio.size);
 
-		console.log("old: ", explAudio);
-		console.log("left: ", left);
-		console.log("insert: ", insert);
-		console.log("right: ", right);
-
+		// join each of the pieces together
 		return new Blob([left, insert, right], {type: "audio/wav"});
 	}();
-
-	console.log("newAudio: ", newAudio);
 
 	// insert the events
 	exploration.insertEvents(insertee.getEvents(), eventIndex+1, currentTime);
