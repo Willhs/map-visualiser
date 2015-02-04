@@ -97,22 +97,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 			<div id="exploration-container">
 				<select id="exploration-selector" size="0"></select>
 			</div>
-			<div>
-				<p id="files-loaded">no exploration loaded</p>
-			</div>
 		</div>
 		<div>
 			<h3>
-				<label for="user-input" id="to-label">To:</label>
+				<label for="user-input" id="to-label">Send to:</label>
 			</h3>
 			<input type="text" id="user-input" name="user" placeholder="Username" />
 			<button type='button' id="submit-shared-file">Send</button>
 			<p id = "expl-sent-message"></p>
 
 		</div>
-		<div class='select-device'>
+		<!-- <div class='select-device'>
 			<label for='audio-source'>Audio source: </label> <select id='audio-source'></select>
-		</div>
+		</div> -->
 
 		<div id="location-div" class="location-pane">
 			<h2 id="location-title"></h2>
@@ -151,6 +148,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. -->
 		</div>
 		<div id="below-bar">
 			<p id="exploration-title"></p>
+			<img src="data/image/microphone-128-blue.png" id="has-audio"></img>
 			<p id="duration-text"></p>
 		</div>
 	</div>

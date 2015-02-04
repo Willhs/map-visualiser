@@ -20,7 +20,10 @@ var recordExplButton = document.getElementById("record-exploration-button"),
 	stopInsertButton = $("#stop-insert-button"),
 	explorationTitle = $("#exploration-title"),
 	timeText = $("#time-text"),
-	durationText = $("#duration-text");
+	durationText = $("#duration-text"),
+	hasAudio = $("#has-audio"),
+	aboveBarDiv = $("#above-bar"),
+	belowBarDiv = $("#below-bar");
 
 //updates elements in the side bar
 function updateSideBar(){
@@ -312,7 +315,11 @@ function displayLocationInfo(city){
 
 			var userName = annotation.userName;
 			var timeStamp = new Date(annotation.timeStamp);
-			var time = timeStamp.getHours() + ":" + timeStamp.getMinutes();
+			// h:mm format
+			var time = 	timeStamp.getHours() + ":" +
+						(timeStamp.getMinutes().toString().length < 2 ? 
+							"0" + timeStamp.getMinutes() :
+							timeStamp.getMinutes());
 			var date = timeStamp.getDate() + "/" + timeStamp.getMonth() + "/" + timeStamp.getFullYear().toString().substring(2,4);
 		 	var annInfo = "<i> – " + userName + " " + time + " on " + date + "</i>";
 

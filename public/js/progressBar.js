@@ -7,7 +7,6 @@ function ProgressBar() {
 		progressHeight = 36,
 		progressTop = 0,
 		progressLeft = 0;
-
 	
 	// add the progress bar svg
 	var progressSVG = d3.select("#bar-container").append("svg")
@@ -38,7 +37,7 @@ function ProgressBar() {
 		bar.attr("x", currentPosition);
 
 		// hide button
-		insertButton.css("visibility", "hidden");
+		hideInsertButton();
 
 		// start transition
 		bar.transition()
@@ -87,6 +86,8 @@ function ProgressBar() {
 		var travelEvents = [];
 		var barWidth = 5;
 
+		belowBarDiv.show();
+
 		for (var i = 0; i < exploration.numEvents(); i++){
 			var event = exploration.getEvent(i);
 			if (event.type == "travel")
@@ -123,12 +124,12 @@ function ProgressBar() {
 		function showTravelText(d){
 			var travelId = d.body;
 			d3.select("#"+travelId)
-				.insert("text")
+				.insert("text", ":last-child")
 				.attr({
 					id: travelId + "-text",
 					dx: function(d){ return getEventPosition(d.time); },
 					dy: 12,
-					fill: "steelblue",
+					fill: "red",
 					"text-anchor": "middle"
 				})
 				.text(travelId);
@@ -167,7 +168,11 @@ function ProgressBar() {
 		// show title and duration text elements
 		explorationTitle.text(exploration.name + ", " + exploration.timeStamp);
 		explorationTitle.show();
-		showDurationText();
+		// if exploration has audio, show hasAudio
+		if (selectedExploration.hasAudio())
+			hasAudio.show();
+		// duration
+		showDurationText();		
 	}
 
 	// unloads an exploration
@@ -185,10 +190,9 @@ function ProgressBar() {
 		// remove playControl listener
 		playControl.on("click", null);
 		// hide text and insert button
-		timeText.hide();
-		insertButton.css("visibility", "hidden");
-		explorationTitle.hide();
-		durationText.hide();
+		this.hideTimeText();
+		hideInsertButton();
+		belowBarDiv.hide();
 	}
 
 	function onBarClick(e){
@@ -229,7 +233,8 @@ function ProgressBar() {
 			left: (progressPosition - timeText.outerWidth()/2)
 		};
 
-		timeText.show(); // jquery
+	//	aboveBarDiv.show(); // show parent div
+		timeText.show();
 		timeText.text(formattedTime);
 		timeText.css(timePosition); // sets position relative to parent
 	}
@@ -242,6 +247,7 @@ function ProgressBar() {
 	// used in explorations
 	this.hideTimeText = function(){
 		timeText.hide();
+	//	aboveBarDiv.hide();
 	}
 
 	function formatTime(millis){
@@ -253,8 +259,17 @@ function ProgressBar() {
 		return minutes + ":" + seconds;
 	}
 
+	function showInsertButton(){
+		insertButton.css("visibility", "hidden");
+	}
+
+	function hideInsertButton(){
+		insertButton.css("visibility", "hidden");
+	}
+
 	// creates a bar, like the progress bar to show a currently recording exploration
 	this.showInsertGraphics = function(insertX){
+		// aboveBarDiv.show(); // show parent div
 		var insertDiv = d3.select("#above-bar");
 
 		var divHeight = parseInt(insertDiv.style("height"), 10),
@@ -345,6 +360,7 @@ function ProgressBar() {
 				.style("opacity", 0)
 				.each("end", function() {insertSVG.remove();});
 		}
+		//aboveBarDiv.hide();
 		$("#stop-insert-button").hide();
 	}
 

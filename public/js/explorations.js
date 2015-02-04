@@ -474,7 +474,7 @@ function deselectExploration(){
 		disableAction("delete");
 }
 
-// resets to original state (no explorations selected and no recordings in progress)
+// resets to original state (no explorations selected and no recordings or playbacks in progress)
 function resetExplorations() {
 	if (playing || paused)
 		stopPlayback(selectedExploration);

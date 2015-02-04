@@ -11,20 +11,18 @@ body {
 	position: absolute;
 	width: 80%;
 	height: 95%;
-	top: 3px;
 }
 
 #side-bar {
 	position: fixed;
-	left: 81%;
-	top: 3px;
+	left: 80%;
 	width: 20%;
 	height: 100%;
 	background-color: #ccc;
 	border: 3px solid black;
 }
 
-#side-bar>* { /* all child elements of sidebar */
+#side-bar > * { /* all child elements of sidebar */
 	padding-left: 1em;
 }
 
@@ -45,8 +43,8 @@ input,label {
 }
 
 .user-button {
-	width: 50px;
-	height: 50px;
+	width: 60px;
+	height: 60px;
 	border-style: solid;
 	display: inline;
 }
@@ -100,8 +98,8 @@ input,label {
 
 .annotation-controls {
 	/*min-width: 30%;*/
-	padding-right: 20px;
-	float: right;
+	display: inline-block;
+	padding-right: 10px;
 }
 
 .annotation-text {
@@ -214,7 +212,6 @@ input,label {
 #above-bar {
 	width: 980px;
 	height: 45px;
-	position: relative;
 }
 
 #play-progress {	
@@ -306,18 +303,29 @@ input,label {
 	font-size: 0.9em;
 }
 
-#exploration-title {
-	left: 36px;
-}
-
-#duration-text {
-	left: 850px;
+#below-bar {
 }
 
 #below-bar p {
 	font-size: 1.5em;
 	color: SteelBlue;
 	position: absolute;
+}
+
+#exploration-title {
+	left: 5%;
+}
+
+#has-audio {
+	position: absolute;
+	margin: 5px;
+	left: 75%;
+	width: 3em;
+	height: 3em;
+}
+
+#duration-text {
+	left: 85%;
 }
 
 #path-play {
