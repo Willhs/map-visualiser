@@ -379,3 +379,16 @@ function changeButtonColour(name, state){
 	else
 		button.src = IMAGE_PATH + name + "_off.jpeg";
 }
+
+// displays an image of a microphone
+function displayAudioGraphic(){    
+    svg.append("image")
+        .attr({
+            x: width*0.9,
+            y: 20,
+            width: 50,
+            height: 50, 
+            "xlink:href": "data/image/microphone-128.png",
+            id: "microphone-graphic"
+        });
+}

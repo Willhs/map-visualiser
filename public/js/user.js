@@ -112,7 +112,7 @@ function logon(name){
 
 function logout(){
 	currentUser = null;
-	deselectExploration();
+	resetExplorations();
 	updateSideBar();
 }
 

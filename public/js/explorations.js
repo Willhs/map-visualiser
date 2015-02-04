@@ -181,13 +181,15 @@ function startRecording() {
 }
 
 //ends recording of user navigation
-function stopRecording() {
+function stopRecording(audioCB) {
+
+	var recordedExpl = currentUser.currentExpl;
 	// if there is no recording, do nothing
-	if (!currentUser.currentExpl || !recording)
+	if (!recordedExpl || !recording)
 		return;
 
 	// removes event listeners which are recording user navigation.
-	zoom.on("zoom.record", null);//remove recording zoom listener
+	zoom.on("zoom.record", null); // remove recording zoom listener
 
 	// cities on the map
 	var mapCities = document.getElementsByClassName("place");
@@ -196,21 +198,22 @@ function stopRecording() {
 		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
 	}
 
-	currentUser.getCurrentExploration().addEvent("end", "");
+	recordedExpl.addEvent("end", "");
 
-	currentUser.getCurrentExploration().setTimeStamp(new Date());
+	recordedExpl.setTimeStamp(new Date());
 	// else, it will overwrite the selected exploration
 	if (!inserting)
-		selectExploration(currentUser.getCurrentExploration());
+		selectExploration(recordedExpl);
+
+	// audio stuff
 	if (audioRecorder)
-		stopAudioRecording();
+		stopAudioRecording(audioCB);
 
 	removeRecordingGraphics();
 
 	recording = false;
 	updateExplorationControls("stopped-recording");
-	progressBar.load(currentUser.getCurrentExploration());
-	console.log("Recorded " + currentUser.currentExpl.numEvents() + " events");
+	progressBar.load(recordedExpl);
 }
 
 // index of last event which was played
@@ -226,11 +229,6 @@ function startPlayback(exploration){
 		alert("nothing to play");
 		return; // if no events, do nothing.
 	}
-
-	// print audio information
-	/*var audioBytes = exploration.audio.size;
-	console.log("audio size: ", audioBytes + " bytes");
-	console.log("duration: ", ((audioBytes/4)/44100));*/
 
 	// launch the first event
 	launchEvents(exploration, 0);
@@ -386,40 +384,55 @@ function insertIntoSelectedExploration(insertee){
 	var eventIndex = currentEventIndex;
 
 	// time to insert newly recorded events
-	var time = exploration.getEvent(eventIndex).time + elapsedEventTime;
+	var currentTime = getCurrentPlaybackTime();
+
+	// grab audio
+	var newAudio = function(){
+		if (!insertee.hasAudio() || !exploration.hasAudio())
+			return null;
+
+		var currentTimeAudio = audioElem.currentTime;
+		var sampleRate = 44100;
+		var framePosition = (currentTime/1000) * sampleRate;
+		var bytesPerFrame = 4;
+		var headerSize = 44;
+		var dataBytePos = (framePosition * bytesPerFrame) - ((framePosition * bytesPerFrame) % 4);
+		var bytePosition = headerSize + dataBytePos;
+
+		var explAudio = exploration.getAudio();
+		var inserteeAudio = insertee.getAudio();
+
+		var left = explAudio.slice(0, bytePosition);
+		// chop off header
+		var insert = inserteeAudio.slice(headerSize, inserteeAudio.size);
+		var right = explAudio.slice(bytePosition, explAudio.size);
+
+		console.log("old: ", explAudio);
+		console.log("left: ", left);
+		console.log("insert: ", insert);
+		console.log("right: ", right);
+
+		return new Blob([left, insert, right], {type: "audio/wav"});
+	}();
+
+	console.log("newAudio: ", newAudio);
 
 	// insert the events
-	exploration.insertEvents(insertee.getEvents(), eventIndex+1, time);
+	exploration.insertEvents(insertee.getEvents(), eventIndex+1, currentTime);
+	// replace audio
+	if (newAudio){
+		exploration.setAudio(newAudio);
+		setupAudio(exploration);
+	}
 
 	// put the new exploration into currentExporation so it will be saved next
 	// TODO: save as the older exploration, not a new one
 	currentUser.setCurrentExploration(exploration);
 
-	// TODO: insert into audio
-	/*if (insertee.hasAudio()){
-		var sampleRate = 44100;
-		var samplePosition = (time/1000) * sampleRate;
-//		var oldLeft = exploration.getAudio().slice(0, )
-//		exploration.setAudio(new Blob([)
-	}*/
-
 	progressBar.unload();
 	progressBar.load(exploration);
 
 	inserting = false;
-}
-
-// plays audio from a blob
-function playAudio(audioBlob){
-	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
-	audioElem.play();
-}
-
-// assumes there is aleady audio data loaded into audioElem
-// resumes from current position + skipped time (in seconds)
-function resumeAudio(position){
-	audioElem.currentTime = position;
-	audioElem.play();
 }
 
 // updates GUI and other things..
@@ -442,6 +455,8 @@ function updatePlaybackStarted(){
 function selectExploration(exploration){
 	if (selectedExploration)
 		deselectExploration();
+
+	setupAudio(exploration);
 
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
@@ -480,11 +495,11 @@ function resetExplorations() {
 function saveExploration(exploration) {
 	updateExplorationControls("saved");
 
-	// if the exploration has no audio, go ahead and send
-	if (!exploration.audio){
+	if (!exploration.hasAudio()){
 		sendExploration(exploration);
 	}
-	else { // if the exploration contains audio
+	else {
+		// attach audio to exploration
 		// convert audio from blob to string so it can be sent
 		var reader = new FileReader();
 		reader.addEventListener("loadend", audioConverted);
@@ -517,6 +532,24 @@ function saveExploration(exploration) {
 			contentType: "application/json"
 		});
 	}
+}
+
+function setupAudio(exploration){
+	var audioBlob = exploration.getAudio();
+	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
+}
+
+// plays audio from a blob
+// assumes there is aleady audio data loaded into audioElem
+function playAudio(audioBlob){
+	audioElem.play();
+}
+
+// assumes there is aleady audio data loaded into audioElem
+// resumes from current position + skipped time (in seconds)
+function resumeAudio(position){
+	audioElem.currentTime = position;
+	audioElem.play();
 }
 
 // disables an action (currently button)

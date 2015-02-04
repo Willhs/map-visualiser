@@ -13,49 +13,42 @@ var audioContext = new AudioContext();
 var audioRecorder = null;
 
 function saveAudio() {
-    audioRecorder.exportWAV( doneEncoding );
     // could get mono instead by saying
     // audioRecorder.exportMonoWAV( doneEncoding );
-}
-
-function gotBuffers( buffers ) {
-    // the ONLY time gotBuffers is called is right after a new recording is completed - 
-    // so here's where we should set up the download.
     audioRecorder.exportWAV( doneEncoding );
-}
 
-function doneEncoding( blob ) {
-    // sets the audio of the current user's current exploration
-    currentUser.getCurrentExploration().setAudio(blob);
+    function doneEncoding(){
+        console.log("done encoding (doing nothing now)");
+    }
 }
 
 function startAudioRecording() {
     // start recording
-    if (!audioRecorder)
-        return;
     audioRecorder.clear();
     audioRecorder.record();
     displayAudioGraphic();
 }
 
-function stopAudioRecording(){
-    // stop recording
+function stopAudioRecording(cb){
     audioRecorder.stop();
-    audioRecorder.getBuffers( gotBuffers );
+    audioRecorder.getBuffers( function (buffers){        
+        gotBuffers(buffers, cb);
+    });
     removeAudioGraphic();
-}
 
-// displays an image of a microphone
-function displayAudioGraphic(){    
-    svg.append("image")
-        .attr({
-            x: width*0.9,
-            y: 20,
-            width: 50,
-            height: 50, 
-            "xlink:href": "data/image/microphone-128.png",
-            id: "microphone-graphic"
+    function gotBuffers( buffers, cb ) {
+        // the ONLY time gotBuffers is called is right after a new recording is completed - 
+        // so here's where we should set up the download.
+        audioRecorder.exportWAV( function(buffers){
+            doneEncoding(buffers, cb);
         });
+
+        function doneEncoding( blob, cb ) {
+            // sets the audio of the current user's current exploration
+            currentUser.getCurrentExploration().setAudio(blob);
+            cb();
+        }
+    }
 }
 
 function removeAudioGraphic(){

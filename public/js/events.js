@@ -24,7 +24,7 @@ stopExplButton.addEventListener('click', function(){
 });
 
 saveExplButton.onclick = function(){ 
-	saveExploration(currentUser.getCurrentExploration());
+	saveExploration(currentExpl);
 }
 
 resetExplButton.onclick = resetExplorations;
@@ -124,17 +124,28 @@ insertButton.click( function(){
 });
 
 stopInsertButton.click( function(){
-	stopRecording();
-	inserting = false;
+	var currentExpl = currentUser.getCurrentExploration();
 
-	var insertionDuration = currentUser.getCurrentExploration().getDuration();
-	var currentTime = getCurrentPlaybackTime();
+	if (audioRecorder){
+		stopRecording(doneRecording);
+	}
+	else {
+		stopRecording();
+		doneRecording();
+	}	
 
-	insertIntoSelectedExploration(currentUser.getCurrentExploration());
+	function doneRecording(){
+		inserting = false;
 
-	// gui stuff
-	progressBar.hideInsertGraphics();
-	progressBar.showInsertedChunk(currentTime, insertionDuration);
+		var insertionDuration = currentExpl.getDuration();
+		var currentTime = getCurrentPlaybackTime();
+
+		insertIntoSelectedExploration(currentExpl);
+
+		// gui stuff
+		progressBar.hideInsertGraphics();
+		progressBar.showInsertedChunk(currentTime, insertionDuration);
+	}
 });
 
 // ---- INIT

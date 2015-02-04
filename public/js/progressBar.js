@@ -156,12 +156,12 @@ function ProgressBar() {
 		});
 
 		// add mouse listener to bar
-		progressSVG.on("click", triggerPlayFromPosition);
+		progressSVG.on("click", onBarClick);
 		// add hover listener
 		progressSVG.on("mousemove", function(){ showTimeText(getTimeOfXpos(d3.mouse(this)[0])); });
 		// mouseoff listener
 		progressSVG.on("mouseout", this.hideTimeText);
-		// show 
+		// show bar
 		progressSVG.style.visibility = "visible";
 
 		// show title and duration text elements
@@ -191,7 +191,7 @@ function ProgressBar() {
 		durationText.hide();
 	}
 
-	function triggerPlayFromPosition(e){
+	function onBarClick(e){
 		var rect = d3.select("#play-svg");
 		// figure out x position of mouse
       	var offset = $(this).offset();
@@ -262,7 +262,8 @@ function ProgressBar() {
 			barHeight = 36,
 			barWidth = 400,
 			barLeft = (progressWidth - barWidth) / 2,
-			barTop = 0;
+			barTop = 0,
+			barCurve = 20;
 
 		var insertText = "Inserting";
 
@@ -277,18 +278,18 @@ function ProgressBar() {
 			.attr("id", "insert-bar");
 
 		// insert bar
-		insertGroup.append("rect")
+		var insertBar = insertGroup.append("rect")
 			.attr({
 				x: barLeft,
 				y: barTop,
 				width: barWidth,
 				height: barHeight,
-				rx: 20,
-				ry: 20,
+				rx: barCurve,
+				ry: barCurve,
 				fill: "#28AADE"
 			});
 		// ** recording ** text
-		insertGroup.append("text")
+		var insertText = insertGroup.append("text")
 			.text(insertText)
 			.attr({
 				x: barLeft + (barWidth/2),
@@ -298,25 +299,45 @@ function ProgressBar() {
 			});
 		// lines from insert point to bottom of insert bar
 		var points = [	{x: insertX, y: divHeight}, 
-						{x: barLeft, y: barTop + barHeight},
-						{x: barLeft + barWidth, y: barTop + barHeight}	];
+						{x: barLeft + barCurve, y: barTop + barHeight},
+						{x: barLeft + barWidth - barCurve, y: barTop + barHeight}	];
 
 		insertGroup.append("polygon")
-			.data(points)
+			.data([points])
 			.attr({
 				points: function(d) {
-					return [d.x, d.y].join(",");
-				},
-				fill: "green"
-			});
+					return d.map(function(d){
+						return [d.x, d.y].join(",");
+					}).join(" ");
+				},				
+				fill: "grey",
+				stroke: "black",
+				"stroke-width": "3px"
+			})
+			.style("opacity", 0.6);
 		// record stop button
 		$("#stop-insert-button").show();
+
+		// record in progress animation
+		changeColour(true);
+		// changes to either red or blue depending on 'red' argument
+		function changeColour(red){
+			insertText.transition()
+				.duration(300)
+				.attr("fill", function(){
+					return red ? "red" : "#28AADE";
+				})
+				.each("end", function(){
+					changeColour(!red);
+				});
+		}
 	}
 
 	this.hideInsertGraphics = function(){
 		var insertSVG = d3.select("#insert-svg");
 		if (insertSVG){
 			insertSVG.select("#insert-bar")
+			.attr("fill","28AADE")
 			.transition()
 				.duration(1000)
 				.ease("cubic-in-out")
@@ -328,7 +349,6 @@ function ProgressBar() {
 	}
 
 	this.showInsertedChunk = function(startTime, duration){
-		console.log(startTime, duration);
 		var startX = this.getXPosOfTime(startTime);
 		var endX = this.getXPosOfTime(startTime + duration);
 
