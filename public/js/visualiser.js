@@ -133,7 +133,7 @@ function submitAnnotation(annotationText){
 		userName: currentUser.name,
 		location: selectedLocation,
 		text: annotationText,
-		timestamp: new Date()
+		timeStamp: new Date()
 	};
 
 	$.ajax({
@@ -154,7 +154,6 @@ function updateLocationInfo(){
 
 // removing an annotation from a location.
 function deleteAnnotation(annotation){
-	console.log("delete annotation");
 	$.ajax({
 		type: 'POST',
 		url: "deleteAnnotation",

@@ -136,7 +136,7 @@ app.post('/postExploration', function(req, res){
 		return filename;
 	}
 
-	var fileName = userName + timeStamp + ".json";
+	var fileName = userName + " - " + timeStamp + ".json";
 	var filePath = path + fileName;
 
 	fs.writeFileSync(filePath, JSON.stringify(exploration, null, 4));
@@ -229,7 +229,7 @@ app.post("/setExplorationIsOld", function(req, res){
 	path += currentUserName + "/";
 	path += "explorations/";
 
-	// find the exploration with the right user and timestamp, and change the isNew property
+	// find the exploration with the right user and timeStamp, and change the isNew property
 	var explFiles = fs.readdirSync(path);
 	var found;
 
@@ -292,12 +292,12 @@ app.post("/createAccount", function(req, res){
 app.post('/postAnnotation', function(req, res){
 
 	var annotation = req.body;
-	var timeStamp = new Date(annotation.timeStamp); // apparently timeStamp is now a string...
+	var timeStamp = new Date(annotation.timeStamp);
 	var location = annotation.location;
 	var userName = annotation.userName; // string
 	var text = annotation.text;
 
-	console.log("posting annotation: " + text);
+	console.log("posting annotation: \"" + text + "\" at \"" + timeStamp +"\"");
 
 	var path = "public/data/annotation/";
 	// makes annotation path if none exists.
@@ -348,17 +348,19 @@ app.post("/deleteAnnotation", function(req, res){
 	var annotationFiles = fs.readdirSync(path);
 
 	// find and delete the file corresponding to the annotation specified.
-	annotationFiles.forEach(function(filename){
+	for (var i = 0; i < annotationFiles.length; i++){
+		var filename = annotationFiles[i];
 		var inputAnnotation = JSON.parse(fs.readFileSync(path + filename));
 
 		// if annotations are equal, delete the file
 		if (annotation.userName === inputAnnotation.userName
-				&&annotation.timestamp === inputAnnotation.timestamp
+				&& annotation.timeStamp === inputAnnotation.timeStamp
 				&& annotation.text === inputAnnotation.text){
 			fs.unlinkSync(path + filename);
 			res.sendStatus(200); // success code
+			return;
 		}
-	});
+	}
 });
 
 //returns whether the dir existed

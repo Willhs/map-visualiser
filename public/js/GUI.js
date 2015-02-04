@@ -311,10 +311,10 @@ function displayLocationInfo(city){
 		annotations.forEach(function(annotation){
 
 			var userName = annotation.userName;
-			var timestamp = new Date(annotation.timestamp);
-			var time = timestamp.getHours() + ":" + timestamp.getMinutes();
-			var date = timestamp.getDate() + "/" + timestamp.getMonth();
-		 	var annInfo = "<i> – " + userName + " " + date + " " + time + "</i>";
+			var timeStamp = new Date(annotation.timeStamp);
+			var time = timeStamp.getHours() + ":" + timeStamp.getMinutes();
+			var date = timeStamp.getDate() + "/" + timeStamp.getMonth() + "/" + timeStamp.getFullYear().toString().substring(2,4);
+		 	var annInfo = "<i> – " + userName + " " + time + " on " + date + "</i>";
 
 		 	// make necessary DOM elements
 		 	var rowDiv = document.createElement("div");
@@ -326,7 +326,7 @@ function displayLocationInfo(city){
 		 	// set class (styles are applied in styles.css)
 		 	content.className = "annotation-text annotation-content";
 		 	info.className = "annotation-text annotation-info";
-		 	controlsDiv.className ="annotation-inner-container annotation-controls";
+		 	controlsDiv.className = "annotation-inner-container annotation-controls";
 		 	textDiv.className ="annotation-inner-container annotation-text-container";
 		 	rowDiv.className = "annotation-row";
 
