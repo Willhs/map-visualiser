@@ -197,6 +197,7 @@ function ProgressBar() {
       	var offset = $(this).offset();
       	var xpos = d3.mouse(this)[0]; // 36 ?
       	pathMove.setPausedTime(getTimeOfXpos(xpos));
+      	progressBarClicked = true;
       	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 

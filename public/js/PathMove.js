@@ -50,7 +50,7 @@ function PathMove(){
 
 //	get the set of citie's x, y coordinates
 	this.translates = function(){
-		trans =[] ;
+		trans =[];
 		this.citiesDisplay().forEach(function(cityName){
 			var index = getCityIndex(cityName);
 			var paths = document.getElementById(index);
@@ -59,6 +59,17 @@ function PathMove(){
 			trans.push(translate);
 		});
 		return trans;
+	};
+	this.getCityIndexByPoint = function(x, y){
+		for(var i = 1; i< this.translates().length; i++){
+			if(x > this.translates()[i-1][0] && y > this.translates()[i-1][1]
+			&& x < this.translates()[i][0]  && y < this.translates()[i-1][1] ){
+				return i;
+			}
+			if(x == this.translates()[i-1][1] ){
+				return i-1;
+			}
+		}
 	};
 
 //	get the set of cities event time
@@ -94,7 +105,13 @@ function PathMove(){
 		.attr("id","path-play")
 		.attr("stroke-dasharray","4,4")
 		.attr("d", d3.svg.line()
-				.tension(0));
+				.tension(0))
+				.on("click", function(){
+					pathLineClicked = true;
+					pausedX = d3.mouse(this)[0];
+					pausedY = d3.mouse(this)[1];
+					this.setPosition();
+				});
 		g.selectAll(".point")
 		.data(this.translates())
 		.enter().append("circle")
@@ -191,6 +208,7 @@ function PathMove(){
 
 //	resume from pause
 	var progressBarClicked = false;
+	var pathLineClick = false;
 	this.resumePathMove = function(eventDur){
 
 		currentCityIndex = this.getCurrentCityIndex( this.pausedTime );
@@ -269,53 +287,59 @@ function PathMove(){
 
 	this.setPosition = function(){
 		d3.selectAll("#animationPath").remove();
-		currentCityIndex = this.getCurrentCityIndex(this.pausedTime);
-		if( this.pausedTime <= this.cityEventTimes()[ 1 ] ){//pausedTime less then the first city event time
-			d3.select("#circle-move")
-			.attr("cx", this.translates()[ 0 ][ 0 ] )
-			.attr("cy", this.translates()[ 0 ][ 1 ] );
-			ncx = this.translates()[ 1 ][ 0 ];
-			ncy = this.translates()[ 1 ][ 1 ];
-			dur = 0;
-		}
-		if( currentCityIndex < 1 ||undefined)return;
-		progressBarClicked = true;
-		//reset circle FROM position and TO position
-		var currentCityX = this.translates()[ currentCityIndex ][ 0 ];
-		var currentCityY = this.translates()[ currentCityIndex ][ 1 ];
-		var lastCityX = this.translates()[ currentCityIndex - 1 ][ 0 ];
-		var lastCityY = this.translates()[ currentCityIndex - 1 ][ 1 ];
-		// temp is percentage between (pausedTime  -  last CityEvent time) and total time between lastcity events and current city event time
-		var nextCityEventTime = -1;
-		if( currentCityIndex   ===  this.citiesDisplay().length - 1 ) {
-			nextCityEventTime = this.expl.events[ this.expl.events.length - 1 ].time;
-		}
-		else{
-			nextCityEventTime = this.cityEventTimes()[ currentCityIndex  +  1 ];
+		if(progressBarClicked){
+			currentCityIndex = this.getCurrentCityIndex(this.pausedTime);
 
+			if( this.pausedTime <= this.cityEventTimes()[ 1 ] ){//pausedTime less then the first city event time
+				d3.select("#circle-move")
+				.attr("cx", this.translates()[ 0 ][ 0 ] )
+				.attr("cy", this.translates()[ 0 ][ 1 ] );
+				ncx = this.translates()[ 1 ][ 0 ];
+				ncy = this.translates()[ 1 ][ 1 ];
+				dur = 0;
+			}
+			if( currentCityIndex < 1 ||undefined)return;
+			//reset circle FROM position and TO position
+			var currentCityX = this.translates()[ currentCityIndex ][ 0 ];
+			var currentCityY = this.translates()[ currentCityIndex ][ 1 ];
+			var lastCityX = this.translates()[ currentCityIndex - 1 ][ 0 ];
+			var lastCityY = this.translates()[ currentCityIndex - 1 ][ 1 ];
+			// temp is percentage between (pausedTime  -  last CityEvent time) and total time between lastcity events and current city event time
+			var nextCityEventTime = -1;
+			if( currentCityIndex   ===  this.citiesDisplay().length - 1 ) {
+				nextCityEventTime = this.expl.events[ this.expl.events.length - 1 ].time;
+			}
+			else{
+				nextCityEventTime = this.cityEventTimes()[ currentCityIndex  +  1 ];
+
+			}
+			var temp = (this.pausedTime  -  this.cityEventTimes()[ currentCityIndex ] )
+			/ (nextCityEventTime - this.cityEventTimes()[ currentCityIndex ] );
+
+			var xMoved = temp  *  (Math.abs(lastCityX  -  currentCityX));
+			var yMoved = temp  *  (Math.abs(lastCityY  -  currentCityY));
+			if(lastCityX  >  currentCityX)
+				pausedX = lastCityX - xMoved;
+			else if(lastCityX  <  currentCityX)
+				pausedX = lastCityX + xMoved;
+			else if(lastCityX   ===  currentCityX)
+				pausedX = currentCityX;
+
+			if(currentCityY < lastCityY)
+				pausedY = lastCityY  -  yMoved;
+			else if(currentCityY > lastCityY)
+				pausedY = lastCityY  +  yMoved;
+			else
+				pausedY = lastCityY;
 		}
-		var temp = (this.pausedTime  -  this.cityEventTimes()[ currentCityIndex ] )
-		/ (nextCityEventTime - this.cityEventTimes()[ currentCityIndex ] );
-
-		var xMoved = temp  *  (Math.abs(lastCityX  -  currentCityX));
-		var yMoved = temp  *  (Math.abs(lastCityY  -  currentCityY));
-		if(lastCityX  >  currentCityX)
-			pausedX = lastCityX - xMoved;
-		else if(lastCityX  <  currentCityX)
-			pausedX = lastCityX + xMoved;
-		else if(lastCityX   ===  currentCityX)
-			pausedX = currentCityX;
-
-		if(currentCityY < lastCityY)
-			pausedY = lastCityY  -  yMoved;
-		else if(currentCityY > lastCityY)
-			pausedY = lastCityY  +  yMoved;
-		else
-			pausedY = lastCityY;
+		else if(pathLineClick){
+			currentCityIndex = this.getCityIndexByPoint(pausedX, pausedY);
+			console.log("aa");
+		}
 		ctx = pausedX;
 		ctY = pausedY;
-		ncx = this.translates()[ currentCityIndex ][ 0 ];
-		ncy = this.translates()[ currentCityIndex ][ 1 ];
+		ncx = this.translates()[currentCityIndex][ 0 ];
+		ncy = this.translates()[currentCityIndex][ 1 ];
 
 		d3.select("#circle-move")
 		.attr("cx", pausedX)
@@ -385,7 +409,7 @@ function PathMove(){
 			for(var j = 1;  j < this.expl.events.length - 1;  j++ ){
 				if(this.expl.events[ j ].type   === "travel"
 					&& this.expl.events[ j ].body === this.citiesDisplay()[ i ]
-					&& eventTime ===  cityEventTimes[ i ] ){
+				&& eventTime ===  cityEventTimes[ i ] ){
 					index = i;
 					return index;
 				}
