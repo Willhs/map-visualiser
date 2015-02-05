@@ -345,10 +345,6 @@ input,label {
   	stroke-width: 3px;
 }
 
-.invisible {
-	visibility: hidden;
-}
-
-.visible {
-	visibility: visible;
+.select-device {
+	display: none;
 }

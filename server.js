@@ -45,8 +45,6 @@ app.post("/checkAuthentication", function(req, res){
 	var userName = fields.userName;
 	var pw = fields.password;
 
-	//console.log(userName+  " " + pw);
-
 	ensureDirExists(USER_PATH);
 	var path = USER_PATH + userName + "/";
 	// check if user dir exists
@@ -66,6 +64,11 @@ app.post("/checkAuthentication", function(req, res){
 	});
 
 	res.send(JSON.stringify(authenticated));
+});
+
+app.get("/null", function(req, res){
+	console.log("2spooky");
+	res.sendStatus(200);
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -147,7 +150,7 @@ app.post('/postExploration', function(req, res){
 
 
 app.post("/deleteExploration", function(req, res){
-	console.log("delete exploration");
+	console.log("deleting exploration");
 
 	var userName = req.body.userName;
 	var timeStamp = req.body.timeStamp;
@@ -159,6 +162,7 @@ app.post("/deleteExploration", function(req, res){
 	ensureDirExists(path);
 	path += "explorations/";
 	ensureDirExists(path);
+
 	var explFiles = fs.readdirSync(path);
 
 	// find and delete the file corresponding to the annotation specified.
@@ -166,8 +170,9 @@ app.post("/deleteExploration", function(req, res){
 		var filename = explFiles[i];
 		var filePath = path + filename;
 		if (fs.lstatSync(filePath).isDirectory())
-			return; // if the file is a directory
+			continue; // if the file is a directory
 		var exploration = JSON.parse(fs.readFileSync(filePath));
+
 			// found match
 		if (timeStamp.localeCompare(exploration.timeStamp)==0){
 			// delete exploration file.
@@ -307,7 +312,7 @@ app.post('/postAnnotation', function(req, res){
 
 	var fileName = path + userName + " " + timeStamp.getHours() + ":"
 	+ timeStamp.getMinutes() + ":" + timeStamp.getSeconds() + ".json";
-	fs.writeFile(fileName, JSON.stringify(annotation, 4, null), function(err) {
+	fs.writeFile(fileName, JSON.stringify(annotation, null, 4), function(err) {
 		if (err){ console.log("errooor: "+err); }
 	});
 	res.sendStatus(200); // success code

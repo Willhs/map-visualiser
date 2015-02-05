@@ -52,7 +52,7 @@ function updateExplorationChooser(){
 	explorations.forEach(function(exploration, index){
 		var explOption = document.createElement('option');
 		explOption.setAttribute("id", exploration.timeStamp);
-		var explorationName = exploration.name +" - "+ exploration.timeStamp;
+		var explorationName = exploration.name;
 		explOption.innerHTML = explorationName;
 		explOption.value = index;
 		explChooser.appendChild(explOption);
@@ -92,7 +92,6 @@ function updateNotifications(){
 	sharedExpl.forEach(function(expl){
 
 		if(expl.isNew) newCount++;
-		console.log(newCount);
 	});
 
 	if(newCount>0){

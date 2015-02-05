@@ -190,9 +190,9 @@ function ProgressBar() {
 		// remove playControl listener
 		playControl.on("click", null);
 		// hide text and insert button
-		this.hideTimeText();
+		this.hideTimeText();		
 		hideInsertButton();
-		belowBarDiv.hide();
+		hasAudio.hide();
 	}
 
 	function onBarClick(e){

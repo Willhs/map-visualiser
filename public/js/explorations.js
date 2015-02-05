@@ -22,16 +22,16 @@ function Event(type, body, time){
 
 // an exploration of the visualisation
 function Exploration() {
-	this.name = generateDefaultExplName();
+	this.name;
 	this.userName = (currentUser ? currentUser.name : null);
 	this.events = []; // events that took place over the course of the exploration
 	this.firstEventTime = null;
-	this.timeStamp = null;//time saving at save button pressed
-	this.audio = null; // blob/string representing audio
+	this.timeStamp = null;// time when recording ends button pressed
+	this.audio = null; // blob representing audio
 	this.isNew = true; // has the user watched this before
 
 	this.setTimeStamp = function(timestamp){
-		this.timeStamp = timestamp.toString();
+		this.timeStamp = timestamp;
 	};
 	this.addEvent = function (type, body){
 		var currentTime = new Date().getTime();
@@ -134,18 +134,29 @@ function Exploration() {
 		this.events = this.events.slice(0, afterIndex)
 						.concat(newEvents)
 						.concat(this.events.slice(afterIndex));
-	}		
-}
+	}
 
-//makes a default name for an exploration
-var generateDefaultExplName = function(){
-	var index = 0;
-	return function(){
-		var name = currentUser.name + " exploration " + index;
-		index++;
-		return name;
-	};
-}();
+	// gives the exploration a name based on the time stamp etc
+	this.giveName = function(){
+		this.name = this.userName + " " + makeShortTimeFormat(new Date(this.timeStamp));
+
+		function makeShortTimeFormat(date){
+			// convert millis to mm:ss
+			var hours = date.getHours().toString(),
+				minutes = date.getMinutes().toString(),
+				seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
+													: date.getSeconds(),
+				day = date.getDay(),
+				month = monthAsString(date.getMonth());
+
+			return hours + ":" + minutes + " - " + day + "th " + month;
+
+			function monthAsString(monthIndex){
+				return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][monthIndex];
+			}
+		}
+	}
+}
 
 // begins recording of user navigation actions
 // insert is true if this recording will be inserted into another exploration
@@ -191,7 +202,7 @@ function stopRecording(audioCB) {
 	// removes event listeners which are recording user navigation.
 	zoom.on("zoom.record", null); // remove recording zoom listener
 
-	// cities on the map
+	// city elems on the map
 	var mapCities = document.getElementsByClassName("place");
 	for (var i = 0; i < mapCities.length; i++){
 		var city = mapCities.item(i);
@@ -200,7 +211,9 @@ function stopRecording(audioCB) {
 
 	recordedExpl.addEvent("end", "");
 
-	recordedExpl.setTimeStamp(new Date());
+	recordedExpl.setTimeStamp(new Date().toString());
+	recordedExpl.giveName();
+
 	// else, it will overwrite the selected exploration
 	if (!inserting)
 		selectExploration(recordedExpl);
@@ -583,9 +596,9 @@ function recordMovement(){
 function deleteExploration(expl){
 	$.ajax({
 		type: 'POST',
-		url: "deleteExploration",
+		url: "/deleteExploration",
 		data: JSON.stringify({
-			userName: expl.userName,
+			userName: currentUser.name,
 			timeStamp: expl.timeStamp,
 			hasAudio: expl.hasAudio()
 		}),
