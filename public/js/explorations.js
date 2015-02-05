@@ -245,7 +245,7 @@ function launchEvents(exploration, i, elapsedTime){
 	switch (currentEvent.type){
 	case ("travel"):
 		var location = currentEvent.body;
-		//goToLoc(location, elapsedTime);
+		goToLoc(location, elapsedTime);
 		pathMove.updatePathMove(currentEvent.time);
 	   	break;
 	case ("start"):
@@ -351,7 +351,7 @@ function setPlaybackPosition(exploration, time){
 			case ("travel"):
 				var locationName = event.body;
 				// instantly go to location
-				//goToLoc(locationName, 0.001);
+				goToLoc(locationName, 0.001);
 			   	break;
 			case ("movement"):
 				var transform = event.body;

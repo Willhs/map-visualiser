@@ -95,7 +95,13 @@ function PathMove(){
 		.attr("r",4)
 		.attr("transform", function(d) { return "translate(" + d + ")"; });
 		this.setText();
-		appendCircle();
+		var circle = g.append("circle")
+		.attr("r", 5)
+		.style("stroke", "gray")
+		.style("fill","red")
+		.attr("id", "circle-move")
+		.attr("cx", pathMove.translates()[0][0])
+		.attr("cy", pathMove.translates()[0][1]);
 
 		//goToLoc(this.citiesDisplay()[0]);
 		//var iframeWindow = new IframePath;
@@ -105,7 +111,6 @@ function PathMove(){
 	var pausedX = -1, pausedY = -1; //value set when click pause button
 	var ncx = -1, ncy = -1, ctx = -1, cty = -1;//ct: current city position, nc: next city position
 	var currentCityIndex = -1;
-	var datas =[];
 
 	//	this function called at launchevents function if it is a travel event then move
 	this.updatePathMove = function(eventTime){
@@ -132,7 +137,7 @@ function PathMove(){
 			cty = this.translates()[currentCityIndex-1][1];
 			ncx = this.translates()[currentCityIndex][0];
 			ncy = this.translates()[currentCityIndex][1];
-			datas = [{x:ctx,y:cty},{x:ncx,y:ncy}];
+			var data = [{x:ctx,y:cty},{x:ncx,y:ncy}];
 			var eventDuration = (eventTime-this.cityEventTimes()[currentCityIndex-1]);
 			d3.selectAll("#circle-move")
 			.attr("cx", ctx)
@@ -146,7 +151,7 @@ function PathMove(){
 			var pathLineMove= g.append("path")
 			.attr({
 				id: "animationPath",
-				d: line(datas),
+				d: line(data),
 				stroke: "blue",
 				"stroke-width": 2})
 				.style("fill", "none");
@@ -191,13 +196,10 @@ function PathMove(){
 		//this.pausedTime set when click on the progress bar.
 		if(this.pausedTime>=this.cityEventTimes()[1] && this.pausedTime!=null){//case: pausedTime great then first city event time
 			//duration from paused point to next city event time
-			if(currentCityIndex===3){
-				console.log("3333");
-				dur = this.expl.events[this.expl.events.length-1]-this.pausedTime;
+			if(currentCityIndex===this.citiesDisplay().length-1){
+				dur = this.expl.events[this.expl.events.length-1].time -this.pausedTime;
 			}
 			else {
-				console.log("not 3333");
-
 				dur = this.cityEventTimes()[currentCityIndex+1]-this.pausedTime;
 			}
 		}
@@ -220,7 +222,7 @@ function PathMove(){
 
 			var p = g.append("path")
 			.attr({
-				id: "animationPath2",
+				id: "animationPath",
 				d: line(data),
 				stroke: "blue",
 				"stroke-width": 2})
@@ -258,7 +260,6 @@ function PathMove(){
 	this.setPosition = function(){
 
 		d3.selectAll("#animationPath").remove();
-		d3.selectAll("#animationPath2").remove();
 
 
 		currentCityIndex = this.getCurrentCityIndex(this.pausedTime);
@@ -309,8 +310,6 @@ function PathMove(){
 		ncx = this.translates()[currentCityIndex][0];
 		ncy = this.translates()[currentCityIndex][1];
 
-		datas = [{x:ctx,y:cty},{x:ncx,y:ncy}];
-
 		d3.select("#circle-move")
 		.attr("cx", pausedX)
 		.attr("cy", pausedY);
@@ -320,10 +319,10 @@ function PathMove(){
 			tempTrans.push(this.translates()[i]);
 		}
 		tempTrans.push([pausedX,pausedY]);
-		//tempTrans.push([lastCityX,lastCityY]);
+
 		g.append("path")
 		.data([tempTrans])
-		.attr("id","animationPath2")
+		.attr("id","animationPath")
 		.attr("stroke","blue")
 		.attr('stroke-width', 2)
 		.style("fill", "none")
@@ -348,7 +347,6 @@ function PathMove(){
 		d3.selectAll("#circle").remove();
 		d3.select("#circle-move").remove();
 		d3.selectAll("#animationPath").remove();
-		d3.selectAll("#animationPath2").remove();
 
 		this.resetText();
 		this.pausedTime = null;
@@ -360,7 +358,6 @@ function PathMove(){
 		pausedY = -1;
 		if(this.citiesDisplay().length==0)return;
 		d3.selectAll("#animationPath").remove();
-		d3.selectAll("#animationPath2").remove();
 
 		d3.selectAll("#circle-move")
 		.attr("cx", this.translates()[0][0])
@@ -432,12 +429,3 @@ function lineDistance( point1, point2 ){
 	return Math.sqrt( xs + ys );
 }
 
-function appendCircle(){
-	var circle = g.append("circle")
-	.attr("r", 5)
-	.style("stroke", "gray")
-	.style("fill","red")
-	.attr("id", "circle-move")
-	.attr("cx", pathMove.translates()[0][0])
-	.attr("cy", pathMove.translates()[0][1]);
-}
