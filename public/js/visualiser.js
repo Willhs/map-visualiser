@@ -190,7 +190,7 @@ function travelTo(city, duration, elapsedTime) {
 	var center = [width / 2, height / 2],
 	i = d3.interpolateZoom(start, end);
 
-	var duration = duration ? duration : i.duration * ANIMATION_DELAY,
+	var duration =i.duration * ANIMATION_DELAY,
 		ease = elapsedTime ? resumed_ease(EASE_FUNCTION, elapsedTime) : EASE_FUNCTION;
 
 	g.transition()

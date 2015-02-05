@@ -167,6 +167,7 @@ function PathMove(){
 			.attrTween("point", translateAlong(pathLineMove.node()));
 		}
 
+		// return a point at each milisecond
 		function translateAlong(path) {
 			var l = path.getTotalLength();
 			return function(d, i, a) {
@@ -178,7 +179,6 @@ function PathMove(){
 				};
 			};
 		}
-
 	};
 
 
@@ -207,6 +207,7 @@ function PathMove(){
 			if(pausedX===-1)return; //pausedX == -1 <==> paused == false
 			dur = eventDur*(lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:ctx,y:cty},{x:ncx,y:ncy}));
 		}
+
 		//ease function "cubic-out" will redraw from paused position
 		if(progressBarClicked){
 			var line =
@@ -345,9 +346,8 @@ function PathMove(){
 		if(!this.citiesDisplay())return;
 		d3.selectAll("#path-play").remove();
 		d3.selectAll("#circle").remove();
-		d3.select("#circle-move").remove();
+		d3.selectAll("#circle-move").remove();
 		d3.selectAll("#animationPath").remove();
-
 		this.resetText();
 		this.pausedTime = null;
 		progressBarClicked = false;
@@ -358,7 +358,6 @@ function PathMove(){
 		pausedY = -1;
 		if(this.citiesDisplay().length==0)return;
 		d3.selectAll("#animationPath").remove();
-
 		d3.selectAll("#circle-move")
 		.attr("cx", this.translates()[0][0])
 		.attr("cy", this.translates()[0][1]);
@@ -418,6 +417,7 @@ function PathMove(){
 		});
 	};
 }
+
 function lineDistance( point1, point2 ){
 	var xs = 0;
 	var ys = 0;
@@ -428,4 +428,3 @@ function lineDistance( point1, point2 ){
 
 	return Math.sqrt( xs + ys );
 }
-

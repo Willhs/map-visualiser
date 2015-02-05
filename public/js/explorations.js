@@ -274,7 +274,7 @@ function stopPlayback(exploration){
 
 	updatePlaybackStopped();
 	progressBar.resetProgress();
-	pathMove.reset(exploration);
+	pathMove.reset();
 	currentEventIndex = 0;
 	elapsedEventTime = 0;
 	playing = false;
@@ -318,7 +318,7 @@ function resumePlayback(exploration){
 
 	progressBar.updateProgress(exploration, position, timeTilNextEvent);
 	progressBar.updateButton();
-	pathMove.resumePathMove(eventDur);
+	pathMove.resumePathMove(eventDur, currentEvent.time);
 
 }
 

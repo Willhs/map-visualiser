@@ -1,12 +1,12 @@
 
 // ------ Dom elements --------
 var recordExplButton = document.getElementById("record-exploration-button"),
-	playExplButton = document.getElementById("play-exploration-button"),
-	pauseExplButton = document.getElementById("pause-exploration-button"),
-	stopExplButton = document.getElementById("stop-exploration-button"),
-	saveExplButton = document.getElementById('save-exploration-button'),
-	deleteExplButton = document.getElementById('delete-exploration-button'),
-	resetExplButton = document.getElementById("reset-exploration-button"),
+	playExplButton = $("#play-exploration-button"),
+	pauseExplButton = $("#pause-exploration-button"),
+	stopExplButton = $("#stop-exploration-button"),
+	saveExplButton = $("#save-exploration-button"),
+	deleteExplButton = $("#delete-exploration-button"),
+	resetExplButton = $("#reset-exploration-button"),
 	explChooser = document.getElementById("exploration-selector"),
 	userNameInput = document.getElementById("username-input"),
 	passwordInput = document.getElementById("password-input"),
@@ -75,9 +75,7 @@ function updateUserButtons(currentUser){
 //updates the notification GUI elements
 function updateNotifications(){
 	resetVisibility(notificationContainer,"hidden");
-	resetVisibility(notificationSelector,"hidden");
-	resetVisibility(removeNotification, "hidden");
-	resetVisibility(quickplayNotification, "hidden");
+	setNotificationButtonOff();
 	if (!userLoggedOn()){
 		return;
 	}
@@ -91,8 +89,8 @@ function updateNotifications(){
 	});
 
 	if(newCount>0){
-		$("#notification-container").html("  have "+ newCount + " new explorations.");
 		resetVisibility(notificationContainer,"visible");
+		$("#notification-container").html("  have "+ newCount + " new explorations.");
 		notificationContainer.style.cursor = "pointer";
 
 	}
@@ -147,26 +145,22 @@ function updateExplorationControls(specialCase){
 function updateLogonElements(){
 	// if user is currently logged on
 	if (userLoggedOn()){
-		logonButton.value = "Log off";
-		userNameInput.disabled = true;
-		passwordInput.disabled = true;
-		userNameInput.style.cursor = "not-allowed";
-		passwordInput.style.cursor = "not-allowed";
-
+		LoggedOnOff("Log off", true,"not-allowed" );
 	}
 	// if no users logged on
 	else {
-		logonButton.value = "Log on";
-		userNameInput.disabled = false;
-		passwordInput.disabled = false;
-
-		userNameInput.value = "";
-		passwordInput.value = "";
-		userNameInput.style.cursor = "default";
-		passwordInput.style.cursor = "default";
-
+		LoggedOnOff("Log on", false, "default");
 
 	}
+}
+
+function LoggedOnOff(onOff, trueFlase, defaultOrNot){
+	logonButton.value = onOff;
+	userNameInput.disabled = trueFlase;
+	passwordInput.disabled = trueFlase;
+	userNameInput.style.cursor = defaultOrNot;
+	passwordInput.style.cursor = defaultOrNot;
+
 }
 
 function updateUserInputElements(){
@@ -210,20 +204,22 @@ function addRecordingGraphics(){
 	var circleCY = borderWidth + circleRadius;
 
 	svg.append("rect")
-	.attr("id", "record-border")
-	.attr("x", 0 + borderWidth/2)
-	.attr("y", 0 + borderWidth/2)
-	.attr("width", width - borderWidth)
-	.attr("height", height - bottomPadding - borderWidth)
+	.attr({
+		id:    "record-border",
+		x:     0 + borderWidth/2,
+		y:     0 + borderWidth/2,
+		width: width - borderWidth,
+		height:height - bottomPadding - borderWidth})
 	.style("stroke", "red")
 	.style("fill", "none")
 	.style("stroke-width", borderWidth);
 
 	svg.append('circle')
-	.attr("id", "record-circle")
-	.attr('cx', circleCX)
-	.attr('cy', circleCY)
-	.attr('r', circleRadius)
+	.attr({
+		id: "record-circle",
+		cx:  circleCX,
+		cy:  circleCY,
+		r: 	 circleRadius})
 	.style('fill', 'red')
 	.transition().duration();
 }
@@ -276,6 +272,12 @@ function divHideShow(div){
 //reset notifications lable when logoff
 function resetVisibility(idVar, state){
 	idVar.style.visibility = state;
+}
+
+function setNotificationButtonOff(){
+	resetVisibility(notificationSelector, "hidden");
+	resetVisibility(removeNotification, "hidden");
+	resetVisibility(quickplayNotification, "hidden");
 }
 
 //displays information about the location selected
