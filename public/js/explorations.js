@@ -245,7 +245,7 @@ function launchEvents(exploration, i, elapsedTime){
 	switch (currentEvent.type){
 	case ("travel"):
 		var location = currentEvent.body;
-		goToLoc(location, elapsedTime);
+		//goToLoc(location, elapsedTime);
 		pathMove.updatePathMove(currentEvent.time);
 	   	break;
 	case ("start"):
@@ -294,7 +294,7 @@ function pausePlayback(exploration, cb){
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
-	pathMove.pause(exploration);
+	pathMove.pause();
 }
 
 // waits until next event before executing playExploration
@@ -337,14 +337,7 @@ function setPlaybackPosition(exploration, time){
 
 		progressBar.setPosition(time);
 		var eventDuration = -1;
-		pathMove.cityEventTimes().forEach(function(time,index){
-			if(newEvent.time>=time && newEvent.time<=pathMove.cityEventTimes()[index+1]){
-				eventDuration = pathMove.cityEventTimes()[index+1]-time;
-				pathMove.resumePathMove(eventDuration);
-			}
-		});
-
-
+		pathMove.setPosition(time);
 		// set audio
 
 		// if already playing, continue
@@ -358,7 +351,7 @@ function setPlaybackPosition(exploration, time){
 			case ("travel"):
 				var locationName = event.body;
 				// instantly go to location
-				goToLoc(locationName, 0.001);
+				//goToLoc(locationName, 0.001);
 			   	break;
 			case ("movement"):
 				var transform = event.body;
