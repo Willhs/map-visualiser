@@ -66,17 +66,57 @@ function PathMove(){
 		return trans;
 	};
 	this.getCityIndexByPoint = function(x, y){
-		for(var i = 1; i< this.translates().length; i++){
-			if(x > this.translates()[i-1][0]&& x < this.translates()[i][0] ){
-				return i-1;
+		for(var i = 0; i< this.translates().length-1; i++){
+			if(this.translates()[i][0]===x && this.translates()[i][1]===y){
+				return i;
 			}
-			if(x < this.translates()[i-1][0]&& x > this.translates()[i][0] ){
-				return i-1;
+			if(isOnLine(this.translates()[i][0], this.translates()[i][1], this.translates()[i+1][0],this.translates()[i+1][1], x, y, 5)){
+				return i;
 			}
-			if(x == this.translates()[i-1][0] && y == this.translates()[i-1][1]){
-				return i-1;
-			}
-
+		}
+		function isOnLine(x1,y1, x2, y2, px, py, tolerance) {
+		    var dy = y1 - y2;
+		    var dx = x1 - x2;
+		    if(dy == 0) { //horizontal line
+		        if(py == y1) {
+		            if(x1 > x2) {
+		                if(px <= x1 && px >= x2)
+		                    return true;
+		            }
+		            else {
+		                if(px >= x1 && px <= x2)
+		                    return true;
+		            }
+		        }
+		    }
+		    else if(dx == 0) { //vertical line
+		        if(px == x1) {
+		            if(y1 > y2) {
+		                if(py <= y1 && py >= y2)
+		                    return true;
+		            }
+		            else {
+		                if(py >= y1 && py <= y2)
+		                    return true;
+		            }
+		        }
+		    }
+		    else { //slope line
+		        var p = dy/dx;
+		    	var b = y2 - p*x2;
+		        var y = p * px + b;
+		        if(y <= py + tolerance && y >= py - tolerance) {
+		            if(x1 > x2) {
+		                if(px <= x1 && px >= x2)
+		                    return true;
+		            }
+		            else {
+		                if(px >= x1 && px <= x2)
+		                    return true;
+		            }
+		        }
+		    }
+		    return false;
 		}
 	};
 
@@ -108,28 +148,53 @@ function PathMove(){
 //	load called when user select exploration function or stop recording function called.
 	this.load = function(){
 		if(this.citiesDisplay().length == 0)return;
+		// arrowhead markers
+		/*g.append("defs")
+			.append("marker")
+			.attr({
+				id: "marker-arrow",
+				viewBox: "0 -5 10 10",
+				markerWidth: 6,
+				markerHeight: 6,
+				refX: 0,
+				refY: 0,
+				orient: "auto"
+			})
+			.append("path")
+				.attr("d", "M0,-5 L10,0 L0,5");*/
+
 		pathLine = g.append("path")
 		.data( [ this.translates() ] )
 		.attr("id","path-play")
 		.attr("stroke-dasharray","4,4")
-		.attr("d", d3.svg.line()
-				.tension(0));
+		.attr("d", d3.svg.line().tension(10))/*
+		.attr("stroke-width", 1.5)
+		.attr("marker-mid", "url(#marker-arrow)")
+		.attr("marker-end", "url(#marker-arrow)");*/
+
 		pathLine.on("click", function(){
 			pausedX = d3.mouse(this)[0];
 			pausedY = d3.mouse(this)[1];
 			setPositionFromClickedPathLine();
 		});
+		var trans = this.translates();
 		g.selectAll(".point")
 		.data(this.translates())
 		.enter().append("circle")
 		.attr("id", "circle")
 		.attr("r",4)
 		.attr("transform", function(d) { return "translate("  +  d  +  ")";  })
-		.on("click", function(){
-			pausedX = d3.mouse(this)[0];
-			pausedY = d3.mouse(this)[1];
-			setPositionFromClickedPathLine();
+		.on("click", function(d){
+			pausedX = d3.mouse(g.node())[0];
+			pausedY = d3.mouse(g.node())[1];
+			console.log(d);
+			for(var i = 0; i<trans.length; i++){
+				if(trans[i][0]===d[0] && trans[i][1]===d[1])
+					setPositionFromClickedPathLine(i);
+
+			}
 		});
+
 		this.setText();
 		g.append("circle")
 		.attr("r", 5)
@@ -253,14 +318,6 @@ function PathMove(){
 			dur = eventDur * (lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:ctx,y:cty},{x:ncx,y:ncy}));
 		}
 
-		//ease function "cubic - out" will redraw from paused position
-		//	if(this.progressBarClicked){
-		if(this.pathLineClicked)
-			this.pathLineClicked = false;
-		else if(this.progressBarClicked)
-			this.progressBarClicked = false;
-
-
 		var line =
 			d3.svg.line()
 			.x(function(d) {
@@ -312,7 +369,7 @@ function PathMove(){
 	this.setPosition = function(){
 		d3.selectAll("#animationPath").remove();
 		if(this.progressBarClicked){
-			this.pathLineClicked = false;
+			//this.pathLineClicked = false;
 
 			if( this.pausedTime <= this.cityEventTimes()[ 1 ] ){//pausedTime less then the first city event time
 				d3.select("#circle-move")
@@ -489,15 +546,19 @@ function lineDistance( point1, point2 ){
 	return Math.sqrt( xs  +  ys );
 }
 
-function setPositionFromClickedPathLine(){
+function setPositionFromClickedPathLine(cityIndex){
 	pathMove.pathLineClicked = true;
+	pathMove.progressBarClicked = false;
 		d3.selectAll("#animationPath").remove();
-		currentCityIndex = pathMove.getCityIndexByPoint(pausedX, pausedY);
+		if(!cityIndex)
+			currentCityIndex = pathMove.getCityIndexByPoint(pausedX, pausedY);
+		else currentCityIndex = cityIndex;
 		ctx = pausedX;
 		cty = pausedY;
 		d3.selectAll("#circle-move")
 		.attr("cx", ctx)
 		.attr("cy", cty);
+		if(currentCityIndex+1<pathMove.translates().length){
 		ncx = pathMove.translates()[currentCityIndex+1][ 0 ];
 		ncy = pathMove.translates()[currentCityIndex+1][ 1 ];
 		var tempTrans =  [];
@@ -505,7 +566,8 @@ function setPositionFromClickedPathLine(){
 			tempTrans.push(pathMove.translates()[ i ] );
 		}
 		tempTrans.push( [ pausedX , pausedY ] );
-
+		}
+		else tempTrans = pathMove.translates();
 		g.append("path")
 		.data( [ tempTrans ] )
 		.attr("id","animationPath")
@@ -517,8 +579,9 @@ function setPositionFromClickedPathLine(){
 				.on("click", function(){
 					pausedX = d3.mouse(this)[0];
 					pausedY = d3.mouse(this)[1];
-					console.log(pathMove.pathLineClicked );
-					setPositionFromClickedPathLine(true);});
+					setPositionFromClickedPathLine();});
+		if(currentCityIndex+1>pathMove.translates().length-1)
+			return;
 		var time = (Math.abs(pausedX - pathMove.translates()[currentCityIndex][0]))
 				* Math.abs((pathMove.cityEventTimes()[currentCityIndex] -  pathMove.cityEventTimes()[currentCityIndex+1]))
 				/ Math.abs((pathMove.translates()[currentCityIndex][0] - pathMove.translates()[currentCityIndex+1][0]))

@@ -199,6 +199,7 @@ function ProgressBar() {
       	var xpos = d3.mouse(this)[0]; // 36 ?
       	pathMove.setPausedTime(getTimeOfXpos(xpos));
         pathMove.progressBarClicked = true;
+        pathMove.pathLineClicked = false;
       	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 
