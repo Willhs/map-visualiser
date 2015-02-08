@@ -63,7 +63,7 @@ var path = d3.geo.path().projection(projection)
 var zoom = d3.behavior.zoom()
 .on("zoom.normal",function() {
 	g.attr("transform","translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-})
+});
 
 var svg = d3.select("body").append("svg")
 .attr("width", width)
@@ -72,6 +72,7 @@ var svg = d3.select("body").append("svg")
 .attr("id", "svg_map")
 .call(zoom) // attach zoom listener
 .on("dblclick.zoom", null); // disable double-click zoom
+
 
 var g = svg.append("g")
 	.attr("id","map_area")

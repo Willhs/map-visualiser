@@ -55,6 +55,7 @@ function ProgressBar() {
 	}
 
 	this.setPosition = function(time){
+
 		// if selectedExploration is null, set position to 0 and return
 		if (!selectedExploration){
 			bar.attr("x", 0);
@@ -197,7 +198,7 @@ function ProgressBar() {
       	var offset = $(this).offset();
       	var xpos = d3.mouse(this)[0]; // 36 ?
       	pathMove.setPausedTime(getTimeOfXpos(xpos));
-      	progressBarClicked = true;
+        pathMove.progressBarClicked = true;
       	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 

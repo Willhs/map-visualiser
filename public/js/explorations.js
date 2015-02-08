@@ -325,8 +325,8 @@ function resumePlayback(exploration){
 // sets playback position to time parameter, then plays from that position (if was playing before)
 function setPlaybackPosition(exploration, time){
 	var wasPlaying = playing;
-
 	pausePlayback(exploration, function(){
+
 		var newEvent = exploration.getEventAtTime(time);
 
 		// go to translation and scale of the last event
@@ -337,16 +337,18 @@ function setPlaybackPosition(exploration, time){
 
 		progressBar.setPosition(time);
 		var eventDuration = -1;
-		pathMove.setPosition(time);
+		if(pathMove.progressBarClicked)
+			pathMove.setPosition(time);
 		// set audio
 
 		// if already playing, continue
 		if (wasPlaying)
-			resumePlayback(exploration);
+			resumePlayback(exploration, time);
 	});
 
 	// changes (transforms) map to be aftermath of event
 	function transformToAfterEvent(event){
+
 		switch (event.type){
 			case ("travel"):
 				var locationName = event.body;
@@ -357,6 +359,8 @@ function setPlaybackPosition(exploration, time){
 				var transform = event.body;
 				g.attr("transform", transform);
 				updateScaleAndTrans();
+				break;
+			case ("end"):
 				break;
 		}
 	}
