@@ -137,7 +137,6 @@ function attemptCreateAccount(name, pw){
 }
 
 function loadAllExplorations(userName, cb){
-	console.log("loadAllExplorations");
 	$.ajax({
 		type: 'GET',
 		url: "/getUserExplorations",

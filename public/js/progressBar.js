@@ -364,6 +364,7 @@ function ProgressBar() {
 		$("#stop-insert-button").hide();
 	}
 
+	// highlights a portion inserted exploration on the progress bar
 	this.showInsertedChunk = function(startTime, duration){
 		var startX = this.getXPosOfTime(startTime);
 		var endX = this.getXPosOfTime(startTime + duration);
