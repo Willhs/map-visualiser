@@ -115,7 +115,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	.attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
 	.attr("dy", ".35em")
 	.text(function(d) { return d.properties.NAME; });
-	
+
 	places.style('cursor','hand');
 
 	// Align labels to minimize overlaps
@@ -202,7 +202,7 @@ function transitionTo(translate, scale, duration, elapsedTime){
 	.ease(ease)
 	.attrTween("transform", function() {
 		return function(t) { return transformAt(interpolator(t)); };
-	})	
+	})
 	.each("end.update", function(){
 		updateScaleAndTrans();
 	}); // updates global scale and transition variables
@@ -213,6 +213,19 @@ function transitionTo(translate, scale, duration, elapsedTime){
 		var k = height / p[2];
 		return "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
 	}
+}
+
+function makeZoomInterpolator(translation, scale){
+	var sb = getRealBounds(),
+		start = [sb[0][0], sb[0][1], height / d3.transform(g.attr("transform")).scale[0]];
+
+	var cx = translation[0],
+		cy = translation[1],
+		screenWidth = scale ? height / scale : 200;
+
+	var end = [cx, cy, screenWidth];
+
+	return d3.interpolateZoom(start, end);
 }
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
@@ -245,7 +258,7 @@ function goToFirstLocation(exploration){
 	var translate = d3.transform(firstLocation).translate;
 	var scale = d3.transform(firstLocation).scale;
 	// TODO: don't have -1 multipliers
-	transitionTo(	[translate[0]*-1 + (width/2), translate[1]*-1 + (height/2)], 
+	transitionTo(	[translate[0]*-1 + (width/2), translate[1]*-1 + (height/2)],
 					scale[0]
 				);
 }

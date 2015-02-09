@@ -11,7 +11,6 @@ var audioElem = document.getElementById("exploration-audio");
 
 var progressBar = new ProgressBar;
 var pathMove = new PathMove;
-//var iframeWindow = new IframePath;
 
 var selectedExploration = null; // currently selected exploration
 
@@ -23,7 +22,7 @@ function Event(type, body, time){
 
 // an exploration of the visualisation
 function Exploration() {
-	this.name = generateDefaultExplName();
+	this.name;
 	this.userName = (currentUser ? currentUser.name : null);
 	this.events = []; // events that took place over the course of the exploration
 	this.firstEventTime = null;
@@ -135,18 +134,31 @@ function Exploration() {
 		this.events = this.events.slice(0, afterIndex)
 						.concat(newEvents)
 						.concat(this.events.slice(afterIndex));
-	}		
+
+	}
+
+	// gives the exploration a name based on the time stamp etc
+	this.giveName = function(){
+		this.name = this.userName + " " + makeShortTimeFormat(new Date(this.timeStamp));
+
+		function makeShortTimeFormat(date){
+			// convert millis to mm:ss
+			var hours = date.getHours().toString(),
+				minutes = date.getMinutes().toString(),
+				seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
+													: date.getSeconds(),
+				day = date.getDate(),
+				month = monthAsString(date.getMonth());
+
+			return hours + ":" + minutes + " - " + day + "th " + month;
+
+			function monthAsString(monthIndex){
+				return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][monthIndex];
+			}
+		}
+	}
 }
 
-//makes a default name for an exploration
-var generateDefaultExplName = function(){
-	var index = 0;
-	return function(){
-		var name = currentUser.name + " exploration " + index;
-		index++;
-		return name;
-	};
-}();
 
 // begins recording of user navigation actions
 // insert is true if this recording will be inserted into another exploration
@@ -167,9 +179,8 @@ function startRecording() {
 
 	// add start event
 	newExpl.addEvent("start", g.attr("transform"));
-	//newExpl.addEvent("start", "");
 
-	currentUser.setCurrentExploration(newExpl);	
+	currentUser.setCurrentExploration(newExpl);
 
 	// starts recording audio
 	if (audioRecorder)
@@ -182,29 +193,34 @@ function startRecording() {
 }
 
 //ends recording of user navigation
-function stopRecording() {
+function stopRecording(audioCB) {
+	var recordedExpl = currentUser.currentExpl;
 	// if there is no recording, do nothing
-	if (!currentUser.currentExpl || !recording)
+	if (!recordedExpl || !recording)
 		return;
 
 	// removes event listeners which are recording user navigation.
-	zoom.on("zoom.record", null);//remove recording zoom listener
+	zoom.on("zoom.record", null); // remove recording zoom listener
 
-	// cities on the map
+	// city elems on the map
 	var mapCities = document.getElementsByClassName("place");
 	for (var i = 0; i < mapCities.length; i++){
 		var city = mapCities.item(i);
 		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
 	}
 
-	currentUser.getCurrentExploration().addEvent("end", "");
+	recordedExpl.addEvent("end", "");
 
-	currentUser.getCurrentExploration().setTimeStamp(new Date());
+	recordedExpl.setTimeStamp(new Date().toString());
+	recordedExpl.giveName();
+
 	// else, it will overwrite the selected exploration
 	if (!inserting)
-		selectExploration(currentUser.getCurrentExploration());
+		selectExploration(recordedExpl);
+
+	// audio stuff
 	if (audioRecorder)
-		stopAudioRecording();
+		stopAudioRecording(audioCB);
 
 	removeRecordingGraphics();
 
@@ -258,6 +274,7 @@ function launchEvents(exploration, i, elapsedTime){
 	case ("travel"):
 		var location = currentEvent.body;
 		goToLoc(location, elapsedTime);
+		pathMove.updatePathMove(currentEvent.time);
 	   	break;
 	case ("start"):
 	case ("movement"):
@@ -273,7 +290,9 @@ function launchEvents(exploration, i, elapsedTime){
 	var nextEvent = exploration.getEvent(i+1);
 	var delay = nextEvent.time - currentEvent.time;
 	// if elapsedTime is specified, remove it from delay
-	delay = elapsedTime ? delay - elapsedTime : delay;
+	if (elapsedTime)
+		delay = delay - elapsedTime;
+
 	progressBar.updateProgress(exploration, currentEvent.time, delay);
 
 	playTimeout = setTimeout(launchEvents, delay, exploration, i + 1);
@@ -294,6 +313,8 @@ function stopPlayback(exploration){
 	playing = false;
 	paused = false;
 	updatePlaybackStopped();
+	pathMove.reset();
+
 }
 
 // pauses the current playback. cb will happen after progress bar updates
@@ -309,6 +330,7 @@ function pausePlayback(exploration, cb){
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
+	pathMove.pause();
 }
 
 // waits until next event before executing playExploration
@@ -316,9 +338,9 @@ function resumePlayback(exploration){
 	var currentEvent = exploration.getEvent(currentEventIndex);
 	var eventDur = exploration.getEvent(currentEventIndex+1).time - currentEvent.time,
 		timeTilNextEvent = eventDur - elapsedEventTime,
-		// playback position in time 
+		// playback position in time
 		position = currentEvent.time + elapsedEventTime;
-	
+
 	// skips the rest of the event and goes to the next one.
 	// TODO: play the rest of the event, don't skip
 	playTimeout = setTimeout(function(){
@@ -332,6 +354,7 @@ function resumePlayback(exploration){
 
 	progressBar.updateProgress(exploration, position, timeTilNextEvent);
 	progressBar.updateButton();
+	pathMove.resumePathMove(eventDur, currentEvent.time);
 }
 
 // sets playback position to time parameter, then plays from that position (if was playing before)
@@ -350,11 +373,12 @@ function setPlaybackPosition(exploration, time){
 
 		progressBar.setPosition(time);
 
-		// set audio		
-
+    	pathMove.setPausedTime(time);
+		if(pathMove.progressBarClicked)
+			pathMove.setPosition(time);
 		// if already playing, continue
 		if (wasPlaying)
-			resumePlayback(exploration);	
+			resumePlayback(exploration);
 	});
 
 	// changes (transforms) map to be aftermath of event
@@ -374,7 +398,7 @@ function setPlaybackPosition(exploration, time){
 	}
 }
 
-// inserts 'insertee' into the currently selected exploration at the time of the last pause
+//inserts 'insertee' into the currently selected exploration at the time of the last pause
 function insertIntoSelectedExploration(insertee){
 
 	var exploration = selectedExploration;
@@ -382,21 +406,48 @@ function insertIntoSelectedExploration(insertee){
 	var eventIndex = currentEventIndex;
 
 	// time to insert newly recorded events
-	var time = exploration.getEvent(eventIndex).time + elapsedEventTime;
+	var currentTime = getCurrentPlaybackTime();
+
+	// grab audio
+	var newAudio = function(){
+		if (!insertee.hasAudio() || !exploration.hasAudio())
+			return null;
+
+		// find the byte position of the current time
+		var currentTimeAudio = audioElem.currentTime,
+			sampleRate = 44100,
+			bytesPerFrame = 4,
+			headerSize = 44;
+
+		var framePosition = (currentTime/1000) * sampleRate;
+		var dataBytePos = framePosition * bytesPerFrame;
+		// get the last frame before the bytePosition (so bytePosition isn't in middle of sample)
+		var lastFrameStart = (dataBytePos - (dataBytePos % bytesPerFrame));
+		var bytePosition = headerSize + lastFrameStart;
+
+		var explAudio = exploration.getAudio();
+		var inserteeAudio = insertee.getAudio();
+
+		var left = explAudio.slice(0, bytePosition);
+		// chop off header
+		var insert = inserteeAudio.slice(headerSize, inserteeAudio.size);
+		var right = explAudio.slice(bytePosition, explAudio.size);
+
+		// join each of the pieces together
+		return new Blob([left, insert, right], {type: "audio/wav"});
+	}();
 
 	// insert the events
-	exploration.insertEvents(insertee.getEvents(), eventIndex+1, time);
+	exploration.insertEvents(insertee.getEvents(), eventIndex+1, currentTime);
+	// replace audio
+	if (newAudio){
+		exploration.setAudio(newAudio);
+		setupAudio(exploration);
+	}
 
 	// put the new exploration into currentExporation so it will be saved next
+	// TODO: save as the older exploration, not a new one
 	currentUser.setCurrentExploration(exploration);
-
-	// TODO: insert into audio
-	/*if (insertee.hasAudio()){
-		var sampleRate = 44100;
-		var samplePosition = (time/1000) * sampleRate;
-//		var oldLeft = exploration.getAudio().slice(0, )
-//		exploration.setAudio(new Blob([)
-	}*/
 
 	progressBar.unload();
 	progressBar.load(exploration);
@@ -404,17 +455,18 @@ function insertIntoSelectedExploration(insertee){
 	inserting = false;
 }
 
-// plays audio from a blob
-function playAudio(audioBlob){
-	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
+function setupAudio(exploration){
+	audioElem.src = exploration.getAudio();
+}
+
+function playAudio(){
 	audioElem.play();
 }
 
-// assumes there is aleady audio data loaded into audioElem
-// resumes from current position + skipped time (in seconds)
+// position in seconds
 function resumeAudio(position){
 	audioElem.currentTime = position;
-	audioElem.play();
+	playAudio();
 }
 
 // updates GUI and other things..
@@ -438,20 +490,26 @@ function selectExploration(exploration){
 	if (selectedExploration)
 		deselectExploration();
 
+	setupAudio(exploration);
+
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
+	pathMove.load(selectedExploration);
 
 	updateExplorationControls();
+
+	goToFirstLocation(exploration);
 }
 
 // deselects current exploration
 function deselectExploration(){
 	if (!selectedExploration)
 		return;
+	pathMove.unload();
 	selectedExploration = null;
 	progressBar.unload();
 	if (!currentUser || !currentUser.hasExplorations())
-		disableAction("delete");
+		disableAction(["delete"]);
 }
 
 // resets to original state (no explorations selected and no recordings in progress)
@@ -464,7 +522,6 @@ function resetExplorations() {
 		currentUser.resetCurrentExploration();
 
 	deselectExploration();
-	progressBar.unload();
 	updateExplorationControls();
 }
 
@@ -504,7 +561,7 @@ function saveExploration(exploration) {
 					updateExplorationChooser();
 				}
 
-				enableAction("delete");				
+				enableAction(["delete"]);
 				updateExplorationChooser();
 			},
 			contentType: "application/json"
@@ -513,20 +570,25 @@ function saveExploration(exploration) {
 }
 
 // disables an action (currently button)
-function disableAction(name){
-	var button = document.getElementById(name + "-exploration-button");
-	button.disabled = true;
-	changeButtonColour(name, false);
+function disableAction(names){
+	names.forEach(function(name){
+		var button = document.getElementById(name + "-exploration-button");
+		button.disabled = true;
+		button.style.cursor = "not-allowed";
+		changeButtonColour(name, false);
+	});
 }
 
-// enable an action
-function enableAction(name){
-	var button = document.getElementById(name + "-exploration-button");
-	button.disabled = false;
-
-	// change the colour itf it's not the record button
-	if (!name.localeCompare("record") == 0)
-		changeButtonColour(name, true);
+//enable an action
+function enableAction(names){
+	names.forEach(function(name){
+		var button = document.getElementById(name + "-exploration-button");
+		button.disabled = false;
+		button.style.cursor = "pointer";
+		// change the colour if it's not the record button
+		if (!name.localeCompare("record") == 0)
+			changeButtonColour(name, true);
+	});
 }
 
 //records an instance of a user action to travel to a place on the map
@@ -547,7 +609,7 @@ function deleteExploration(expl){
 		type: 'POST',
 		url: "deleteExploration",
 		data: JSON.stringify({
-			userName: expl.userName,
+			userName: currentUser.name,
 			timeStamp: expl.timeStamp,
 			hasAudio: expl.hasAudio()
 		}),
@@ -579,8 +641,8 @@ function updateSelectedExploration(){
 
 // ensures that an exploration is selected by selecting the first in the list
 function ensureExplorationSelected(){
-	if (!selectedExploration 
-		&& userLoggedOn() 
+	if (!selectedExploration
+		&& userLoggedOn()
 		&& currentUser.explorations.length > 0){
 
 		var explTimeStamp = explChooser.options[0].id;
@@ -599,7 +661,7 @@ function setExplorationIsOld(expl){
 			explUserName:expl.userName, // the user who made the exploration
 			timeStamp: expl.timeStamp
 		}),
-		contentType: "application/json"		
+		contentType: "application/json"
 	});
 }
 

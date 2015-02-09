@@ -38,7 +38,7 @@ deleteExplButton.click(function(){
 
 resetExplButton.click(resetExplorations);
 
-explChooser.click(updateSelectedExploration);
+explChooser.onclick = updateSelectedExploration;
 
 //users
 var guestUsers = ["obama", "john", "lorde", "will"];
@@ -132,7 +132,7 @@ stopInsertButton.click( function(){
 	else {
 		stopRecording();
 		doneRecording();
-	}	
+	}
 
 	function doneRecording(){
 		inserting = false;

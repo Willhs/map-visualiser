@@ -14,7 +14,10 @@ function PathMove(){
 		this.expl = expl;
 	};
 
-
+	this.setProgressBarClicked = function(){
+		pathMove.progressBarClicked = true;
+		pathMove.pathLineClicked = false;
+	}
 	//this function will return set of cityEvents in the exploration.
 	this.cityEvents = function(){
 		if(this.expl == null)return;
@@ -22,6 +25,7 @@ function PathMove(){
 		if(this.expl == null)return;
 		for(var j = 0;  j < this.expl.events.length; j++ ){
 			if(this.expl.events[ j ].type  === "travel" && !checkMatchCity(this.expl.events[ j ] ,citiesE)){
+
 				citiesE.push(this.expl.events[ j ] );
 			}
 		}
@@ -40,6 +44,7 @@ function PathMove(){
 
 //	get the set of cities in the exploration return list of names
 	this.citiesDisplay = function(){
+		if(this.expl == null)return;
 		var cities =[] ;
 		this.cityEvents().forEach(function(event){
 			if(event.type.localeCompare("travel") == 0){
@@ -55,6 +60,7 @@ function PathMove(){
 
 //	get the set of citie's x, y coordinates
 	this.translates = function(){
+		if(this.expl == null)return;
 		trans =[];
 		this.citiesDisplay().forEach(function(cityName){
 			var index = getCityIndex(cityName);
@@ -75,48 +81,48 @@ function PathMove(){
 			}
 		}
 		function isOnLine(x1,y1, x2, y2, px, py, tolerance) {
-		    var dy = y1 - y2;
-		    var dx = x1 - x2;
-		    if(dy == 0) { //horizontal line
-		        if(py == y1) {
-		            if(x1 > x2) {
-		                if(px <= x1 && px >= x2)
-		                    return true;
-		            }
-		            else {
-		                if(px >= x1 && px <= x2)
-		                    return true;
-		            }
-		        }
-		    }
-		    else if(dx == 0) { //vertical line
-		        if(px == x1) {
-		            if(y1 > y2) {
-		                if(py <= y1 && py >= y2)
-		                    return true;
-		            }
-		            else {
-		                if(py >= y1 && py <= y2)
-		                    return true;
-		            }
-		        }
-		    }
-		    else { //slope line
-		        var p = dy/dx;
-		    	var b = y2 - p*x2;
-		        var y = p * px + b;
-		        if(y <= py + tolerance && y >= py - tolerance) {
-		            if(x1 > x2) {
-		                if(px <= x1 && px >= x2)
-		                    return true;
-		            }
-		            else {
-		                if(px >= x1 && px <= x2)
-		                    return true;
-		            }
-		        }
-		    }
-		    return false;
+			var dy = y1 - y2;
+			var dx = x1 - x2;
+			if(dy == 0) { //horizontal line
+				if(py == y1) {
+					if(x1 > x2) {
+						if(px <= x1 && px >= x2)
+							return true;
+					}
+					else {
+						if(px >= x1 && px <= x2)
+							return true;
+					}
+				}
+			}
+			else if(dx == 0) { //vertical line
+				if(px == x1) {
+					if(y1 > y2) {
+						if(py <= y1 && py >= y2)
+							return true;
+					}
+					else {
+						if(py >= y1 && py <= y2)
+							return true;
+					}
+				}
+			}
+			else { //slope line
+				var p = dy/dx;
+				var b = y2 - p*x2;
+				var y = p * px + b;
+				if(y <= py + tolerance && y >= py - tolerance) {
+					if(x1 > x2) {
+						if(px <= x1 && px >= x2)
+							return true;
+					}
+					else {
+						if(px >= x1 && px <= x2)
+							return true;
+					}
+				}
+			}
+			return false;
 		}
 	};
 
@@ -146,7 +152,8 @@ function PathMove(){
 		}
 	};
 //	load called when user select exploration function or stop recording function called.
-	this.load = function(){
+	this.load = function(expl){
+		this.expl = expl;
 		if(this.citiesDisplay().length == 0)return;
 		// arrowhead markers
 		/*g.append("defs")
@@ -187,7 +194,6 @@ function PathMove(){
 		.on("click", function(d){
 			pausedX = d3.mouse(g.node())[0];
 			pausedY = d3.mouse(g.node())[1];
-			console.log(d);
 			for(var i = 0; i<trans.length; i++){
 				if(trans[i][0]===d[0] && trans[i][1]===d[1])
 					setPositionFromClickedPathLine(i);
@@ -237,7 +243,8 @@ function PathMove(){
 			ncx = this.translates()[ currentCityIndex ][ 0 ] ;
 			ncy = this.translates()[ currentCityIndex ][ 1 ] ;
 			var data =  [ {x:ctx,y:cty},{x:ncx,y:ncy} ] ;
-			var eventDuration = (eventTime - this.cityEventTimes()[ currentCityIndex - 1 ] );
+			//var eventDuration = (eventTime - this.cityEventTimes()[ currentCityIndex + 1 ] );
+			var eventDuration = makeZoomInterpolator(this.translates()[currentCityIndex]).duration * ANIMATION_DELAY;
 			d3.selectAll("#circle-move")
 			.attr("cx", ctx)
 			.attr("cy", cty)
@@ -246,7 +253,6 @@ function PathMove(){
 			.ease(EASE_FUNCTION)
 			.attr("cx", ncx)
 			.attr("cy", ncy);
-
 			var pathLineMove= g.append("path")
 			.attr({
 				id: "animationPath",
@@ -257,7 +263,6 @@ function PathMove(){
 			pathLineMove.on("click", function(){
 				pausedX = d3.mouse(this)[0];
 				pausedY = d3.mouse(this)[1];
-				console.log(pausedX + "   " + pausedY);
 				setPositionFromClickedPathLine();
 				//this.setPosition();
 
@@ -329,7 +334,6 @@ function PathMove(){
 
 		var data =  [ {x:pausedX,y:pausedY} ,
 		              {x:this.translates()[ currentCityIndex ][ 0 ], y:this.translates()[ currentCityIndex ][ 1 ] } ] ;
-
 		var p = g.append("path")
 		.attr({
 			id: "animationPath",
@@ -415,12 +419,13 @@ function PathMove(){
 				pausedY = lastCityY  +  yMoved;
 			else
 				pausedY = lastCityY;
-		}
 
-		ctx = pausedX;
-		cty = pausedY;
-		ncx = this.translates()[currentCityIndex][ 0 ];
-		ncy = this.translates()[currentCityIndex][ 1 ];
+		}
+			ctx = pausedX;
+			cty = pausedY;
+			ncx = this.translates()[currentCityIndex][ 0 ];
+			ncy = this.translates()[currentCityIndex][ 1 ];
+
 		d3.select("#circle-move")
 		.attr("cx", ctx)
 		.attr("cy", cty);
@@ -445,6 +450,7 @@ function PathMove(){
 					setPositionFromClickedPathLine();
 
 				});
+
 	}
 
 //	pause
@@ -477,7 +483,6 @@ function PathMove(){
 		d3.selectAll("#circle-move")
 		.attr("cx", this.translates()[ 0 ][ 0 ] )
 		.attr("cy", this.translates()[ 0 ][ 1 ] );
-		this.resetText();
 		this.pausedTime = null;
 		this.progressBarClicked = false;
 		this.pathLineClicked = false;
@@ -549,16 +554,18 @@ function lineDistance( point1, point2 ){
 function setPositionFromClickedPathLine(cityIndex){
 	pathMove.pathLineClicked = true;
 	pathMove.progressBarClicked = false;
-		d3.selectAll("#animationPath").remove();
-		if(!cityIndex)
-			currentCityIndex = pathMove.getCityIndexByPoint(pausedX, pausedY);
-		else currentCityIndex = cityIndex;
-		ctx = pausedX;
-		cty = pausedY;
-		d3.selectAll("#circle-move")
-		.attr("cx", ctx)
-		.attr("cy", cty);
-		if(currentCityIndex+1<pathMove.translates().length){
+	d3.selectAll("#animationPath").remove();
+	if(!cityIndex){
+		currentCityIndex = pathMove.getCityIndexByPoint(pausedX, pausedY);
+	}
+	else currentCityIndex = cityIndex;
+
+	ctx = pausedX;
+	cty = pausedY;
+	d3.selectAll("#circle-move")
+	.attr("cx", ctx)
+	.attr("cy", cty);
+	if(currentCityIndex+1<pathMove.translates().length){
 		ncx = pathMove.translates()[currentCityIndex+1][ 0 ];
 		ncy = pathMove.translates()[currentCityIndex+1][ 1 ];
 		var tempTrans =  [];
@@ -566,27 +573,34 @@ function setPositionFromClickedPathLine(cityIndex){
 			tempTrans.push(pathMove.translates()[ i ] );
 		}
 		tempTrans.push( [ pausedX , pausedY ] );
-		}
-		else tempTrans = pathMove.translates();
-		g.append("path")
-		.data( [ tempTrans ] )
-		.attr("id","animationPath")
-		.attr("stroke","blue")
-		.attr('stroke-width', 2)
-		.style("fill", "none")
-		.attr("d", d3.svg.line()
-				.tension(0))
-				.on("click", function(){
-					pausedX = d3.mouse(this)[0];
-					pausedY = d3.mouse(this)[1];
-					setPositionFromClickedPathLine();});
-		if(currentCityIndex+1>pathMove.translates().length-1)
-			return;
-		var time = (Math.abs(pausedX - pathMove.translates()[currentCityIndex][0]))
-				* Math.abs((pathMove.cityEventTimes()[currentCityIndex] -  pathMove.cityEventTimes()[currentCityIndex+1]))
-				/ Math.abs((pathMove.translates()[currentCityIndex][0] - pathMove.translates()[currentCityIndex+1][0]))
-				+ pathMove.cityEventTimes()[currentCityIndex+1];
-		setPlaybackPosition(pathMove.expl, time);
+	}
+	else tempTrans = pathMove.translates();
+	g.append("path")
+	.data( [ tempTrans ] )
+	.attr("id","animationPath")
+	.attr("stroke","blue")
+	.attr('stroke-width', 2)
+	.style("fill", "none")
+	.attr("d", d3.svg.line()
+			.tension(0))
+			.on("click", function(){
+				pausedX = d3.mouse(this)[0];
+				pausedY = d3.mouse(this)[1];
+				setPositionFromClickedPathLine();});
+	if(currentCityIndex>pathMove.translates().length-1)
+		return;
+
+	var currentCityEventTime = pathMove.cityEventTimes()[currentCityIndex];
+	var distToPausedX  = Math.abs(pausedX - pathMove.translates()[currentCityIndex][0]);
+	if(currentCityIndex+1>pathMove.translates().length-1)
+		return;
+	var durCityEvents = pathMove.cityEventTimes()[currentCityIndex+1] -  currentCityEventTime;
+	var distX = Math.abs((pathMove.translates()[currentCityIndex][0] - pathMove.translates()[currentCityIndex+1][0]));
+	var time = distToPausedX * durCityEvents / distX + currentCityEventTime;
+	if(time<pathMove.cityEventTimes()[0])
+		time = pathMove.cityEventTimes()[0];
+	console.log(time);
+	setPlaybackPosition(pathMove.expl, time);
 
 
 }

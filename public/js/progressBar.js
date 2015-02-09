@@ -172,7 +172,7 @@ function ProgressBar() {
 		if (selectedExploration.hasAudio())
 			hasAudio.show();
 		// duration
-		showDurationText();		
+		showDurationText();
 	}
 
 	// unloads an exploration
@@ -190,7 +190,7 @@ function ProgressBar() {
 		// remove playControl listener
 		playControl.on("click", null);
 		// hide text and insert button
-		this.hideTimeText();		
+		this.hideTimeText();
 		hideInsertButton();
 		hasAudio.hide();
 	}
@@ -200,7 +200,8 @@ function ProgressBar() {
 		// figure out x position of mouse
       	var offset = $(this).offset();
       	var xpos = d3.mouse(this)[0]; // 36 ?
-
+      	// Pathmove needs to know this for setPosition
+		pathMove.setProgressBarClicked();
       	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 
@@ -311,7 +312,7 @@ function ProgressBar() {
 				"text-anchor": "middle"
 			});
 		// lines from insert point to bottom of insert bar
-		var points = [	{x: insertX, y: divHeight}, 
+		var points = [	{x: insertX, y: divHeight},
 						{x: barLeft + barCurve, y: barTop + barHeight},
 						{x: barLeft + barWidth - barCurve, y: barTop + barHeight}	];
 
@@ -322,7 +323,7 @@ function ProgressBar() {
 					return d.map(function(d){
 						return [d.x, d.y].join(",");
 					}).join(" ");
-				},				
+				},
 				fill: "grey",
 				stroke: "black",
 				"stroke-width": "3px"
@@ -389,7 +390,7 @@ function ProgressBar() {
 				.ease("cubic-in-out")
 				.style("opacity", 0.8)
 				.each("end", function(){
-					setTimeout( fadeOut, fadeOutDelay); 
+					setTimeout( fadeOut, fadeOutDelay);
 				});
 		}
 

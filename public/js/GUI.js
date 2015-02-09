@@ -149,18 +149,18 @@ function updateLogonElements(){
 	// if user is currently logged on
 	if (userLoggedOn())
 		toggleLogon(true,"not-allowed");
-	
+
 	else    toggleLogon(false, "default");
-	
+
 }
 
 function toggleLogon(loggedOn, cursor){
-	logonButton.value = loggedOn ? "Log on" : "Log off";
+	logonButton.value = loggedOn ? "Log off" : "Log on";
 	userNameInput.disabled = loggedOn;
 	passwordInput.disabled = loggedOn;
 	userNameInput.style.cursor = cursor;
 	passwordInput.style.cursor = cursor;
-	
+
 	if (!loggedOn){
 		userNameInput.value = "";
 		passwordInput.value = "";
@@ -318,7 +318,7 @@ function displayLocationInfo(city){
 			var timeStamp = new Date(annotation.timeStamp);
 			// h:mm format
 			var time = 	timeStamp.getHours() + ":" +
-						(timeStamp.getMinutes().toString().length < 2 ? 
+						(timeStamp.getMinutes().toString().length < 2 ?
 							"0" + timeStamp.getMinutes() :
 							timeStamp.getMinutes());
 			var date = timeStamp.getDate() + "/" + timeStamp.getMonth() + "/" + timeStamp.getFullYear().toString().substring(2,4);
@@ -389,13 +389,13 @@ function changeButtonColour(name, state){
 }
 
 // displays an image of a microphone
-function displayAudioGraphic(){    
+function displayAudioGraphic(){
     svg.append("image")
         .attr({
             x: width*0.9,
             y: 20,
             width: 50,
-            height: 50, 
+            height: 50,
             "xlink:href": "data/image/microphone-128.png",
             id: "microphone-graphic"
         });
