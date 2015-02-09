@@ -51,6 +51,7 @@ app.post("/checkAuthentication", function(req, res){
 	doesUserExist(userName);
 
 	var users = JSON.parse(fs.readFileSync(USER_PATH + USER_INFO_FILE_NAME));
+
 	// check if uname and pw match
 
 	var authenticated = false;
@@ -64,11 +65,6 @@ app.post("/checkAuthentication", function(req, res){
 	});
 
 	res.send(JSON.stringify(authenticated));
-});
-
-app.get("/null", function(req, res){
-	console.log("2spooky");
-	res.sendStatus(200);
 });
 
 app.get("/getUserExplorations", function(req, res){
@@ -366,6 +362,11 @@ app.post("/deleteAnnotation", function(req, res){
 			return;
 		}
 	}
+});
+
+app.get("/null", function(req, res){
+	console.log("caught null request (bug)");
+	res.sendStatus(200);
 });
 
 //returns whether the dir existed

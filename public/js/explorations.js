@@ -20,7 +20,7 @@ function Event(type, body, time){
 	this.time = time;
 }
 
-// an exploration of the visualisation
+// an exploration of the map
 function Exploration() {
 	this.name;
 	this.userName = (currentUser ? currentUser.name : null);
@@ -146,7 +146,7 @@ function Exploration() {
 				minutes = date.getMinutes().toString(),
 				seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
 													: date.getSeconds(),
-				day = date.getDay(),
+				day = date.getDate(),
 				month = monthAsString(date.getMonth());
 
 			return hours + ":" + minutes + " - " + day + "th " + month;

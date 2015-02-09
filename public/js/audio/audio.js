@@ -46,7 +46,8 @@ function stopAudioRecording(cb){
         function doneEncoding( blob, cb ) {
             // sets the audio of the current user's current exploration
             currentUser.getCurrentExploration().setAudio(blob);
-            cb();
+            if (cb)
+                cb();
         }
     }
 }
