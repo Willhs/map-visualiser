@@ -62,7 +62,7 @@ var path = d3.geo.path().projection(projection)
 var zoom = d3.behavior.zoom()
 .on("zoom.normal",function() {
 	g.attr("transform","translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-})
+});
 
 var svg = d3.select("body").append("svg")
 .attr("width", width)
@@ -75,6 +75,8 @@ var svg = d3.select("body").append("svg")
 var g = svg.append("g")
 	.attr("id","map_area")
 	.attr("transform", "translate(0,0)scale(1)");
+
+svg.style('cursor','move');
 
 // Read country outline from file
 d3.json("data/map/kaz.json", function(error, json) {
@@ -113,6 +115,8 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	.attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
 	.attr("dy", ".35em")
 	.text(function(d) { return d.properties.NAME; });
+	
+	places.style('cursor','hand');
 
 	// Align labels to minimize overlaps
 	g.selectAll(".place-label")
@@ -314,10 +318,12 @@ function ping(location) {
 	var endR = startR + screenvars[1][1] * PING_SIZE;
 
 	g.append("circle")
-	.attr("class", "ping")
-	.attr("cx", center[0])
-	.attr("cy", center[1])
-	.attr("r", startR)
+	.attr({
+		class: "ping",
+		cx: center[0],
+		cy: center[1],
+		r: startR
+	})
 	.transition()
 	.duration(750)
 	.style("stroke-opacity", 0.25)

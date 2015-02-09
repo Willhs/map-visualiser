@@ -3,33 +3,42 @@
 // ---- explorations
 
 recordExplButton.addEventListener("click", function(){
-	if (recording)
+	if (recording){
 		stopRecording();
+		if (inserting)
+			insertIntoSelectedExploration(currentUser.getCurrentExploration());
+	}
 	else
-		startRecording();	
+		startRecording();
 });
 
-playExplButton.addEventListener('click', function () {
+playExplButton.on('click', function () {
 	if (!paused)
 		startPlayback(selectedExploration);
 	else resumePlayback(selectedExploration);
 });
 
-pauseExplButton.addEventListener('click', function(){
+pauseExplButton.on('click', function(){
 	pausePlayback(selectedExploration);
 });
 
-stopExplButton.addEventListener('click', function(){
+stopExplButton.on('click', function(){
 	stopPlayback(selectedExploration);
 });
 
-saveExplButton.onclick = function(){ 
+saveExplButton.click(function(){
 	saveExploration(currentUser.getCurrentExploration());
-}
+});
 
-resetExplButton.onclick = resetExplorations;
+//delete button
+deleteExplButton.click(function(){
+	if (selectedExploration)
+		deleteExploration(selectedExploration);
+});
 
-explChooser.onclick = updateSelectedExploration;
+resetExplButton.click(resetExplorations);
+
+explChooser.click(updateSelectedExploration);
 
 //users
 var guestUsers = ["obama", "john", "lorde", "will"];
@@ -73,22 +82,17 @@ newAccount.onclick = function(){
 	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
 
-// delete button
-deleteExplButton.onclick = function(){
-	if (selectedExploration)
-		deleteExploration(selectedExploration);
-};
-
-// ---- NOTIFICATIONS ----
+//---- NOTIFICATIONS ----
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
 	if(showListNotifications()){
-		resetVisibility(notificationSelector, "visible");
+		divHideShow(notificationSelector);
+		divHideShow(removeNotification);
+		divHideShow(quickplayNotification);
+
 	}
 	else{
-		resetVisibility(notificationSelector, "hidden");
-		resetVisibility(removeNotification, "hidden");
-		resetVisibility(quickplayNotification, "hidden");
+		setNotificationButtonOff();
 	}
 });
 
@@ -97,24 +101,20 @@ removeNotification.addEventListener("click", function(){
 	selected.isNew = false;
 	setExplorationIsOld(selected);
 
-	resetVisibility(notificationSelector, "hidden");
-	resetVisibility(removeNotification, "hidden");
-	resetVisibility(quickplayNotification, "hidden");
+	setNotificationButtonOff();
 	updateNotifications();
 	deselectExploration();
 });
 
 quickplayNotification.addEventListener("click", function(){
 	selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
-	//var quickPlayExploration = new Exploration();
-	//quickPlayExploration = selected;
 	startPlayback(selected);
 	selected.isNew = true;
 	updateNotifications();
 });
 
 // ---- insert button
-insertButton.click( function(){
+insertButton.click(function(){
 	inserting = true;
 	startRecording();
 	insertButton.css("visibility", "hidden");

@@ -7,7 +7,7 @@ function ProgressBar() {
 		progressHeight = 36,
 		progressTop = 0,
 		progressLeft = 0;
-	
+
 	// add the progress bar svg
 	var progressSVG = d3.select("#bar-container").append("svg")
 	.attr("id","play-svg")
@@ -33,7 +33,7 @@ function ProgressBar() {
 		var currentPosition = eventTime / exploration.getDuration() * progressWidth,
 			nextPosition = ((eventTime + eventDuration) / exploration.getDuration()) * progressWidth;
 
-		// update bar with current position	
+		// update bar with current position
 		bar.attr("x", currentPosition);
 
 		// hide button
@@ -58,8 +58,8 @@ function ProgressBar() {
 		// if selectedExploration is null, set position to 0 and return
 		if (!selectedExploration){
 			bar.attr("x", 0);
-			return;	
-		} 
+			return;
+		}
 		var progress = time / selectedExploration.getDuration();
 		bar.attr("x", progress * progressWidth);
 	}
@@ -124,7 +124,7 @@ function ProgressBar() {
 		function showTravelText(d){
 			var travelId = d.body;
 			d3.select("#"+travelId)
-				.insert("text", ":last-child")
+				.insert("text")
 				.attr({
 					id: travelId + "-text",
 					dx: function(d){ return getEventPosition(d.time); },
@@ -224,16 +224,15 @@ function ProgressBar() {
 	// displays insert button above the current playback position
 	function showTimeText(millis){
 
-		var formattedTime = formatTime(millis);	
+		var formattedTime = formatTime(millis);
 
-		var progressPosition = progressBar.getXPosOfTime(millis);													
+		var progressPosition = progressBar.getXPosOfTime(millis);
 		var	padding = 10;
 
 		var timePosition = {
 			left: (progressPosition - timeText.outerWidth()/2)
 		};
 
-	//	aboveBarDiv.show(); // show parent div
 		timeText.show();
 		timeText.text(formattedTime);
 		timeText.css(timePosition); // sets position relative to parent
@@ -247,7 +246,6 @@ function ProgressBar() {
 	// used in explorations
 	this.hideTimeText = function(){
 		timeText.hide();
-	//	aboveBarDiv.hide();
 	}
 
 	function formatTime(millis){
@@ -260,7 +258,7 @@ function ProgressBar() {
 	}
 
 	function showInsertButton(){
-		insertButton.css("visibility", "hidden");
+		insertButton.css("visibility", "visible");
 	}
 
 	function hideInsertButton(){

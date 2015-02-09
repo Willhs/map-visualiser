@@ -1,12 +1,12 @@
 
-// ------ Dom elements -------- 
+// ------ Dom elements --------
 var recordExplButton = document.getElementById("record-exploration-button"),
-	playExplButton = document.getElementById("play-exploration-button"),
-	pauseExplButton = document.getElementById("pause-exploration-button"),
-	stopExplButton = document.getElementById("stop-exploration-button"),
-	saveExplButton = document.getElementById('save-exploration-button'),
-	deleteExplButton = document.getElementById('delete-exploration-button'),
-	resetExplButton = document.getElementById("reset-exploration-button"),
+	playExplButton = $("#play-exploration-button"),
+	pauseExplButton = $("#pause-exploration-button"),
+	stopExplButton = $("#stop-exploration-button"),
+	saveExplButton = $("#save-exploration-button"),
+	deleteExplButton = $("#delete-exploration-button"),
+	resetExplButton = $("#reset-exploration-button"),
 	explChooser = document.getElementById("exploration-selector"),
 	userNameInput = document.getElementById("username-input"),
 	passwordInput = document.getElementById("password-input"),
@@ -34,6 +34,7 @@ function updateSideBar(){
 	updateNotifications();
 	updateLogonElements();
 	updateUserInputElements();
+	updateUserImage();
 }
 
 //updates the exploration chooser (drop down box)
@@ -78,9 +79,7 @@ function updateUserButtons(currentUser){
 //updates the notification GUI elements
 function updateNotifications(){
 	resetVisibility(notificationContainer,"hidden");
-	resetVisibility(notificationSelector,"hidden");
-	resetVisibility(removeNotification, "hidden");
-	resetVisibility(quickplayNotification, "hidden");
+	setNotificationButtonOff();
 	if (!userLoggedOn()){
 		return;
 	}
@@ -90,90 +89,79 @@ function updateNotifications(){
 	var newCount = 0;
 
 	sharedExpl.forEach(function(expl){
-
 		if(expl.isNew) newCount++;
 	});
 
 	if(newCount>0){
-		$("#notification-container").html("have "+ newCount + " new explorations.");
-		resetVisibility(notificationSelector,"hidden");
 		resetVisibility(notificationContainer,"visible");
+		$("#notification-container").html("  have "+ newCount + " new explorations.");
+		notificationContainer.style.cursor = "pointer";
 	}
 	else{
 		resetVisibility(notificationContainer,"visible");
-		$("#notification-container").html("have no new explorations.");
+		$("#notification-container").html("  have no new explorations.");
+		notificationContainer.style.cursor = "not-allowed";
+
 	}
 }
 
 function updateExplorationControls(specialCase){
 	if (!selectedExploration){
-		disableAction("save");
-		disableAction("play");
-		disableAction("stop");
-		disableAction("pause");
-		disableAction("reset");
-		disableAction("delete");
-		enableAction("record");
+		disableAction(["save","play","stop","pause","reset","delete"]);
+		enableAction(["record"]);
 
 		if (userLoggedOn()){
-			enableAction("record");
+			enableAction(["record"]);
 		}
 		else {
-			disableAction("record");
+			disableAction(["record"]);
 		}
 	}
 	else if (!playing){
-		enableAction("play");
-		enableAction("reset");
-		enableAction("record");
-		enableAction("delete");
-		disableAction("pause");
-		disableAction("stop");
+		enableAction(["record","play","reset","delete"]);
+		disableAction(["stop","pause"]);
+
 		changeButtonColour("record", false);
 	}
 	else if (playing){
-		enableAction("stop");
-		enableAction("pause");
-		disableAction("record");
-		disableAction("play");
+		enableAction(["stop","pause"]);
+		disableAction(["record","play","delete"]);
 	}
 	if (recording){
-		disableAction("stop");
-		disableAction("pause");
-		disableAction("save");
-		disableAction("play");
+		disableAction(["save","play","stop","pause","delete"]);
 		changeButtonColour("record", true);
 	}
 
 	if (specialCase){
 		if (specialCase === "stopped-recording"){
-			enableAction("play");
-			enableAction("reset");
-			enableAction("record");
-			disableAction("pause");
-			disableAction("stop");
+			enableAction(["record","play","reset","save"]);
+			disableAction(["stop","pause","delete"]);
 			changeButtonColour("record", false);
-			enableAction("save");
+			enableAction(["save"]);
 		}
 		if (specialCase === "saved"){
-			disableAction("save");
+			disableAction(["save","delete"]);
 		}
 	}
 }
 
 function updateLogonElements(){
 	// if user is currently logged on
-	if (userLoggedOn()){
-		logonButton.value = "Log off";
-		userNameInput.disabled = true;
-		passwordInput.disabled = true;
-	}
-	// if no users logged on
-	else {
-		logonButton.value = "Log on";
-		userNameInput.disabled = false;
-		passwordInput.disabled = false;
+	if (userLoggedOn())
+		toggleLogon(true,"not-allowed");
+	
+	else    toggleLogon(false, "default");
+	
+}
 
+function toggleLogon(loggedOn, cursor){
+	logonButton.value = loggedOn ? "Log on" : "Log off";
+	userNameInput.disabled = loggedOn;
+	passwordInput.disabled = loggedOn;
+	userNameInput.style.cursor = cursor;
+	passwordInput.style.cursor = cursor;
+	
+	if (!loggedOn){
 		userNameInput.value = "";
 		passwordInput.value = "";
 	}
@@ -182,6 +170,22 @@ function updateLogonElements(){
 function updateUserInputElements(){
 	document.getElementById("user-input").value = "";
 	document.getElementById("expl-sent-message").innerHTML = "";
+}
+
+function updateUserImage(){
+	var elems = document.getElementsByClassName("user-button");
+	if(logoned)	{
+		for(var i = 0; i<elems.length; i++){
+			elems[i].disabled = true;
+			elems[i].style.cursor = "not-allowed";
+		}
+	}
+	else{
+		for(var j = 0; j<elems.length; j++){
+			elems[j].disabled = false;
+			elems[j].style.cursor = "pointer";
+		}
+	}
 }
 
 function changeButtonColour(name, state){
@@ -204,20 +208,22 @@ function addRecordingGraphics(){
 	var circleCY = borderWidth + circleRadius;
 
 	svg.append("rect")
-	.attr("id", "record-border")
-	.attr("x", 0 + borderWidth/2)
-	.attr("y", 0 + borderWidth/2)
-	.attr("width", width - borderWidth)
-	.attr("height", height - bottomPadding - borderWidth)
+	.attr({
+		id:    "record-border",
+		x:     0 + borderWidth/2,
+		y:     0 + borderWidth/2,
+		width: width - borderWidth,
+		height:height - bottomPadding - borderWidth})
 	.style("stroke", "red")
 	.style("fill", "none")
 	.style("stroke-width", borderWidth);
 
 	svg.append('circle')
-	.attr("id", "record-circle")
-	.attr('cx', circleCX)
-	.attr('cy', circleCY)
-	.attr('r', circleRadius)
+	.attr({
+		id: "record-circle",
+		cx:  circleCX,
+		cy:  circleCY,
+		r: 	 circleRadius})
 	.style('fill', 'red')
 	.transition().duration();
 }
@@ -233,10 +239,6 @@ function showListNotifications(){
 		notificationSelector.removeChild(notificationSelector.firstChild);
 	}
 	var newSharedExpls = currentUser.getSharedExploration();
-	divHideShow(notificationSelector);
-	divHideShow(removeNotification);
-	divHideShow(quickplayNotification);
-
 	var hasNewExpl = false;
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
@@ -244,19 +246,13 @@ function showListNotifications(){
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
-				explorationName = expl.userName +" "+ expl.timeStamp.substr(0,24)+" "+expl.timeStamp.substr(34,40);
+				explorationName = expl.name
 				newOption.innerHTML = explorationName;
 				newOption.onclick  = function(){
 					stopRecording();
-					enableAction("play");
-					enableAction("reset");
-					currentUser.setCurrentExploration(expl);
-					var pathMove = new PathMove;
-					pathMove.load(expl);
-					progressBar.load(expl);
+					selectExploration(expl);
 				}
 				notificationSelector.appendChild(newOption);
-
 				hasNewExpl = true;
 
 			}
@@ -266,7 +262,7 @@ function showListNotifications(){
 }
 
 function divHideShow(div){
-	if (div.style.visibility.localeCompare("visible")==0){
+	if (div.style.visibility==="visible"){
 		div.style.visibility= "hidden";
 	}
 	else{
@@ -279,7 +275,13 @@ function resetVisibility(idVar, state){
 	idVar.style.visibility = state;
 }
 
-// displays information about the location selected
+function setNotificationButtonOff(){
+	resetVisibility(notificationSelector, "hidden");
+	resetVisibility(removeNotification, "hidden");
+	resetVisibility(quickplayNotification, "hidden");
+}
+
+//displays information about the location selected
 function displayLocationInfo(city){
 
 	document.getElementById("location-title").innerHTML = city.properties.NAME;
@@ -336,25 +338,25 @@ function displayLocationInfo(city){
 		 	textDiv.className ="annotation-inner-container annotation-text-container";
 		 	rowDiv.className = "annotation-row";
 
-		 	content.innerHTML = annotation.text;
-		 	info.innerHTML = annInfo;
+			content.innerHTML = annotation.text;
+			info.innerHTML = annInfo;
 
-		 	// display delete button if user owns the annotation
-		 	// TODO: more reliable equality check
-		 	if (currentUser != null && currentUser.name === userName){
-			 	var deleteButton = document.createElement("input");
-			 	deleteButton.type = "image";
-			 	deleteButton.src = IMAGE_PATH + "delete.png";
-			 	deleteButton.id = "delete-button";
-			 	deleteButton.onclick = function () { deleteAnnotation(annotation); }
-		 		controlsDiv.appendChild(deleteButton);
-		 	}
+			// display delete button if user owns the annotation
+			// TODO: more reliable equality check
+			if (currentUser != null && currentUser.name === userName){
+				var deleteButton = document.createElement("input");
+				deleteButton.type = "image";
+				deleteButton.src = IMAGE_PATH + "delete.png";
+				deleteButton.id = "delete-button";
+				deleteButton.onclick = function () { deleteAnnotation(annotation); }
+				controlsDiv.appendChild(deleteButton);
+			}
 
-		 	textDiv.appendChild(content);
-		 	textDiv.appendChild(info);
+			textDiv.appendChild(content);
+			textDiv.appendChild(info);
 
-		 	rowDiv.appendChild(textDiv);
-		 	rowDiv.appendChild(controlsDiv);
+			rowDiv.appendChild(textDiv);
+			rowDiv.appendChild(controlsDiv);
 
 			container.appendChild(rowDiv);
 		});

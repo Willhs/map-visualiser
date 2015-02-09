@@ -10,9 +10,10 @@ var	playTimeout = -1; // id for setTimeout used while playing an exploration
 var audioElem = document.getElementById("exploration-audio");
 
 var progressBar = new ProgressBar;
+var pathMove = new PathMove;
+//var iframeWindow = new IframePath;
 
 var selectedExploration = null; // currently selected exploration
-//var pathMove = new PathMove;
 
 function Event(type, body, time){
 	this.type = type;
@@ -20,18 +21,18 @@ function Event(type, body, time){
 	this.time = time;
 }
 
-// an exploration of the map
+// an exploration of the visualisation
 function Exploration() {
-	this.name;
+	this.name = generateDefaultExplName();
 	this.userName = (currentUser ? currentUser.name : null);
 	this.events = []; // events that took place over the course of the exploration
 	this.firstEventTime = null;
-	this.timeStamp = null;// time when recording ends button pressed
-	this.audio = null; // blob representing audio
+	this.timeStamp = null;//time saving at save button pressed
+	this.audio = null; // blob/string representing audio
 	this.isNew = true; // has the user watched this before
 
 	this.setTimeStamp = function(timestamp){
-		this.timeStamp = timestamp;
+		this.timeStamp = timestamp.toString();
 	};
 	this.addEvent = function (type, body){
 		var currentTime = new Date().getTime();
@@ -134,29 +135,18 @@ function Exploration() {
 		this.events = this.events.slice(0, afterIndex)
 						.concat(newEvents)
 						.concat(this.events.slice(afterIndex));
-	}
-
-	// gives the exploration a name based on the time stamp etc
-	this.giveName = function(){
-		this.name = this.userName + " " + makeShortTimeFormat(new Date(this.timeStamp));
-
-		function makeShortTimeFormat(date){
-			// convert millis to mm:ss
-			var hours = date.getHours().toString(),
-				minutes = date.getMinutes().toString(),
-				seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
-													: date.getSeconds(),
-				day = date.getDate(),
-				month = monthAsString(date.getMonth());
-
-			return hours + ":" + minutes + " - " + day + "th " + month;
-
-			function monthAsString(monthIndex){
-				return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][monthIndex];
-			}
-		}
-	}
+	}		
 }
+
+//makes a default name for an exploration
+var generateDefaultExplName = function(){
+	var index = 0;
+	return function(){
+		var name = currentUser.name + " exploration " + index;
+		index++;
+		return name;
+	};
+}();
 
 // begins recording of user navigation actions
 // insert is true if this recording will be inserted into another exploration
@@ -192,41 +182,36 @@ function startRecording() {
 }
 
 //ends recording of user navigation
-function stopRecording(audioCB) {
-
-	var recordedExpl = currentUser.currentExpl;
+function stopRecording() {
 	// if there is no recording, do nothing
-	if (!recordedExpl || !recording)
+	if (!currentUser.currentExpl || !recording)
 		return;
 
 	// removes event listeners which are recording user navigation.
-	zoom.on("zoom.record", null); // remove recording zoom listener
+	zoom.on("zoom.record", null);//remove recording zoom listener
 
-	// city elems on the map
+	// cities on the map
 	var mapCities = document.getElementsByClassName("place");
 	for (var i = 0; i < mapCities.length; i++){
 		var city = mapCities.item(i);
 		city.removeEventListener("onclick", recordTravel(getCityIndex(city.id)));
 	}
 
-	recordedExpl.addEvent("end", "");
+	currentUser.getCurrentExploration().addEvent("end", "");
 
-	recordedExpl.setTimeStamp(new Date().toString());
-	recordedExpl.giveName();
-
+	currentUser.getCurrentExploration().setTimeStamp(new Date());
 	// else, it will overwrite the selected exploration
 	if (!inserting)
-		selectExploration(recordedExpl);
-
-	// audio stuff
+		selectExploration(currentUser.getCurrentExploration());
 	if (audioRecorder)
-		stopAudioRecording(audioCB);
+		stopAudioRecording();
 
 	removeRecordingGraphics();
 
 	recording = false;
 	updateExplorationControls("stopped-recording");
-	progressBar.load(recordedExpl);
+	progressBar.load(currentUser.getCurrentExploration());
+	console.log("Recorded " + currentUser.currentExpl.numEvents() + " events");
 }
 
 // index of last event which was played
@@ -397,53 +382,39 @@ function insertIntoSelectedExploration(insertee){
 	var eventIndex = currentEventIndex;
 
 	// time to insert newly recorded events
-	var currentTime = getCurrentPlaybackTime();
-
-	// grab audio
-	var newAudio = function(){
-		if (!insertee.hasAudio() || !exploration.hasAudio())
-			return null;
-
-		// find the byte position of the current time
-		var currentTimeAudio = audioElem.currentTime,
-			sampleRate = 44100,
-			bytesPerFrame = 4,
-			headerSize = 44;
-
-		var framePosition = (currentTime/1000) * sampleRate;
-		var dataBytePos = framePosition * bytesPerFrame;
-		// get the last frame before the bytePosition (so bytePosition isn't in middle of sample)
-		var lastFrameStart = (dataBytePos - (dataBytePos % bytesPerFrame));
-		var bytePosition = headerSize + lastFrameStart;
-
-		var explAudio = exploration.getAudio();
-		var inserteeAudio = insertee.getAudio();
-
-		var left = explAudio.slice(0, bytePosition);
-		// chop off header
-		var insert = inserteeAudio.slice(headerSize, inserteeAudio.size);
-		var right = explAudio.slice(bytePosition, explAudio.size);
-
-		// join each of the pieces together
-		return new Blob([left, insert, right], {type: "audio/wav"});
-	}();
+	var time = exploration.getEvent(eventIndex).time + elapsedEventTime;
 
 	// insert the events
-	exploration.insertEvents(insertee.getEvents(), eventIndex+1, currentTime);
-	// replace audio
-	if (newAudio){
-		exploration.setAudio(newAudio);
-		setupAudio(exploration);
-	}
+	exploration.insertEvents(insertee.getEvents(), eventIndex+1, time);
 
 	// put the new exploration into currentExporation so it will be saved next
-	// TODO: save as the older exploration, not a new one
 	currentUser.setCurrentExploration(exploration);
+
+	// TODO: insert into audio
+	/*if (insertee.hasAudio()){
+		var sampleRate = 44100;
+		var samplePosition = (time/1000) * sampleRate;
+//		var oldLeft = exploration.getAudio().slice(0, )
+//		exploration.setAudio(new Blob([)
+	}*/
 
 	progressBar.unload();
 	progressBar.load(exploration);
 
 	inserting = false;
+}
+
+// plays audio from a blob
+function playAudio(audioBlob){
+	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
+	audioElem.play();
+}
+
+// assumes there is aleady audio data loaded into audioElem
+// resumes from current position + skipped time (in seconds)
+function resumeAudio(position){
+	audioElem.currentTime = position;
+	audioElem.play();
 }
 
 // updates GUI and other things..
@@ -467,14 +438,10 @@ function selectExploration(exploration){
 	if (selectedExploration)
 		deselectExploration();
 
-	setupAudio(exploration);
-
 	selectedExploration = exploration;
 	progressBar.load(selectedExploration);
 
 	updateExplorationControls();
-
-	goToFirstLocation(exploration);
 }
 
 // deselects current exploration
@@ -487,7 +454,7 @@ function deselectExploration(){
 		disableAction("delete");
 }
 
-// resets to original state (no explorations selected and no recordings or playbacks in progress)
+// resets to original state (no explorations selected and no recordings in progress)
 function resetExplorations() {
 	if (playing || paused)
 		stopPlayback(selectedExploration);
@@ -506,11 +473,11 @@ function resetExplorations() {
 function saveExploration(exploration) {
 	updateExplorationControls("saved");
 
-	if (!exploration.hasAudio()){
+	// if the exploration has no audio, go ahead and send
+	if (!exploration.audio){
 		sendExploration(exploration);
 	}
-	else {
-		// attach audio to exploration
+	else { // if the exploration contains audio
 		// convert audio from blob to string so it can be sent
 		var reader = new FileReader();
 		reader.addEventListener("loadend", audioConverted);
@@ -543,24 +510,6 @@ function saveExploration(exploration) {
 			contentType: "application/json"
 		});
 	}
-}
-
-function setupAudio(exploration){
-	var audioBlob = exploration.getAudio();
-	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
-}
-
-// plays audio from a blob
-// assumes there is aleady audio data loaded into audioElem
-function playAudio(audioBlob){
-	audioElem.play();
-}
-
-// assumes there is aleady audio data loaded into audioElem
-// resumes from current position + skipped time (in seconds)
-function resumeAudio(position){
-	audioElem.currentTime = position;
-	audioElem.play();
 }
 
 // disables an action (currently button)
@@ -596,9 +545,9 @@ function recordMovement(){
 function deleteExploration(expl){
 	$.ajax({
 		type: 'POST',
-		url: "/deleteExploration",
+		url: "deleteExploration",
 		data: JSON.stringify({
-			userName: currentUser.name,
+			userName: expl.userName,
 			timeStamp: expl.timeStamp,
 			hasAudio: expl.hasAudio()
 		}),

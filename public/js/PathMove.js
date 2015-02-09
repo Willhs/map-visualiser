@@ -1,23 +1,62 @@
 //init when load the map
+var pausedX =  -1, pausedY =  -1;  //value set when click pause button
+var ncx =  -1, ncy =  -1, ctx =  -1, cty =  -1; //ct: current city position, nc: next city position
+
 function PathMove(){
 
-	var svg = d3.select("#svg_map");
-	var g = svg.select("#map_area");
 	var pathLine = null;
-	this.exploration = null;
-	this.citiesDisplay = function(expl){
-		var cities=[];
-		expl.events.forEach(function(event){
-			if(event.type.localeCompare("travel")==0){
+	this.expl = null;
+	this.progressBarClicked = false;
+	this.pathLineClicked = false;
+	this.pausedTime = null;  //this variable is for resumePathMove function when click on the progress bar (return clicked event time)
+	// set Exploration when selectExploration called or stop recording
+	this.setExploration = function(expl){
+		this.expl = expl;
+	};
+
+
+	//this function will return set of cityEvents in the exploration.
+	this.cityEvents = function(){
+		if(this.expl == null)return;
+		var citiesE =[] ;
+		if(this.expl == null)return;
+		for(var j = 0;  j < this.expl.events.length; j++ ){
+			if(this.expl.events[ j ].type  === "travel" && !checkMatchCity(this.expl.events[ j ] ,citiesE)){
+				citiesE.push(this.expl.events[ j ] );
+			}
+		}
+		return citiesE;
+
+		//this function is checking if event already in the cityEvents reject (return true).
+		function checkMatchCity(event, cityEvents){
+			for(var i = 0;  i < cityEvents.length;  i++ ){
+				if(event.body  === cityEvents[ i ].body && event.time == cityEvents[ i ].time) {
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+
+//	get the set of cities in the exploration return list of names
+	this.citiesDisplay = function(){
+		var cities =[] ;
+		this.cityEvents().forEach(function(event){
+			if(event.type.localeCompare("travel") == 0){
 				cities.push(event.body);
 			}
 		});
 		return cities;
-	}
+	};
 
-	this.translates = function(expl){
-		trans = [];
-		this.citiesDisplay(expl).forEach(function(cityName){
+	this.setPausedTime = function(time){
+		this.pausedTime = time;
+	};
+
+//	get the set of citie's x, y coordinates
+	this.translates = function(){
+		trans =[];
+		this.citiesDisplay().forEach(function(cityName){
 			var index = getCityIndex(cityName);
 			var paths = document.getElementById(index);
 			var data = paths.getAttribute('transform');
@@ -26,84 +65,437 @@ function PathMove(){
 		});
 		return trans;
 	};
-	this.cityEventTimes = function(expl){
-		times = [];
-		expl.events.forEach(function(event){
-			if(event.type.localeCompare("travel")==0){
-				times.push(event.time);
+	this.getCityIndexByPoint = function(x, y){
+		for(var i = 0; i< this.translates().length-1; i++){
+			if(this.translates()[i][0]===x && this.translates()[i][1]===y){
+				return i;
 			}
+			if(isOnLine(this.translates()[i][0], this.translates()[i][1], this.translates()[i+1][0],this.translates()[i+1][1], x, y, 5)){
+				return i;
+			}
+		}
+		function isOnLine(x1,y1, x2, y2, px, py, tolerance) {
+		    var dy = y1 - y2;
+		    var dx = x1 - x2;
+		    if(dy == 0) { //horizontal line
+		        if(py == y1) {
+		            if(x1 > x2) {
+		                if(px <= x1 && px >= x2)
+		                    return true;
+		            }
+		            else {
+		                if(px >= x1 && px <= x2)
+		                    return true;
+		            }
+		        }
+		    }
+		    else if(dx == 0) { //vertical line
+		        if(px == x1) {
+		            if(y1 > y2) {
+		                if(py <= y1 && py >= y2)
+		                    return true;
+		            }
+		            else {
+		                if(py >= y1 && py <= y2)
+		                    return true;
+		            }
+		        }
+		    }
+		    else { //slope line
+		        var p = dy/dx;
+		    	var b = y2 - p*x2;
+		        var y = p * px + b;
+		        if(y <= py + tolerance && y >= py - tolerance) {
+		            if(x1 > x2) {
+		                if(px <= x1 && px >= x2)
+		                    return true;
+		            }
+		            else {
+		                if(px >= x1 && px <= x2)
+		                    return true;
+		            }
+		        }
+		    }
+		    return false;
+		}
+	};
+
+//	get the set of cities event time
+	this.cityEventTimes = function(){
+		times = [] ;
+		this.cityEvents().forEach(function(event){
+			times.push(event.time);
 		});
 		return times;
 	};
 
-	this.load = function(expl){
-		if(this.citiesDisplay(expl).length==0)return;
-		pathLine =g.append("path")
-		.data([this.translates(expl)])
+	this.getCurrentCityIndex = function(time){
+		for(var i = 1;  i < this.cityEventTimes().length;  i++ ){
+
+			if(this.cityEventTimes()[ i - 1 ]  < time && this.cityEventTimes()[ i ]  > time)
+				return i - 1;
+
+			if(this.cityEventTimes()[ i ]   === time)
+				return i;
+
+			if(time > this.cityEventTimes()[ this.cityEventTimes().length - 1 ] )
+				return this.cityEventTimes().length - 1;
+
+			if(time < this.cityEventTimes()[ 0 ] )
+				return 0;
+		}
+	};
+//	load called when user select exploration function or stop recording function called.
+	this.load = function(){
+		if(this.citiesDisplay().length == 0)return;
+		// arrowhead markers
+		/*g.append("defs")
+			.append("marker")
+			.attr({
+				id: "marker-arrow",
+				viewBox: "0 -5 10 10",
+				markerWidth: 6,
+				markerHeight: 6,
+				refX: 0,
+				refY: 0,
+				orient: "auto"
+			})
+			.append("path")
+				.attr("d", "M0,-5 L10,0 L0,5");*/
+
+		pathLine = g.append("path")
+		.data( [ this.translates() ] )
 		.attr("id","path-play")
 		.attr("stroke-dasharray","4,4")
-		.attr("d", d3.svg.line()
-				.tension(0));
+		.attr("d", d3.svg.line().tension(10))/*
+		.attr("stroke-width", 1.5)
+		.attr("marker-mid", "url(#marker-arrow)")
+		.attr("marker-end", "url(#marker-arrow)");*/
+
+		pathLine.on("click", function(){
+			pausedX = d3.mouse(this)[0];
+			pausedY = d3.mouse(this)[1];
+			setPositionFromClickedPathLine();
+		});
+		var trans = this.translates();
 		g.selectAll(".point")
-		.data(this.translates(expl))
+		.data(this.translates())
 		.enter().append("circle")
 		.attr("id", "circle")
 		.attr("r",4)
-		.attr("transform", function(d) { return "translate(" + d + ")"; });
+		.attr("transform", function(d) { return "translate("  +  d  +  ")";  })
+		.on("click", function(d){
+			pausedX = d3.mouse(g.node())[0];
+			pausedY = d3.mouse(g.node())[1];
+			console.log(d);
+			for(var i = 0; i<trans.length; i++){
+				if(trans[i][0]===d[0] && trans[i][1]===d[1])
+					setPositionFromClickedPathLine(i);
 
-		circle = g.append("circle")
+			}
+		});
+
+		this.setText();
+		g.append("circle")
 		.attr("r", 5)
-		.attr("fill","black")
+		.style("stroke", "gray")
+		.style("fill","red")
 		.attr("id", "circle-move")
-		.attr("cx", this.translates(expl)[0][0])
-		.attr("cy", this.translates(expl)[0][1]);
-		//.attr("transform", "translate(" + this.translates(expl)[0] + ")");
+		.attr("cx", pathMove.translates()[ 0 ][ 0 ] )
+		.attr("cy", pathMove.translates()[ 0 ][ 1 ] );
+
+		//goToLoc(this.citiesDisplay() [ 0 ] );
+		//var iframeWindow = new IframePath;
+		//iframeWindow.load(this.expl);
 	};
 
-	this.updatePathMove = function(expl, eventTime, eventDuration){
-		if(this.citiesDisplay(expl).length==0)return;
-		var index = this.cityIndex(this.cityEventTimes(expl),eventTime, expl);
-		if(index !=null){
-			if(index<this.citiesDisplay(expl).length-1){
-				circle.attr("cx", this.translates(expl)[index][0]);
-				circle.attr("cy", this.translates(expl)[index][1]);
-				circle.transition()
-				.duration(eventDuration*ANIMATION_DELAY)
-				.ease(EASE_FUNCTION)
-				.delay(ANIMATION_DELAY*this.cityEventTimes(expl)[0])
-				.attr("cx", this.translates(expl)[index+1][0])
-				.attr("cy", this.translates(expl)[index+1][1]);
-			}
+	var currentCityIndex =  -1;
+
+	//	this function called at launchevents function if it is a travel event then move
+	this.updatePathMove = function(eventTime){
+		this.pausedTime = null;
+		this.progressBarClicked = false;
+		if(this.citiesDisplay().length == 0){
+			return;
+		}
+		currentCityIndex = this.cityEventTimes().indexOf(eventTime);
+		if(currentCityIndex  ===  -1){
+			return;
+		}
+		var line =
+			d3.svg.line()
+			.x(function(d) {
+				return d.x;
+			})
+			.y(function(d) {
+				return d.y;
+			});
+
+		if(currentCityIndex!== 0){
+			ctx = this.translates()[ currentCityIndex - 1 ][ 0 ] ;
+			cty = this.translates()[ currentCityIndex - 1 ][ 1 ] ;
+			ncx = this.translates()[ currentCityIndex ][ 0 ] ;
+			ncy = this.translates()[ currentCityIndex ][ 1 ] ;
+			var data =  [ {x:ctx,y:cty},{x:ncx,y:ncy} ] ;
+			var eventDuration = (eventTime - this.cityEventTimes()[ currentCityIndex - 1 ] );
+			d3.selectAll("#circle-move")
+			.attr("cx", ctx)
+			.attr("cy", cty)
+			.transition()
+			.duration(eventDuration)
+			.ease(EASE_FUNCTION)
+			.attr("cx", ncx)
+			.attr("cy", ncy);
+
+			var pathLineMove= g.append("path")
+			.attr({
+				id: "animationPath",
+				d: line(data),
+				stroke: "blue",
+				"stroke-width": 2})
+				.style("fill", "none");
+			pathLineMove.on("click", function(){
+				pausedX = d3.mouse(this)[0];
+				pausedY = d3.mouse(this)[1];
+				console.log(pausedX + "   " + pausedY);
+				setPositionFromClickedPathLine();
+				//this.setPosition();
+
+			});
+			var totalLength = pathLineMove.node().getTotalLength();
+			pathLineMove
+			.attr("stroke-dasharray", totalLength  +  " "  +  totalLength)
+			.attr("stroke-dashoffset", totalLength)
+			.transition()
+			.duration(eventDuration)
+			.ease(EASE_FUNCTION)
+			.attr("stroke-dashoffset", 0)
+			.attrTween("point", translateAlong(pathLineMove.node()));
+		}
+
+		// return a point at each milisecond
+		function translateAlong(path) {
+			var l = path.getTotalLength();
+			return function(d, i, a) {
+				return function(t) {
+					var p = path.getPointAtLength(t  *  l);
+					pausedX = p.x;
+					pausedY = p.y;
+					return {x:p.x ,y:p.y};
+				};
+			};
 		}
 	};
 
-	this.pause = function(expl, cb){
-		if(this.citiesDisplay(expl).length==0)return;
-		circle.transition()
-		.duration(0)
-		.each("end", cb);
-	}
 
-	this.unload = function(){
-		d3.select("path#path-play").remove();
-		d3.select("g").selectAll("circle").remove();
+//	resume from pause
+	this.resumePathMove = function(eventDur, pausedTime){
+
+		if(this.progressBarClicked)
+			currentCityIndex = this.getCurrentCityIndex( this.pausedTime );
+		else if(this.pathLineClicked)
+			currentCityIndex = this.getCurrentCityIndex( pausedTime );
+
+		if( currentCityIndex < 1 ||undefined )
+			return;
+		//the pathLineMove variable signed when the timeline pass through the fist city
+		//if click on the progress bar before the yellow bar(city event).
+		//will cause error: undefined is not a function (pathLineMove is undefined)
+		var dur =  -1;
+		//this.pausedTime set when click on the progress bar.
+		if( this.pausedTime >=this.cityEventTimes()[ 1 ]  && this.pausedTime!=null ){
+			//case: pausedTime great then first city event time
+			//duration from paused point to next city event time
+			if( currentCityIndex  === this.citiesDisplay().length - 1 ){
+				dur = this.expl.events[ this.expl.events.length - 1 ].time  - this.pausedTime;
+			}
+			else {
+				dur = this.cityEventTimes()[ currentCityIndex + 1 ]  - this.pausedTime;
+			}
+		}
+		else if(this.pausedTime ==  null){
+			if(pausedX  ===  -1)return;  //pausedX  ==   - 1  <  ==  >  paused  ==  false
+			dur = eventDur * (lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:ctx,y:cty},{x:ncx,y:ncy}));
+		}
+
+		var line =
+			d3.svg.line()
+			.x(function(d) {
+				return d.x;
+			})
+			.y(function(d) {
+				return d.y;
+			});
+
+		var data =  [ {x:pausedX,y:pausedY} ,
+		              {x:this.translates()[ currentCityIndex ][ 0 ], y:this.translates()[ currentCityIndex ][ 1 ] } ] ;
+
+		var p = g.append("path")
+		.attr({
+			id: "animationPath",
+			d: line(data),
+			stroke: "blue",
+			"stroke-width": 2})
+			.style("fill", "none");
+
+		var totalLength = p.node().getTotalLength();
+		p
+		.attr("stroke-dasharray", totalLength  +  " "  +  totalLength)
+		.attr("stroke-dashoffset", totalLength)
+		.transition()
+		.duration(dur)
+		.ease("cubic-out")
+		.attr("stroke-dashoffset", 0);
+		//	}
+//		else{
+//		d3.selectAll("#animationPath")
+//		.transition()
+//		.duration(dur)
+//		.ease("cubic-out")
+//		.attr("stroke-dashoffset", 0);
+//		//.delay(currentCityEventTime == null ? 0: ANIMATION_DELAY * this.cityEventTimes(this.expl) [ 0 ] );
+//		}
+
+
+		d3.selectAll("#circle-move")
+		.transition()
+		.duration(dur)
+		.ease("cubic-out")
+		.attr("cx", ncx)
+		.attr("cy", ncy);
+
 	};
 
-	this.reset = function(expl){
-		if(this.citiesDisplay(expl).length==0)return;
-		circle.attr("cx", this.translates(expl)[0][0]);
-		circle.attr("cy", this.translates(expl)[0][1]);
+	this.setPosition = function(){
+		d3.selectAll("#animationPath").remove();
+		if(this.progressBarClicked){
+			//this.pathLineClicked = false;
+
+			if( this.pausedTime <= this.cityEventTimes()[ 1 ] ){//pausedTime less then the first city event time
+				d3.select("#circle-move")
+				.attr("cx", this.translates()[ 0 ][ 0 ] )
+				.attr("cy", this.translates()[ 0 ][ 1 ] );
+				ncx = this.translates()[ 1 ][ 0 ];
+				ncy = this.translates()[ 1 ][ 1 ];
+				dur = 0;
+			}
+			currentCityIndex = this.getCurrentCityIndex(this.pausedTime);
+
+			if( currentCityIndex < 1 ||undefined){return;}
+			//reset circle FROM position and TO position
+			var currentCityX = this.translates()[ currentCityIndex ][ 0 ];
+			var currentCityY = this.translates()[ currentCityIndex ][ 1 ];
+			var lastCityX = this.translates()[ currentCityIndex - 1 ][ 0 ];
+			var lastCityY = this.translates()[ currentCityIndex - 1 ][ 1 ];
+			// temp is percentage between (pausedTime  -  last CityEvent time) and total time between lastcity events and current city event time
+			var nextCityEventTime = -1;
+			if( currentCityIndex   ===  this.citiesDisplay().length - 1 ) {
+				nextCityEventTime = this.expl.events[ this.expl.events.length - 1 ].time;
+			}
+			else{
+				nextCityEventTime = this.cityEventTimes()[ currentCityIndex  +  1 ];
+
+			}
+			var temp = (this.pausedTime  -  this.cityEventTimes()[ currentCityIndex ] )
+			/ (nextCityEventTime - this.cityEventTimes()[ currentCityIndex ] );
+
+			var xMoved = temp  *  (Math.abs(lastCityX  -  currentCityX));
+			var yMoved = temp  *  (Math.abs(lastCityY  -  currentCityY));
+
+			if(lastCityX  >  currentCityX)
+				pausedX = lastCityX - xMoved;
+			else if(lastCityX  <  currentCityX)
+				pausedX = lastCityX + xMoved;
+			else if(lastCityX   ===  currentCityX)
+				pausedX = currentCityX;
+
+			if(currentCityY < lastCityY)
+				pausedY = lastCityY  -  yMoved;
+			else if(currentCityY > lastCityY)
+				pausedY = lastCityY  +  yMoved;
+			else
+				pausedY = lastCityY;
+		}
+
+		ctx = pausedX;
+		cty = pausedY;
+		ncx = this.translates()[currentCityIndex][ 0 ];
+		ncy = this.translates()[currentCityIndex][ 1 ];
+		d3.select("#circle-move")
+		.attr("cx", ctx)
+		.attr("cy", cty);
+
+		var tempTrans =  [];
+		for(var i = 0;  i < currentCityIndex;  i++ ){
+			tempTrans.push(this.translates()[ i ] );
+		}
+		tempTrans.push( [ pausedX , pausedY ] );
+
+		g.append("path")
+		.data( [ tempTrans ] )
+		.attr("id","animationPath")
+		.attr("stroke","blue")
+		.attr('stroke-width', 2)
+		.style("fill", "none")
+		.attr("d", d3.svg.line()
+				.tension(0))
+				.on("click", function(){
+					pausedX = d3.mouse(this)[0];
+					pausedY = d3.mouse(this)[1];
+					setPositionFromClickedPathLine();
+
+				});
 	}
+
+//	pause
+	this.pause = function(){
+		if(this.citiesDisplay().length == 0)return;
+		d3.selectAll("#circle-move").transition()
+		.duration(0);
+
+		d3.selectAll("#animationPath").transition()
+		.duration(0);
+	};
+
+	this.unload = function(){
+		if(!this.citiesDisplay())return;
+		d3.selectAll("#path-play").remove();
+		d3.selectAll("#circle").remove();
+		d3.selectAll("#circle-move").remove();
+		d3.selectAll("#animationPath").remove();
+		this.resetText();
+		this.pausedTime = null;
+		this.progressBarClicked = false;
+		this.pathLineClicked = false;
+	};
+
+	this.reset = function(){
+		pausedX =  - 1;
+		pausedY =  - 1;
+		if(this.citiesDisplay().length == 0)return;
+		d3.selectAll("#animationPath").remove();
+		d3.selectAll("#circle-move")
+		.attr("cx", this.translates()[ 0 ][ 0 ] )
+		.attr("cy", this.translates()[ 0 ][ 1 ] );
+		this.resetText();
+		this.pausedTime = null;
+		this.progressBarClicked = false;
+		this.pathLineClicked = false;
+	};
+
 	function getTranslate(data){
-		var translationX = data.slice(data.indexOf("translate(")+10, data.indexOf(","));
-		var translationY = data.slice(data.indexOf(",")+1, data.indexOf(")"));
-		return [parseFloat(translationX), parseFloat(translationY)];
+		var translationX = data.slice(data.indexOf("translate(") + 10, data.indexOf(","));
+		var translationY = data.slice(data.indexOf(",") + 1, data.indexOf(")"));
+		return  [ parseFloat(translationX), parseFloat(translationY) ];
 	}
-	this.cityIndex = function(cityEventTime, eventTime, expl){
+
+	this.cityIndex = function(cityEventTimes, eventTime, currentCityIndex){
 		var index = null;
-		for(var i = 0; i<this.citiesDisplay(expl).length; i++){
-			for(var j = 0; j<expl.events.length; j++){
-				if(expl.events[j].type ==="travel"&& expl.events[j].body===this.citiesDisplay(expl)[i] && eventTime === cityEventTime[i]){
+		for(var i = currentCityIndex;  i < this.citiesDisplay().length;  i++ ){
+			for(var j = 1;  j < this.expl.events.length - 1;  j++ ){
+				if(this.expl.events[ j ].type   === "travel"
+					&& this.expl.events[ j ].body === this.citiesDisplay()[ i ]
+				&& eventTime ===  cityEventTimes[ i ] ){
 					index = i;
 					return index;
 				}
@@ -111,4 +503,90 @@ function PathMove(){
 		}
 		return null;
 	};
+
+	this.setText = function(){
+		for(var i = 0;  i < this.citiesDisplay().length;  i++ ){
+			var cityNames = this.citiesDisplay();
+			var index = getCityIndex( cityNames[ i ] );
+			var cityText = document.getElementById(index);
+			cityText.setAttribute("font-size","9px");
+			cityText.setAttribute("fill",'#FF0000');
+			cityText.setAttribute("dy" , "1.6em");
+			cityText.setAttribute("dx" , "0.3em");
+//			var subStrCityName = cityText.innerHTML.substr(cityText.innerHTML.length - cityNames [ i ].length);
+//			if(cityNames.indexOf(cityText.innerHTML)! ==  - 1){
+//			cityText.innerHTML = i +  " " + cityNames [ i ] ;
+//			}
+//			else if(cityNames [ i ]   === (subStrCityName)){
+//			cityText.innerHTML = cityText.innerHTML.substring(0,cityText.innerHTML.indexOf(subStrCityName)) + " " +  i  + subStrCityName;
+//			}
+
+
+
+		}
+	};
+	this.resetText = function(){
+		$(".place-label").each(function(index , value){
+			$(this).attr("font-size","12px");
+			$(this).attr("fill" , '#000000');
+			$(this).attr("dy" , ".35em");
+			$(this).attr("dx" , "0em");
+		});
+	};
+}
+
+function lineDistance( point1, point2 ){
+	var xs = 0;
+	var ys = 0;
+	xs = point2.x  -  point1.x;
+	xs = xs  *  xs;
+	ys = point2.y  -  point1.y;
+	ys = ys  *  ys;
+
+	return Math.sqrt( xs  +  ys );
+}
+
+function setPositionFromClickedPathLine(cityIndex){
+	pathMove.pathLineClicked = true;
+	pathMove.progressBarClicked = false;
+		d3.selectAll("#animationPath").remove();
+		if(!cityIndex)
+			currentCityIndex = pathMove.getCityIndexByPoint(pausedX, pausedY);
+		else currentCityIndex = cityIndex;
+		ctx = pausedX;
+		cty = pausedY;
+		d3.selectAll("#circle-move")
+		.attr("cx", ctx)
+		.attr("cy", cty);
+		if(currentCityIndex+1<pathMove.translates().length){
+		ncx = pathMove.translates()[currentCityIndex+1][ 0 ];
+		ncy = pathMove.translates()[currentCityIndex+1][ 1 ];
+		var tempTrans =  [];
+		for(var i = 0;  i < currentCityIndex+1;  i++ ){
+			tempTrans.push(pathMove.translates()[ i ] );
+		}
+		tempTrans.push( [ pausedX , pausedY ] );
+		}
+		else tempTrans = pathMove.translates();
+		g.append("path")
+		.data( [ tempTrans ] )
+		.attr("id","animationPath")
+		.attr("stroke","blue")
+		.attr('stroke-width', 2)
+		.style("fill", "none")
+		.attr("d", d3.svg.line()
+				.tension(0))
+				.on("click", function(){
+					pausedX = d3.mouse(this)[0];
+					pausedY = d3.mouse(this)[1];
+					setPositionFromClickedPathLine();});
+		if(currentCityIndex+1>pathMove.translates().length-1)
+			return;
+		var time = (Math.abs(pausedX - pathMove.translates()[currentCityIndex][0]))
+				* Math.abs((pathMove.cityEventTimes()[currentCityIndex] -  pathMove.cityEventTimes()[currentCityIndex+1]))
+				/ Math.abs((pathMove.translates()[currentCityIndex][0] - pathMove.translates()[currentCityIndex+1][0]))
+				+ pathMove.cityEventTimes()[currentCityIndex+1];
+		setPlaybackPosition(pathMove.expl, time);
+
+
 }

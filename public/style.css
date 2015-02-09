@@ -11,6 +11,7 @@ body {
 	position: absolute;
 	width: 80%;
 	height: 95%;
+	cursor:pointer;
 }
 
 #side-bar {
@@ -120,8 +121,8 @@ input,label {
 	background-color: #ccc;
 	border: 3px solid rgb(0, 0, 1);
 	position: fixed;
-	left: 63%;
-	top: 74%;
+	left: 0%;
+	top: 0%;
 	width: 339px;
 	height: 200px;
 }
@@ -131,14 +132,16 @@ input,label {
 	margin: 1px left;
 	max-width: 339px;
 	max-height: 200px;
+	cursor: pointer;
 }
 
-#minimap-iframe {
+#iframe {
 	border: 0px none;
 	margin-left: -185px;
 	height: 859px;
 	margin-top: -533px;
 	width: 926px;
+	cursor: pointer;
 }
 
 .notification-container {
@@ -151,16 +154,18 @@ input,label {
 	font-size: 150%;
 	background-color: #ccc;
 	visibility: hidden;
+	cursor: pointer;
 }
 
 .notification-selectors {
 	position: fixed;
 	left: 67.7%;
-	top: 83%;
+	top: 84%;
 	width: 250px;
 	height: 70px;
 	background-color: #fff;
 	visibility: hidden;
+	cursor: pointer;
 }
 
 #fileslist-container {
@@ -173,22 +178,22 @@ input,label {
 
 #remove-notification{
 	position: fixed;
-	left: 67.7%;
-	top: 79.2%;
+	left: 78.5%;
+	top: 80.6%;
 	width:20px;
 	height:20px;
 	visibility: hidden;
-
+	cursor: pointer;
 }
 
 #quickplay-notification{
 	position: fixed;
-	left: 68.8%;
-	top: 79.2%;
+	left: 79.8%;
+	top: 80.6%;
 	width:20px;
 	height:20px;
 	visibility: hidden;
-
+	cursor: pointer;
 }
 
 #newAccount {
@@ -199,14 +204,15 @@ input,label {
 	height: 130px;
 	background-color: #ccc;
 	border: 3px solid black;
+	cursor: pointer;
 }
 
 /* ------ PROGRESS BAR ------------ */
 
 #player-panel {	
   	position: fixed;
-  	left: 20%;
-  	top: 80%;
+  	left: 15%;
+  	top: 85%;
 }
 
 #above-bar {
@@ -214,12 +220,12 @@ input,label {
 	height: 45px;
 }
 
-#play-progress {	
+#play-progress {
   	width: 980px;
   	height: 36px;
 }
 
-#bar-container {	
+#bar-container {
   	display: inline-block;
   	background-color: #28AADE;
   	border-radius: 20px;
@@ -301,9 +307,6 @@ input,label {
 	/* text */
 	color: white;
 	font-size: 0.9em;
-}
-
-#below-bar {
 }
 
 #below-bar p {
