@@ -40,6 +40,8 @@ resetExplButton.click(resetExplorations);
 
 explChooser.onclick = updateSelectedExploration;
 
+showPathButton.onclick = toggleVisablePath;
+
 //users
 var guestUsers = ["obama", "john", "lorde", "will"];
 

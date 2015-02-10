@@ -201,7 +201,7 @@ function ProgressBar() {
       	var offset = $(this).offset();
       	var xpos = d3.mouse(this)[0]; // 36 ?
       	// Pathmove needs to know this for setPosition
-		pathMove.setProgressBarClicked();
+		pathView.setProgressBarClicked(true, false);
       	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 

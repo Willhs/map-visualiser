@@ -10,7 +10,7 @@ var	playTimeout = -1; // id for setTimeout used while playing an exploration
 var audioElem = document.getElementById("exploration-audio");
 
 var progressBar = new ProgressBar;
-var pathMove = new PathMove;
+var pathView = new PathView;
 
 var selectedExploration = null; // currently selected exploration
 
@@ -274,7 +274,7 @@ function launchEvents(exploration, i, elapsedTime){
 	case ("travel"):
 		var location = currentEvent.body;
 		goToLoc(location, elapsedTime);
-		pathMove.updatePathMove(currentEvent.time);
+		pathView.updateProgress(currentEvent.time);
 	   	break;
 	case ("start"):
 	case ("movement"):
@@ -314,7 +314,7 @@ function stopPlayback(exploration){
 	paused = false;
 	updatePlaybackStopped();
 	if(hasCityEvents(exploration))
-		pathMove.reset();
+		pathView.reset();
 
 }
 
@@ -332,7 +332,7 @@ function pausePlayback(exploration, cb){
 	updatePlaybackStopped();
 	progressBar.pause(cb);
 	if(hasCityEvents(exploration))
-		pathMove.pause();
+		pathView.pause();
 }
 
 // waits until next event before executing playExploration
@@ -358,7 +358,7 @@ function resumePlayback(exploration){
 	progressBar.updateButton();
 
 	if(hasCityEvents(exploration))
-		pathMove.resumePathMove(eventDur, currentEvent.time);
+		pathView.resumeProgress(eventDur, currentEvent.time);
 }
 
 // sets playback position to time parameter, then plays from that position (if was playing before)
@@ -376,10 +376,13 @@ function setPlaybackPosition(exploration, time){
 		elapsedEventTime = time - newEvent.time;
 
 		progressBar.setPosition(time);
+		// pathView append on the map when city events inside the exploration
 		if(hasCityEvents(exploration)){
-			pathMove.setPausedTime(time);
-			if(pathMove.progressBarClicked)
-				pathMove.setPosition(time);
+			pathView.setPausedTime(time);
+			if(pathView.progressBarClicked){
+				pathView.setPosition(time);
+			}
+
 		}
 
 		// if already playing, continue
@@ -456,9 +459,7 @@ function insertIntoSelectedExploration(insertee){
 	// TODO: save as the older exploration, not a new one
 	currentUser.setCurrentExploration(exploration);
 
-	progressBar.unload();
-	progressBar.load(exploration);
-
+	selectExploration(exploration);
 	inserting = false;
 }
 
@@ -496,13 +497,17 @@ function updatePlaybackStarted(){
 function selectExploration(exploration){
 	if (selectedExploration)
 		deselectExploration();
-
 	setupAudio(exploration);
 
 	selectedExploration = exploration;
 	progressBar.load(exploration);
-	if(hasCityEvents(exploration))
-		pathMove.load(exploration);
+	if(hasCityEvents(exploration)){
+		pathView.load(exploration);
+		showPathButton.innerHTML="Hide Path";
+		var classes = $(".path-move");
+		pathView.setText();
+		classes.show();
+		}
 
 	updateExplorationControls();
 
@@ -513,8 +518,10 @@ function selectExploration(exploration){
 function deselectExploration(){
 	if (!selectedExploration)
 		return;
-	if(hasCityEvents(selectedExploration))
-		pathMove.unload();
+	if(hasCityEvents(selectedExploration)){
+		pathView.unload();
+	}
+
 	selectedExploration = null;
 	progressBar.unload();
 	if (!currentUser || !currentUser.hasExplorations())

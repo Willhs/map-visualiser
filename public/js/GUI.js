@@ -1,29 +1,30 @@
 
-// ------ Dom elements --------
+//------ Dom elements --------
 var recordExplButton = document.getElementById("record-exploration-button"),
-	playExplButton = $("#play-exploration-button"),
-	pauseExplButton = $("#pause-exploration-button"),
-	stopExplButton = $("#stop-exploration-button"),
-	saveExplButton = $("#save-exploration-button"),
-	deleteExplButton = $("#delete-exploration-button"),
-	resetExplButton = $("#reset-exploration-button"),
-	explChooser = document.getElementById("exploration-selector"),
-	userNameInput = document.getElementById("username-input"),
-	passwordInput = document.getElementById("password-input"),
-	logonButton = document.getElementById("logon-button"),
-	messageBar = document.getElementById("percent"),
-	notificationContainer = document.getElementById("notification-container"),
-	removeNotification = document.getElementById("remove-notification"),
-	quickplayNotification = document.getElementById("quickplay-notification"),
-	notificationSelector = document.getElementById("notification-selector"),
-	insertButton = $("#insert-button"),
-	stopInsertButton = $("#stop-insert-button"),
-	explorationTitle = $("#exploration-title"),
-	timeText = $("#time-text"),
-	durationText = $("#duration-text"),
-	hasAudio = $("#has-audio"),
-	aboveBarDiv = $("#above-bar"),
-	belowBarDiv = $("#below-bar");
+playExplButton = $("#play-exploration-button"),
+pauseExplButton = $("#pause-exploration-button"),
+stopExplButton = $("#stop-exploration-button"),
+saveExplButton = $("#save-exploration-button"),
+deleteExplButton = $("#delete-exploration-button"),
+resetExplButton = $("#reset-exploration-button"),
+explChooser = document.getElementById("exploration-selector"),
+userNameInput = document.getElementById("username-input"),
+passwordInput = document.getElementById("password-input"),
+logonButton = document.getElementById("logon-button"),
+messageBar = document.getElementById("percent"),
+notificationContainer = document.getElementById("notification-container"),
+removeNotification = document.getElementById("remove-notification"),
+quickplayNotification = document.getElementById("quickplay-notification"),
+notificationSelector = document.getElementById("notification-selector"),
+showPathButton = document.getElementById("show-path");
+insertButton = $("#insert-button"),
+stopInsertButton = $("#stop-insert-button"),
+explorationTitle = $("#exploration-title"),
+timeText = $("#time-text"),
+durationText = $("#duration-text"),
+hasAudio = $("#has-audio"),
+aboveBarDiv = $("#above-bar"),
+belowBarDiv = $("#below-bar");
 
 //updates elements in the side bar
 function updateSideBar(){
@@ -167,6 +168,26 @@ function toggleLogon(loggedOn, cursor){
 	}
 }
 
+//this funciton called once hide/show button clicked
+function toggleVisablePath(){
+	if(!selectedExploration) return;
+	if(hasCityEvents(selectedExploration)){
+		if(showPathButton.innerHTML=="Show Path"){
+			showPathButton.innerHTML="Hide Path";
+			var classes = $(".path-move");
+			pathView.setText();
+			classes.show();
+		}
+		else if(showPathButton.innerHTML=="Hide Path"){
+			showPathButton.innerHTML="Show Path";
+			var classes = $(".path-move");
+			pathView.resetText();
+			classes.hide();
+		}
+	}
+}
+
+
 function updateUserInputElements(){
 	document.getElementById("user-input").value = "";
 	document.getElementById("expl-sent-message").innerHTML = "";
@@ -174,7 +195,7 @@ function updateUserInputElements(){
 
 function updateUserImage(){
 	var elems = document.getElementsByClassName("user-button");
-	if(logoned)	{
+	if(userLoggedOn())	{
 		for(var i = 0; i<elems.length; i++){
 			elems[i].disabled = true;
 			elems[i].style.cursor = "not-allowed";
@@ -214,9 +235,9 @@ function addRecordingGraphics(){
 		y:     0 + borderWidth/2,
 		width: width - borderWidth,
 		height:height - bottomPadding - borderWidth})
-	.style("stroke", "red")
-	.style("fill", "none")
-	.style("stroke-width", borderWidth);
+		.style("stroke", "red")
+		.style("fill", "none")
+		.style("stroke-width", borderWidth);
 
 	svg.append('circle')
 	.attr({
@@ -224,11 +245,11 @@ function addRecordingGraphics(){
 		cx:  circleCX,
 		cy:  circleCY,
 		r: 	 circleRadius})
-	.style('fill', 'red')
-	.transition().duration();
+		.style('fill', 'red')
+		.transition().duration();
 }
 
-// remove recording related graphics
+//remove recording related graphics
 function removeRecordingGraphics(){
 	d3.select("#record-border").remove();
 	d3.select("#record-circle").remove();
@@ -318,25 +339,25 @@ function displayLocationInfo(city){
 			var timeStamp = new Date(annotation.timeStamp);
 			// h:mm format
 			var time = 	timeStamp.getHours() + ":" +
-						(timeStamp.getMinutes().toString().length < 2 ?
-							"0" + timeStamp.getMinutes() :
-							timeStamp.getMinutes());
+			(timeStamp.getMinutes().toString().length < 2 ?
+					"0" + timeStamp.getMinutes() :
+						timeStamp.getMinutes());
 			var date = timeStamp.getDate() + "/" + timeStamp.getMonth() + "/" + timeStamp.getFullYear().toString().substring(2,4);
-		 	var annInfo = "<i> – " + userName + " " + time + " on " + date + "</i>";
+			var annInfo = "<i> – " + userName + " " + time + " on " + date + "</i>";
 
-		 	// make necessary DOM elements
-		 	var rowDiv = document.createElement("div");
-		 	var textDiv = document.createElement("div");
-		 	var controlsDiv = document.createElement("div");
-		 	var content = document.createElement("p");
-		 	var info = document.createElement("p");
+			// make necessary DOM elements
+			var rowDiv = document.createElement("div");
+			var textDiv = document.createElement("div");
+			var controlsDiv = document.createElement("div");
+			var content = document.createElement("p");
+			var info = document.createElement("p");
 
-		 	// set class (styles are applied in styles.css)
-		 	content.className = "annotation-text annotation-content";
-		 	info.className = "annotation-text annotation-info";
-		 	controlsDiv.className = "annotation-inner-container annotation-controls";
-		 	textDiv.className ="annotation-inner-container annotation-text-container";
-		 	rowDiv.className = "annotation-row";
+			// set class (styles are applied in styles.css)
+			content.className = "annotation-text annotation-content";
+			info.className = "annotation-text annotation-info";
+			controlsDiv.className = "annotation-inner-container annotation-controls";
+			textDiv.className ="annotation-inner-container annotation-text-container";
+			rowDiv.className = "annotation-row";
 
 			content.innerHTML = annotation.text;
 			info.innerHTML = annInfo;
@@ -362,11 +383,11 @@ function displayLocationInfo(city){
 		});
 		// TODO: load all annotations at once
 		document.getElementById("annotation-container")
-			.appendChild(container);
+		.appendChild(container);
 	}
 }
 
-// makes an annotation text input element.
+//makes an annotation text input element.
 function makeAnnotationInput(container){
 	var annInput = document.createElement("input");
 	annInput.type = "text";
@@ -388,15 +409,15 @@ function changeButtonColour(name, state){
 		button.src = IMAGE_PATH + name + "_off.jpeg";
 }
 
-// displays an image of a microphone
+//displays an image of a microphone
 function displayAudioGraphic(){
-    svg.append("image")
-        .attr({
-            x: width*0.9,
-            y: 20,
-            width: 50,
-            height: 50,
-            "xlink:href": "data/image/microphone-128.png",
-            id: "microphone-graphic"
-        });
+	svg.append("image")
+	.attr({
+		x: width*0.9,
+		y: 20,
+		width: 50,
+		height: 50,
+		"xlink:href": "data/image/microphone-128.png",
+		id: "microphone-graphic"
+	});
 }
