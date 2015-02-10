@@ -313,7 +313,8 @@ function stopPlayback(exploration){
 	playing = false;
 	paused = false;
 	updatePlaybackStopped();
-	pathMove.reset();
+	if(hasCityEvents(exploration))
+		pathMove.reset();
 
 }
 
@@ -330,7 +331,8 @@ function pausePlayback(exploration, cb){
 
 	updatePlaybackStopped();
 	progressBar.pause(cb);
-	pathMove.pause();
+	if(hasCityEvents(exploration))
+		pathMove.pause();
 }
 
 // waits until next event before executing playExploration
@@ -354,7 +356,9 @@ function resumePlayback(exploration){
 
 	progressBar.updateProgress(exploration, position, timeTilNextEvent);
 	progressBar.updateButton();
-	pathMove.resumePathMove(eventDur, currentEvent.time);
+
+	if(hasCityEvents(exploration))
+		pathMove.resumePathMove(eventDur, currentEvent.time);
 }
 
 // sets playback position to time parameter, then plays from that position (if was playing before)
@@ -372,10 +376,12 @@ function setPlaybackPosition(exploration, time){
 		elapsedEventTime = time - newEvent.time;
 
 		progressBar.setPosition(time);
+		if(hasCityEvents(exploration)){
+			pathMove.setPausedTime(time);
+			if(pathMove.progressBarClicked)
+				pathMove.setPosition(time);
+		}
 
-    	pathMove.setPausedTime(time);
-		if(pathMove.progressBarClicked)
-			pathMove.setPosition(time);
 		// if already playing, continue
 		if (wasPlaying)
 			resumePlayback(exploration);
@@ -394,6 +400,7 @@ function setPlaybackPosition(exploration, time){
 				g.attr("transform", transform);
 				updateScaleAndTrans();
 				break;
+
 		}
 	}
 }
@@ -493,8 +500,9 @@ function selectExploration(exploration){
 	setupAudio(exploration);
 
 	selectedExploration = exploration;
-	progressBar.load(selectedExploration);
-	pathMove.load(selectedExploration);
+	progressBar.load(exploration);
+	if(hasCityEvents(exploration))
+		pathMove.load(exploration);
 
 	updateExplorationControls();
 
@@ -505,7 +513,8 @@ function selectExploration(exploration){
 function deselectExploration(){
 	if (!selectedExploration)
 		return;
-	pathMove.unload();
+	if(hasCityEvents(selectedExploration))
+		pathMove.unload();
 	selectedExploration = null;
 	progressBar.unload();
 	if (!currentUser || !currentUser.hasExplorations())
@@ -525,7 +534,15 @@ function resetExplorations() {
 	updateExplorationControls();
 }
 
+// check the exploration is has city events return true
+function hasCityEvents(expl){
+	for(var i=0; i<expl.events.length; i++){
+		if(expl.events[i].type==="travel")
+			return true;
+	}
+	return false;
 
+}
 // PRE: current exploration != null
 function saveExploration(exploration) {
 	updateExplorationControls("saved");

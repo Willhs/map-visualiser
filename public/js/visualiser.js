@@ -167,20 +167,20 @@ function deleteAnnotation(annotation){
 	})
 }
 
-// smoothly transitions from current location to a city
+//smoothly transitions from current location to a city
 function travelToCity(city, duration, elapsedTime) {
-	var translate = path.centroid(city);
+	var center = path.centroid(city);
 	var scale = 4;
 
-	transitionTo(translate, null, duration, elapsedTime);
+	transitionTo(center, null, duration, elapsedTime);
 }
 
 // duration [optional] sets duration of transition
 // elapsedTime [optional] makes the transition from elapsedTime to end
-function transitionTo(translate, scale, duration, elapsedTime){
+function transitionTo(center, scale, duration, elapsedTime){
 
-	var cx = translate[0],
-		cy = translate[1],
+	var cx = center[0],
+		cy = center[1],
 		screenWidth = scale ? height / scale : 200;
 
 	var end = [];
@@ -252,15 +252,14 @@ function updateScaleAndTrans(){
 	});
 }*/
 
-// causes a transition to the exploration's start event
+//causes a transition to the exploration's start event
 function goToFirstLocation(exploration){
 	var firstLocation = exploration.getEvent(0).body;
-	var translate = d3.transform(firstLocation).translate;
-	var scale = d3.transform(firstLocation).scale;
-	// TODO: don't have -1 multipliers
-	transitionTo(	[translate[0]*-1 + (width/2), translate[1]*-1 + (height/2)],
-					scale[0]
-				);
+	var transform = d3.transform(firstLocation);
+	var bounds = getRealBounds(transform);
+	var center = [bounds[0][0], bounds[0][1]];
+	var scale = transform.scale[0];
+	transitionTo( [center[0], center[1]], scale );
 }
 
 // A function to return the index of a given city
@@ -348,21 +347,23 @@ function ping(location) {
 }
 
 //Convert the screen coords into data coords
-function getRealBounds() {
-	var transforms = d3.transform(g.attr("transform"));
+//gets current screen coords if no arg
+function getRealBounds(transform) {
+	if (!transform)
+		transform = d3.transform(g.attr("transform"));
 
-	var tx = transforms.translate[0];
-	var ty = transforms.translate[1];
-	var sc = height / transforms.scale[1];
+	var tx = transform.translate[0];
+	var ty = transform.translate[1];
+	var sc = height / transform.scale[1];
 
-	var xcenter = ((width / 2) - tx) / transforms.scale[0];
-	var ycenter = ((height / 2) - ty) / transforms.scale[0];
+	var xcenter = ((width / 2) - tx) / transform.scale[0];
+	var ycenter = ((height / 2) - ty) / transform.scale[0];
 	var xspan = width * sc / SCALE_FACTOR;
 	var yspan = height * sc / SCALE_FACTOR;
 
 	return [[xcenter, ycenter], [xspan, yspan]];
-
 }
+
 
 //Convert
 function getAbsoluteBounds() {

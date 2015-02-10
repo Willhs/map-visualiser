@@ -357,7 +357,7 @@ function PathMove(){
 //		.duration(dur)
 //		.ease("cubic-out")
 //		.attr("stroke-dashoffset", 0);
-//		//.delay(currentCityEventTime == null ? 0: ANIMATION_DELAY * this.cityEventTimes(this.expl) [ 0 ] );
+//		//.delay(nextCityEventTime == null ? 0: ANIMATION_DELAY * this.cityEventTimes(this.expl) [ 0 ] );
 //		}
 
 
@@ -559,7 +559,6 @@ function setPositionFromClickedPathLine(cityIndex){
 		currentCityIndex = pathMove.getCityIndexByPoint(pausedX, pausedY);
 	}
 	else currentCityIndex = cityIndex;
-
 	ctx = pausedX;
 	cty = pausedY;
 	d3.selectAll("#circle-move")
@@ -590,16 +589,27 @@ function setPositionFromClickedPathLine(cityIndex){
 	if(currentCityIndex>pathMove.translates().length-1)
 		return;
 
-	var currentCityEventTime = pathMove.cityEventTimes()[currentCityIndex];
 	var distToPausedX  = Math.abs(pausedX - pathMove.translates()[currentCityIndex][0]);
-	if(currentCityIndex+1>pathMove.translates().length-1)
-		return;
-	var durCityEvents = pathMove.cityEventTimes()[currentCityIndex+1] -  currentCityEventTime;
+	var nextCityEventTime = pathMove.cityEventTimes()[currentCityIndex+2];
+	var durCityEvents = -1;
+	var lastCityEventTime = -1;
+	var length = pathMove.translates().length-2;
+	if(currentCityIndex === pathMove.translates().length-2){
+		durCityEvents = pathMove.expl.events[pathMove.expl.events.length-1].time - pathMove.cityEventTimes()[pathMove.cityEventTimes().length-1];
+		lastCityEventTime = pathMove.cityEventTimes()[pathMove.cityEventTimes().length-1];
+	}
+	else if(currentCityIndex === 0){
+		durCityEvents = pathMove.cityEventTimes()[2]- pathMove.cityEventTimes()[1];
+		lastCityEventTime = pathMove.cityEventTimes()[1];
+	}
+	else{
+		durCityEvents = nextCityEventTime - pathMove.cityEventTimes()[currentCityIndex+1];
+		lastCityEventTime = pathMove.cityEventTimes()[currentCityIndex + 1];
+	}
 	var distX = Math.abs((pathMove.translates()[currentCityIndex][0] - pathMove.translates()[currentCityIndex+1][0]));
-	var time = distToPausedX * durCityEvents / distX + currentCityEventTime;
+	var time = distToPausedX * durCityEvents / distX + lastCityEventTime;
 	if(time<pathMove.cityEventTimes()[0])
 		time = pathMove.cityEventTimes()[0];
-	console.log(time);
 	setPlaybackPosition(pathMove.expl, time);
 
 
