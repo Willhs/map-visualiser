@@ -237,7 +237,7 @@ function updateScaleAndTrans(){
 }
 
 // A function to reset the map to the center, zoomed out.
-/*function reset(){
+function reset(){
 	x = width / 2;
 	y = height / 2;
 	k = 1;
@@ -247,10 +247,10 @@ function updateScaleAndTrans(){
 	.ease(EASE_FUNCTION)
 	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
 	.style("stroke-width", 1.5 / k + "px")
-	.tween("update-zoom", function(){
+	.each("end", function(){
 		return updateScaleAndTrans; // updates global scale and transition variables
 	});
-}*/
+}
 
 //causes a transition to the exploration's start event
 function goToFirstLocation(exploration){

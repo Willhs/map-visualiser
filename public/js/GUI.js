@@ -84,7 +84,6 @@ function updateNotifications(){
 		return;
 	}
 
-
 	var sharedExpl = currentUser.getSharedExploration();
 	var newCount = 0;
 
@@ -101,7 +100,6 @@ function updateNotifications(){
 		resetVisibility(notificationContainer,"visible");
 		$("#notification-container").html("  have no new explorations.");
 		notificationContainer.style.cursor = "not-allowed";
-
 	}
 }
 

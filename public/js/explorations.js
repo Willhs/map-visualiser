@@ -480,8 +480,7 @@ function insertIntoSelectedExploration(insertee){
 	// TODO: save as the older exploration, not a new one
 	currentUser.setCurrentExploration(exploration);
 
-	progressBar.unload();
-	progressBar.load(exploration);
+	selectedExploration(exploration);
 
 	inserting = false;
 }
@@ -542,6 +541,7 @@ function deselectExploration(){
 	if (!selectedExploration)
 		return;
 
+	// must do this first to check if there are city events
 	if(selectedExploration.hasCityEvents())
 		pathMove.unload();
 
