@@ -531,6 +531,7 @@ function resetExplorations() {
 		currentUser.resetCurrentExploration();
 
 	deselectExploration();
+	progressBar.hideTimeText();
 	updateExplorationControls();
 }
 

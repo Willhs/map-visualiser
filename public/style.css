@@ -209,7 +209,7 @@ input,label {
 
 /* ------ PROGRESS BAR ------------ */
 
-#player-panel {	
+#player-panel {
   	position: fixed;
   	left: 15%;
   	top: 85%;
@@ -321,6 +321,7 @@ input,label {
 
 #has-audio {
 	position: absolute;
+	display: none;
 	margin: 5px;
 	left: 75%;
 	width: 3em;
