@@ -227,7 +227,6 @@ function stopRecording(audioCB) {
 	recording = false;
 	updateExplorationControls("stopped-recording");
 	progressBar.load(currentUser.getCurrentExploration());
-	console.log("Recorded " + currentUser.currentExpl.numEvents() + " events");
 }
 
 // index of last event which was played
@@ -463,7 +462,8 @@ function insertIntoSelectedExploration(insertee){
 }
 
 function setupAudio(exploration){
-	audioElem.src = exploration.getAudio();
+	var audioBlob = exploration.getAudio();
+	audioElem.src = (window.URL || window.webkitURL).createObjectURL(audioBlob);
 }
 
 function playAudio(){

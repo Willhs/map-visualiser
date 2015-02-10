@@ -1,4 +1,5 @@
 // ORIGINAL CODE FROM : http://bl.ocks.org/keithcollins/a0564c578b9328fcdcbb
+// most of this code has been re-written, but the appearance is still the same.
 
 function ProgressBar() {
 
