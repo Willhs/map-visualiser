@@ -203,15 +203,6 @@ function updateUserImage(){
 	}
 }
 
-function changeButtonColour(name, state){
-	var button = document.getElementById(name + "-exploration-button");
-
-	if (state)
-		button.src = IMAGE_PATH + name + "_on.jpeg";
-	else
-		button.src = IMAGE_PATH + name + "_off.jpeg";
-}
-
 //adds graphics to the map to show that recording is in progress.
 function addRecordingGraphics(){
 	//var points = [0, 0, width, height];
@@ -397,9 +388,9 @@ function changeButtonColour(name, state){
 	var button = document.getElementById(name + "-exploration-button");
 
 	if (state)
-		button.src = IMAGE_PATH + name + "_on.jpeg";
+		button.src = IMAGE_PATH + name + "-on.png";
 	else
-		button.src = IMAGE_PATH + name + "_off.jpeg";
+		button.src = IMAGE_PATH + name + "-off.png";
 }
 
 //displays an image of a microphone
