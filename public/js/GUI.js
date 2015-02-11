@@ -34,8 +34,7 @@ function updateSideBar(){
 	updateExplorationControls();
 	updateNotifications();
 	updateLogonElements();
-	updateUserInputElements();
-	updateUserImage();
+	updateShareExplElements();
 }
 
 //updates the exploration chooser (drop down box)
@@ -79,30 +78,33 @@ function updateUserButtons(currentUser){
 
 //updates the notification GUI elements
 function updateNotifications(){
+	//set visibility to all notification buttons/labels hidden when log on.
 	resetVisibility(notificationContainer,"hidden");
-	setNotificationButtonOff();
+	hideNotificationButtons();
+
 	if (!userLoggedOn()){
 		return;
 	}
-
-
+	// all shared exploration from current user exploratin folder (use username to id)
 	var sharedExpl = currentUser.getSharedExploration();
-	var newCount = 0;
 
+	// newCount == the number of nonplayed shared exploration in current user folder
+	var newCount = 0;
 	sharedExpl.forEach(function(expl){
-		if(expl.isNew) newCount++;
+		if(expl.isNew)
+			newCount++;
 	});
 
+	// show notification message
 	if(newCount>0){
 		resetVisibility(notificationContainer,"visible");
-		$("#notification-container").html("  have "+ newCount + " new explorations.");
+		$("#notification-container").html(" have "+ newCount + " new explorations.");
 		notificationContainer.style.cursor = "pointer";
 	}
 	else{
 		resetVisibility(notificationContainer,"visible");
-		$("#notification-container").html("  have no new explorations.");
+		$("#notification-container").html(" have no new explorations.");
 		notificationContainer.style.cursor = "not-allowed";
-
 	}
 }
 
@@ -146,29 +148,41 @@ function updateExplorationControls(specialCase){
 	}
 }
 
+// userLoggedOn funciton return currentUser object
+// user loggedOn if not null
 function updateLogonElements(){
-	// if user is currently logged on
+	// if user is currently logged on, disable all userImage button
 	if (userLoggedOn())
 		toggleLogon(true,"not-allowed");
-
-	else    toggleLogon(false, "default");
+	else
+		toggleLogon(false, "default" , "pointer");
 
 }
 
-function toggleLogon(loggedOn, cursor){
+function toggleLogon(loggedOn, cursorD, cursorP){
+	// update logon button and username / password
 	logonButton.value = loggedOn ? "Log off" : "Log on";
 	userNameInput.disabled = loggedOn;
 	passwordInput.disabled = loggedOn;
-	userNameInput.style.cursor = cursor;
-	passwordInput.style.cursor = cursor;
-
+	userNameInput.style.cursor = cursorD;
+	passwordInput.style.cursor = cursorD;
+	// update user image
+	var elems = document.getElementsByClassName("user-button");
+		for(var i = 0; i<elems.length; i++){
+			elems[i].disabled = loggedOn;
+			if (!loggedOn)
+				elems[i].style.cursor = cursorP;
+			else
+				elems[i].style.cursor = cursorD;
+		}
+	// logoff set value to default
 	if (!loggedOn){
 		userNameInput.value = "";
 		passwordInput.value = "";
 	}
 }
 
-//this funciton called once hide/show button clicked
+// this function called once showPathButton clicked (event.js)
 function toggleVisablePath(){
 	if(!selectedExploration) return;
 	if(hasCityEvents(selectedExploration)){
@@ -181,31 +195,15 @@ function toggleVisablePath(){
 	}
 }
 
-
-function updateUserInputElements(){
-	document.getElementById("user-input").value = "";
+// init shared element value
+function updateShareExplElements(){
+	document.getElementById("shared-with").value = "";
 	document.getElementById("expl-sent-message").innerHTML = "";
 }
 
-function updateUserImage(){
-	var elems = document.getElementsByClassName("user-button");
-	if(userLoggedOn())	{
-		for(var i = 0; i<elems.length; i++){
-			elems[i].disabled = true;
-			elems[i].style.cursor = "not-allowed";
-		}
-	}
-	else{
-		for(var j = 0; j<elems.length; j++){
-			elems[j].disabled = false;
-			elems[j].style.cursor = "pointer";
-		}
-	}
-}
-
-//adds graphics to the map to show that recording is in progress.
+// adds graphics to the map to show that recording is in progress.
 function addRecordingGraphics(){
-	//var points = [0, 0, width, height];
+	// var points = [0, 0, width, height];
 	var borderWidth = 10;
 	var circleRadius = 20;
 	var padding = 10;
@@ -240,6 +238,7 @@ function removeRecordingGraphics(){
 	d3.select("#record-circle").remove();
 }
 
+// function triggered when notification container clicked
 function showListNotifications(){
 	while(notificationSelector.firstChild){//remove old labels
 		notificationSelector.removeChild(notificationSelector.firstChild);
@@ -280,7 +279,7 @@ function resetVisibility(idVar, state){
 	idVar.style.visibility = state;
 }
 
-function setNotificationButtonOff(){
+function hideNotificationButtons(){
 	resetVisibility(notificationSelector, "hidden");
 	resetVisibility(removeNotification, "hidden");
 	resetVisibility(quickplayNotification, "hidden");

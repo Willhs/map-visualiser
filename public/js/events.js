@@ -68,12 +68,10 @@ logonButton.onclick = function(){
 //share button
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 
-	var userLabelValue = document.getElementById("user-input").value;
+	var userLabelValue = document.getElementById("shared-with").value;
 	console.log(userLabelValue);
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
 		saveFileToSharedUser(userLabelValue);
-		var selectedExplName = selectedExploration.name;
-		document.getElementById("expl-sent-message").innerHTML = "Sent to: "+userLabelValue+ "     ExplName:"+ selectedExplName;
 	}
 });
 
@@ -94,7 +92,7 @@ notificationContainer.addEventListener('click',function(){
 
 	}
 	else{
-		setNotificationButtonOff();
+		hideNotificationButtons();
 	}
 });
 
@@ -103,7 +101,7 @@ removeNotification.addEventListener("click", function(){
 	selected.isNew = false;
 	setExplorationIsOld(selected);
 
-	setNotificationButtonOff();
+	hideNotificationButtons();
 	updateNotifications();
 	deselectExploration();
 });

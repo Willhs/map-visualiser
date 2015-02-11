@@ -412,6 +412,19 @@ function PathView(){
 		else if(this.pausedTime ==  null){
 			if(pausedX  ===  -1)return;  //pausedX  ==   - 1  <  ==  >  paused  ==  false
 			dur = eventDur * (lineDistance({x:pausedX,y:pausedY},{x:ncx, y:ncy})/lineDistance({x:ctx,y:cty},{x:ncx,y:ncy}));
+
+
+			// line distance between two points (paused point and city position
+			function lineDistance( point1, point2 ){
+				var xs = 0;
+				var ys = 0;
+				xs = point2.x  -  point1.x;
+				xs = xs  *  xs;
+				ys = point2.y  -  point1.y;
+				ys = ys  *  ys;
+
+				return Math.sqrt( xs  +  ys );
+			}
 		}
 
 		var line =
@@ -560,6 +573,7 @@ function PathView(){
 	this.unload = function(){
 		this.init();
 		$(".path-move").remove();
+		this.resetText();
 	};
 
 	// reset all value to initial value
@@ -578,8 +592,7 @@ function PathView(){
 		.attr("cy", this.translates()[ 0 ][ 1 ] );
 		this.pausedTime = null;
 		this.setProgressBarClicked(false,false);
-		if(!userLoggedOn())
-			this.resetText();
+
 	}
 
 	// return a array of coordinate
@@ -613,17 +626,6 @@ function PathView(){
 	};
 }
 
-// line distance between two points (paused point and city position
-function lineDistance( point1, point2 ){
-	var xs = 0;
-	var ys = 0;
-	xs = point2.x  -  point1.x;
-	xs = xs  *  xs;
-	ys = point2.y  -  point1.y;
-	ys = ys  *  ys;
-
-	return Math.sqrt( xs  +  ys );
-}
 
 // when click the path on the map will trigger this function to set the position at clicked point
 // also set the progress bar to the right "time".

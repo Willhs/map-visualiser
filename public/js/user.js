@@ -198,8 +198,14 @@ function saveFileToSharedUser(name){
 		data: JSON.stringify({"exploration":selectedExploration,"to":name, "from":currentUser.name}),
 		//data: JSON.stringify(record),
 		success: function(response){
-			if(!JSON.parse(response))
-				alert("user does not exist!");
+			if(!JSON.parse(response)){
+				document.getElementById("expl-sent-message").innerHTML = "user does not exist!";
+			}
+			else {
+				var userLabelValue = document.getElementById("user-input").value;
+				document.getElementById("expl-sent-message").innerHTML = "Sent to: "+userLabelValue+ "     ExplName:"+ selectedExploration.name;
+			}
+
 		}, //callback when ajax request finishes
 		contentType: "application/json" //text/json...
 	});
