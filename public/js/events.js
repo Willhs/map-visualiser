@@ -135,7 +135,7 @@ insertButton.click(function(){
 stopInsertButton.click( function(){
 	var currentExpl = currentUser.getCurrentExploration();
 
-	// either wait for audio to finish converting to wav
+	// if audio, wait for conversion to wav
 	if (audioRecorder){
 		stopRecording(doneRecording);
 	}

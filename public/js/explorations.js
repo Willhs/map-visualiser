@@ -118,7 +118,7 @@ function Exploration() {
 			if (this.getEvent(i).time > time)
 				return this.getEvent(i-1);
 		}
-	}
+	};
 
 	// inserts all new events into events array after afterIndex
 	// changes the time property of certain events according to the time provided
@@ -144,7 +144,7 @@ function Exploration() {
 						.concat(newEvents)
 						.concat(this.events.slice(afterIndex));
 
-	}
+	};
 
 	// gives the exploration a name based on the time it was recorded
 	this.giveName = function(){
@@ -271,7 +271,6 @@ function startPlayback(exploration){
 		playAudio(exploration.getAudio());
 	}
 	// update to show exploration has been played
-	// TODO: don't do this if exploration is already set to be old
 	if(currentUser.getExploration(exploration.timeStamp)){
 		setExplorationIsOld(exploration);
 	}
@@ -429,8 +428,7 @@ function setPlaybackPosition(exploration, time){
 	}
 }
 
-// inserts 'insertee' into the currently selected exploration at the time of the last pause
-// insertee is an exploration to be inserted into selectedExploration
+//inserts 'insertee' into the currently selected exploration at the time of the last pause
 function insertIntoSelectedExploration(insertee){
 
 	var exploration = selectedExploration;
@@ -680,8 +678,8 @@ function updateSelectedExploration(){
 	if (explChooser.selectedIndex === -1)
 		return;
 
-	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
-	var userExpl = currentUser.getExploration(explTimeStamp);
+	var timeStamp = explChooser.options[explChooser.selectedIndex].id;
+	var userExpl = currentUser.getExploration(timeStamp);
 	resetExplorations();
 	selectExploration(userExpl);
 }
