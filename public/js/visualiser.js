@@ -61,7 +61,7 @@ var path = d3.geo.path().projection(projection)
 // mousewheel zooming
 var zoom = d3.behavior.zoom()
 .on("zoom.normal",function() {
-	g.attr("transform","translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+	map.attr("transform","translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 });
 
 var svg = d3.select("body").append("svg")
@@ -72,7 +72,7 @@ var svg = d3.select("body").append("svg")
 .call(zoom) // attach zoom listener
 .on("dblclick.zoom", null); // disable double-click zoom
 
-var g = svg.append("g")
+var map = svg.append("g")
 	.attr("id","map_area")
 	.attr("transform", "translate(0,0)scale(1)");
 
@@ -83,7 +83,7 @@ d3.json("data/map/kaz.json", function(error, json) {
 	var subunits = topojson.feature(json, json.objects.kaz_subunits);
 
 	// make outline of land mass
-	g.insert("path",":first-child")
+	map.insert("path",":first-child")
 	.datum(subunits)
 	.attr("d", path)
 	.attr("class", "kaz_subunit")
@@ -96,7 +96,7 @@ d3.json("data/map/kaz.json", function(error, json) {
 d3.json("data/map/kaz_places.json", function(error, json){
 	cities = json.features;
 	// places group to contain all elements of a place
-	var places = g.selectAll(".place")
+	var places = map.selectAll(".place")
 	.data(cities)
 	.enter()
 	.append("g")
@@ -119,7 +119,7 @@ d3.json("data/map/kaz_places.json", function(error, json){
 	places.style('cursor','hand');
 
 	// Align labels to minimize overlaps
-	g.selectAll(".place-label")
+	map.selectAll(".place-label")
 	.attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
 	.style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
 });
@@ -189,7 +189,7 @@ function transitionTo(center, scale, duration, elapsedTime){
 	end[2] = screenWidth;
 
 	var sb = getRealBounds(),
-		start = [sb[0][0], sb[0][1], height / d3.transform(g.attr("transform")).scale[0]];
+		start = [sb[0][0], sb[0][1], height / d3.transform(map.attr("transform")).scale[0]];
 
 	var center = [width / 2, height / 2],
 		interpolator = d3.interpolateZoom(start, end);
@@ -197,7 +197,7 @@ function transitionTo(center, scale, duration, elapsedTime){
 	var duration = duration ? duration : interpolator.duration * ANIMATION_DELAY,
 		ease = elapsedTime ? resumed_ease(EASE_FUNCTION, elapsedTime) : EASE_FUNCTION;
 
-	g.transition()
+	map.transition()
 	.duration(duration)
 	.ease(ease)
 	.attrTween("transform", function() {
@@ -217,7 +217,7 @@ function transitionTo(center, scale, duration, elapsedTime){
 
 function makeZoomInterpolator(translation, scale){
 	var sb = getRealBounds(),
-		start = [sb[0][0], sb[0][1], height / d3.transform(g.attr("transform")).scale[0]];
+		start = [sb[0][0], sb[0][1], height / d3.transform(map.attr("transform")).scale[0]];
 
 	var cx = translation[0],
 		cy = translation[1],
@@ -230,8 +230,8 @@ function makeZoomInterpolator(translation, scale){
 
 // updates the zoom.scale and zoom.translation properties to the map's current state
 function updateScaleAndTrans(){
-	var scale = d3.transform(g.attr("transform")).scale[0];
-	var translate = [d3.transform(g.attr("transform")).translate[0], d3.transform(g.attr("transform")).translate[1]];
+	var scale = d3.transform(map.attr("transform")).scale[0];
+	var translate = [d3.transform(map.attr("transform")).translate[0], d3.transform(map.attr("transform")).translate[1]];
 	zoom.scale(scale);
 	zoom.translate(translate);
 }
@@ -242,7 +242,7 @@ function updateScaleAndTrans(){
 	y = height / 2;
 	k = 1;
 
-	g.transition()
+	map.transition()
 	.duration(900 * ANIMATION_DELAY)
 	.ease(EASE_FUNCTION)
 	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
@@ -329,7 +329,7 @@ function ping(location) {
 
 	var endR = startR + screenvars[1][1] * PING_SIZE;
 
-	g.append("circle")
+	map.append("circle")
 	.attr({
 		class: "ping",
 		cx: center[0],
@@ -341,7 +341,7 @@ function ping(location) {
 	.style("stroke-opacity", 0.25)
 	.attr("r", endR)
 	.each("end", function() {
-		g.select(".ping").remove();
+		map.select(".ping").remove();
 	});
 
 }
@@ -350,7 +350,7 @@ function ping(location) {
 //gets current screen coords if no arg
 function getRealBounds(transform) {
 	if (!transform)
-		transform = d3.transform(g.attr("transform"));
+		transform = d3.transform(map.attr("transform"));
 
 	var tx = transform.translate[0];
 	var ty = transform.translate[1];
@@ -367,7 +367,7 @@ function getRealBounds(transform) {
 
 //Convert
 function getAbsoluteBounds() {
-	var transforms = d3.transform(g.attr("transform"));
+	var transforms = d3.transform(map.attr("transform"));
 
 	var tx = transforms.translate[0];
 	var ty = transforms.translate[1];

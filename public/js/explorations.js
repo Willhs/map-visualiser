@@ -2,7 +2,7 @@
 // TODO: don't use global variable for these?
 var recording = false,
 	playing = false,
-	paused = false
+	paused = false,
 	inserting = false;
 
 var	playTimeout = -1; // id for setTimeout used while playing an exploration
@@ -49,19 +49,19 @@ function Exploration() {
 
 	this.getEvents = function(){
 		return this.events;
-	}
+	};
 
 	this.getAudio = function(){
 		return this.audio;
-	}
+	};
 
 	this.hasAudio = function(){
 		return this.audio ? true : false;
-	}
+	};
 
 	this.setAudio = function(audio){
 		this.audio = audio;
-	}
+	};
 
 	this.nextEvent = function (event){
 		if (!isNextEvent(event)){
@@ -89,19 +89,19 @@ function Exploration() {
 		Object.getOwnPropertyNames(exploration).forEach(function(property){
 			that[property] = exploration[property];
 		});
-	}
+	};
 
 	this.equals = function(exploration){
 		if (exploration == null) return false;
 		return this.userName === exploration.userName
 			&& this.timeStamp === exploration.timeStamp;
-	}
+	};
 	this.getDuration = function(){
 		if(this.events.length == 0)
 			return 0;
 		return  this.events[this.events.length-1].time;//return millisecond
 
-	}
+	};
 
 	// PRE: time must be > 0
 	this.getEventAtTime = function(time){
@@ -109,7 +109,7 @@ function Exploration() {
 			if (this.getEvent(i).time > time)
 				return this.getEvent(i-1);
 		}
-	}
+	};
 
 	// inserts all new events into events array after afterIndex
 	// changes the time property of certain events according to the time provided
@@ -135,7 +135,7 @@ function Exploration() {
 						.concat(newEvents)
 						.concat(this.events.slice(afterIndex));
 
-	}
+	};
 
 	// gives the exploration a name based on the time stamp etc
 	this.giveName = function(){
@@ -145,8 +145,8 @@ function Exploration() {
 			// convert millis to mm:ss
 			var hours = date.getHours().toString(),
 				minutes = date.getMinutes().toString(),
-				seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
-													: date.getSeconds(),
+				//seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
+				//									: date.getSeconds(),
 				day = date.getDate(),
 				month = monthAsString(date.getMonth());
 
@@ -156,7 +156,7 @@ function Exploration() {
 				return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][monthIndex];
 			}
 		}
-	}
+	};
 }
 
 
@@ -178,7 +178,7 @@ function startRecording() {
 	var newExpl = new Exploration();
 
 	// add start event
-	newExpl.addEvent("start", g.attr("transform"));
+	newExpl.addEvent("start", map.attr("transform"));
 
 	currentUser.setCurrentExploration(newExpl);
 
@@ -251,7 +251,6 @@ function startPlayback(exploration){
 		playAudio(exploration.getAudio());
 	}
 	// update to show exploration has been played
-	// TODO: don't do this if exploration is already set to be old
 	if(currentUser.getExploration(exploration.timeStamp)){
 		setExplorationIsOld(exploration);
 	}
@@ -279,7 +278,7 @@ function launchEvents(exploration, i, elapsedTime){
 	case ("start"):
 	case ("movement"):
 		var transform = currentEvent.body;
-		g.attr("transform", transform);
+		map.attr("transform", transform);
 		updateScaleAndTrans();
 		break;
 	case ("end"):
@@ -322,7 +321,7 @@ function stopPlayback(exploration){
 function pausePlayback(exploration, cb){
 	elapsedEventTime = new Date() - lastEventTime;
 	clearTimeout(playTimeout);
-	g.transition().duration(0); // stops any current transitions
+	map.transition().duration(0); // stops any current transitions
 	paused = true;
 
 	if (exploration.hasAudio()){
@@ -344,7 +343,6 @@ function resumePlayback(exploration){
 		position = currentEvent.time + elapsedEventTime;
 
 	// skips the rest of the event and goes to the next one.
-	// TODO: play the rest of the event, don't skip
 	playTimeout = setTimeout(function(){
 		launchEvents(exploration, currentEventIndex+1);
 	}, timeTilNextEvent);
@@ -400,7 +398,7 @@ function setPlaybackPosition(exploration, time){
 			   	break;
 			case ("movement"):
 				var transform = event.body;
-				g.attr("transform", transform);
+				map.attr("transform", transform);
 				updateScaleAndTrans();
 				break;
 
@@ -503,10 +501,7 @@ function selectExploration(exploration){
 	progressBar.load(exploration);
 	if(hasCityEvents(exploration)){
 		pathView.load(exploration);
-		showPathButton.innerHTML="Hide Path";
-		var classes = $(".path-move");
-		pathView.setText();
-		classes.show();
+
 		}
 
 	updateExplorationControls();
@@ -658,8 +653,8 @@ function updateSelectedExploration(){
 	if (explChooser.selectedIndex === -1)
 		return;
 
-	var explTimeStamp = explChooser.options[explChooser.selectedIndex].id;
-	var userExpl = currentUser.getExploration(explTimeStamp);
+	var timeStamp = explChooser.options[explChooser.selectedIndex].id;
+	var userExpl = currentUser.getExploration(timeStamp);
 	resetExplorations();
 	selectExploration(userExpl);
 }

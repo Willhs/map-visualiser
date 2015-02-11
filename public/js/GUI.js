@@ -173,16 +173,10 @@ function toggleVisablePath(){
 	if(!selectedExploration) return;
 	if(hasCityEvents(selectedExploration)){
 		if(showPathButton.innerHTML=="Show Path"){
-			showPathButton.innerHTML="Hide Path";
-			var classes = $(".path-move");
-			pathView.setText();
-			classes.show();
+			pathView.showPathElems();
 		}
 		else if(showPathButton.innerHTML=="Hide Path"){
-			showPathButton.innerHTML="Show Path";
-			var classes = $(".path-move");
-			pathView.resetText();
-			classes.hide();
+			pathView.hidePahtElems();
 		}
 	}
 }
@@ -275,7 +269,6 @@ function showListNotifications(){
 				}
 				notificationSelector.appendChild(newOption);
 				hasNewExpl = true;
-
 			}
 		});
 	}
@@ -337,14 +330,14 @@ function displayLocationInfo(city){
 
 			var userName = annotation.userName;
 			var timeStamp = new Date(annotation.timeStamp);
+
 			// h:mm format
 			var time = 	timeStamp.getHours() + ":" +
 			(timeStamp.getMinutes().toString().length < 2 ?
 					"0" + timeStamp.getMinutes() :
 						timeStamp.getMinutes());
-			var date = timeStamp.getDate() + "/" + timeStamp.getMonth() + "/" + timeStamp.getFullYear().toString().substring(2,4);
+			var date = timeStamp.getDate() + "/" + (timeStamp.getMonth()+1) + "/" + timeStamp.getFullYear().toString().substring(2,4);
 			var annInfo = "<i> – " + userName + " " + time + " on " + date + "</i>";
-
 			// make necessary DOM elements
 			var rowDiv = document.createElement("div");
 			var textDiv = document.createElement("div");
