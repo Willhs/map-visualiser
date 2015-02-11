@@ -79,8 +79,8 @@ function updateUserButtons(currentUser){
 //updates the notification GUI elements
 function updateNotifications(){
 	//set visibility to all notification buttons/labels hidden when log on.
-	resetVisibility(notificationContainer,"hidden");
-	hideNotificationButtons();
+	$("#notification-container").hide();
+	$(".notification-elements").hide();
 
 	if (!userLoggedOn()){
 		return;
@@ -98,12 +98,12 @@ function updateNotifications(){
 
 	// show notification message
 	if(newCount>0){
-		resetVisibility(notificationContainer,"visible");
+		$("#notification-container").show();
 		$("#notification-container").html(" have "+ newCount + " new explorations.");
 		notificationContainer.style.cursor = "pointer";
 	}
 	else{
-		resetVisibility(notificationContainer,"visible");
+		$("#notification-container").show();
 		$("#notification-container").html(" have no new explorations.");
 		notificationContainer.style.cursor = "not-allowed";
 	}
@@ -240,50 +240,33 @@ function removeRecordingGraphics(){
 }
 
 // function triggered when notification container clicked
+// return true - when has new shared exploration
 function showListNotifications(){
-	while(notificationSelector.firstChild){//remove old labels
+
+	while(notificationSelector.firstChild)//remove old labels
 		notificationSelector.removeChild(notificationSelector.firstChild);
-	}
+
 	var newSharedExpls = currentUser.getSharedExploration();
 	var hasNewExpl = false;
+	// if has new shared exploration append to notificationSelector
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
 			if(expl.isNew){
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
-				explorationName = expl.name
+				explorationName = expl.name;
 				newOption.innerHTML = explorationName;
 				newOption.onclick  = function(){
 					stopRecording();
 					selectExploration(expl);
-				}
+				};
 				notificationSelector.appendChild(newOption);
 				hasNewExpl = true;
 			}
 		});
 	}
 	return hasNewExpl;
-}
-
-function divHideShow(div){
-	if (div.style.visibility==="visible"){
-		div.style.visibility= "hidden";
-	}
-	else{
-		div.style.visibility = "visible";
-		//setTimeout(function () {div.style.display = "none";}, 3000);
-	}
-}
-//reset notifications lable when logoff
-function resetVisibility(idVar, state){
-	idVar.style.visibility = state;
-}
-
-function hideNotificationButtons(){
-	resetVisibility(notificationSelector, "hidden");
-	resetVisibility(removeNotification, "hidden");
-	resetVisibility(quickplayNotification, "hidden");
 }
 
 //displays information about the location selected
