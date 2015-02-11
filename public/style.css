@@ -5,12 +5,15 @@ html {
 body {
 	/* The default font size will be 10 pixels with the default web browser font size setting*/
 	font: 0.625em/1em Verdana, Geneva, Arial, Helvetica, sans-serif;
+	background-color: #03719c;
+
 }
 
 .map {
 	position: absolute;
 	width: 80%;
 	height: 95%;
+
 	cursor:pointer;
 }
 
@@ -19,7 +22,7 @@ body {
 	left: 81%;
 	width: 20%;
 	height: 100%;
-	background-color: #ccc;
+	background-color: #99C2C2;
 	border: 3px solid black;
 }
 
@@ -69,6 +72,7 @@ input,label {
 .exploration-button {
 	width: 40px;
 	height: 40px;
+	opacity: 0.8;
 	border: 2px solid #000;
 	display: inline-block;
 }
@@ -116,6 +120,17 @@ input,label {
 	color: black;
 }
 
+
+#show-path {
+	position: fixed;
+	left: 75%;
+	top: 1%;
+	width: 100px;
+	height: 30px;
+	font-size: 150%;
+	cursor: pointer;
+	visibility: visible;
+}
 /* Mini-map */
 #minimap {
 	background-color: #ccc;
@@ -311,7 +326,7 @@ input,label {
 
 #below-bar p {
 	font-size: 1.5em;
-	color: SteelBlue;
+	color: black;
 	position: absolute;
 }
 

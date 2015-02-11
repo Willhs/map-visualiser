@@ -1,6 +1,18 @@
 //-------------- event handling for DOM elements ----------------
 
-// ---- explorations
+
+// ######### guest users #############################
+
+var guestUsers = ["obama", "john", "lorde", "will"];
+
+guestUsers.forEach(function(userName){
+	document.getElementById(userName).onclick= function() {
+		userNameInput.value = userName;
+		passwordInput.value = "password";
+	};
+});
+// #################################################
+// ######### exploration controls #################
 
 recordExplButton.addEventListener("click", function(){
 	if (recording){
@@ -13,9 +25,9 @@ recordExplButton.addEventListener("click", function(){
 });
 
 playExplButton.on('click', function () {
-	if (!paused)
-		startPlayback(selectedExploration);
-	else resumePlayback(selectedExploration);
+	if (paused)
+		resumePlayback(selectedExploration);
+	else startPlayback(selectedExploration);
 });
 
 pauseExplButton.on('click', function(){
@@ -30,7 +42,6 @@ saveExplButton.click(function(){
 	saveExploration(currentUser.getCurrentExploration());
 });
 
-//delete button
 deleteExplButton.click(function(){
 	if (selectedExploration)
 		deleteExploration(selectedExploration);
@@ -38,51 +49,47 @@ deleteExplButton.click(function(){
 
 resetExplButton.click(resetExplorations);
 
+// ##########################################
+// ######## exploration chooser and login
+
 explChooser.onclick = updateSelectedExploration;
 
-//users
-var guestUsers = ["obama", "john", "lorde", "will"];
-
-guestUsers.forEach(function(userName){
-	document.getElementById(userName).onclick= function() {
-		userNameInput.value = userName;
-		passwordInput.value = "password";
-	};
-});
+showPathButton.onclick = toggleVisablePath;
 
 //submit button
 logonButton.onclick = function(){
-
 	// if noone is logged on
 	if(userLoggedOn()){
 		if (!recording)
 			logout(currentUser);
 	}
 	else{
-		attemptLogon(userNameInput.value, passwordInput.value);
+		attemptLogin(userNameInput.value, passwordInput.value);
 	}
 };
 
-//share button
+// #########################################
+// ############# share button #############
+
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 
 	var userLabelValue = document.getElementById("user-input").value;
-	console.log(userLabelValue);
-	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
-		saveFileToSharedUser(userLabelValue);
-		var selectedExplName = selectedExploration.name;
-		document.getElementById("expl-sent-message").innerHTML = "Sent to: "+userLabelValue+ "     ExplName:"+ selectedExplName;
+	if(userLabelValue != null && userLabelValue != currentUser.name && selectedExploration != null){
+		shareFile(selectedExploration, userLabelValue);		
 	}
 });
 
-//new account
+// ##########################################
+// ############## create new account #######
 var myWindow;
 var newAccount = document.getElementById("create-new-account");
 newAccount.onclick = function(){
 	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
 
-//---- NOTIFICATIONS ----
+// ##########################################
+// ############### notifications ###########
+
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
 	if(showListNotifications()){
@@ -113,7 +120,9 @@ quickplayNotification.addEventListener("click", function(){
 	updateNotifications();
 });
 
-// ---- insert button
+// ##########################################
+// ########### inserting ##################
+
 insertButton.click(function(){
 	inserting = true;
 	startRecording();
@@ -126,6 +135,7 @@ insertButton.click(function(){
 stopInsertButton.click( function(){
 	var currentExpl = currentUser.getCurrentExploration();
 
+	// either wait for audio to finish converting to wav
 	if (audioRecorder){
 		stopRecording(doneRecording);
 	}
