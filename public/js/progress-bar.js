@@ -1,8 +1,9 @@
 // ORIGINAL CODE FROM : http://bl.ocks.org/keithcollins/a0564c578b9328fcdcbb
+// most of this code has been re-written, but the appearance is still the same.
 
 function ProgressBar() {
 
-	// init some global vars
+	// dimensions and position
 	var progressWidth = 910,
 		progressHeight = 36,
 		progressTop = 0,
@@ -46,24 +47,28 @@ function ProgressBar() {
 		.attr("x", nextPosition);
 	}
 
+	// stops moving the bar
 	this.pause = function(cb){
 		bar.transition()
 		.duration(0)
 		.each("end.cb", cb);
 
-		insertButton.css("visibility", "visible");
+		showInsertButton();
 	}
 
+	// sets the position of the bar
 	this.setPosition = function(time){
 		// if selectedExploration is null, set position to 0 and return
 		if (!selectedExploration){
 			bar.attr("x", 0);
-			return;
 		}
-		var progress = time / selectedExploration.getDuration();
-		bar.attr("x", progress * progressWidth);
+		else {
+			var progress = time / selectedExploration.getDuration();
+			bar.attr("x", progress * progressWidth);
+		}
 	}
 
+	// brings the bar back to the start
 	this.resetProgress = function(){
 		var that = this; // store this
 		// replace current transition with dummy one to stop it
@@ -72,6 +77,7 @@ function ProgressBar() {
 		});
 	}
 
+	// changes the button based on the state of the program
 	this.updateButton = function(){
 		if (playing && !paused)
 			$("#play-control").removeClass().addClass("pause");
@@ -81,6 +87,7 @@ function ProgressBar() {
 			$("#play-control").removeClass().addClass("resume");
 	}
 
+	// updates markers, adds listeners, shows information about exploration
 	this.load = function(exploration){
 		// get all travel events
 		var travelEvents = [];
@@ -165,6 +172,7 @@ function ProgressBar() {
 		// show bar
 		progressSVG.style.visibility = "visible";
 
+		belowBarDiv.show();
 		// show title and duration text elements
 		explorationTitle.text(exploration.name + ", " + exploration.timeStamp);
 		explorationTitle.show();
@@ -192,9 +200,11 @@ function ProgressBar() {
 		// hide text and insert button
 		this.hideTimeText();
 		hideInsertButton();
-		hasAudio.hide();
+		//hasAudio.hide();
+		belowBarDiv.hide();
 	}
 
+	// trigger a playback position change
 	function onBarClick(e){
 		var rect = d3.select("#play-svg");
 		// figure out x position of mouse
@@ -205,14 +215,15 @@ function ProgressBar() {
       	setPlaybackPosition(selectedExploration, getTimeOfXpos(xpos));
 	}
 
-	// returns the x position of the bar at this time
+	// returns the x position of the bar at a time into the selected exploration
 	this.getXPosOfTime = function(time){
 		var progress = time / selectedExploration.getDuration();
 		return progress * progressWidth;
 	}
 
+	// get the time into the exploration given an x position
 	function getTimeOfXpos(xpos){
-		// what percent (as decimal) across the rect is the mouse?
+		// what portion (as decimal) across the rect is the mouse?
 		var progress = xpos / progressWidth;
 		return progress * selectedExploration.getDuration();
 	}
@@ -239,6 +250,7 @@ function ProgressBar() {
 		timeText.css(timePosition); // sets position relative to parent
 	}
 
+	// shows the selected exploration's duration
 	function showDurationText(){
 		var formattedTime = formatTime(selectedExploration.getDuration());
 		durationText.text(formattedTime);
@@ -249,8 +261,8 @@ function ProgressBar() {
 		timeText.hide();
 	}
 
+	// convert millis to mm:ss
 	function formatTime(millis){
-		// convert millis to mm:ss
 		var date = new Date(millis);
 		var minutes = date.getMinutes().toString();
 		var seconds = date.getSeconds() < 10 	? "0" + date.getSeconds().toString()
@@ -332,7 +344,7 @@ function ProgressBar() {
 		// record stop button
 		$("#stop-insert-button").show();
 
-		// record in progress animation
+		// [recording in progress] animation
 		changeColour(true);
 		// changes to either red or blue depending on 'red' argument
 		function changeColour(red){
@@ -363,7 +375,8 @@ function ProgressBar() {
 		$("#stop-insert-button").hide();
 	}
 
-	// highlights a portion inserted exploration on the progress bar
+	// highlights a chunk representing an inserted exploration
+	// starting at startTime, for duration
 	this.showInsertedChunk = function(startTime, duration){
 		var startX = this.getXPosOfTime(startTime);
 		var endX = this.getXPosOfTime(startTime + duration);

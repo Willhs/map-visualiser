@@ -22,12 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. **/
 
+// the location of image files
 var IMAGE_PATH = "data/image/";
 
+// width and height of window (TODO: make these update dynamically)
 var width = $(window).width() * 0.8,
 	height = $(window).height();
 
-var active;
 //How far we should scale into a selection
 var SCALE_FACTOR = 1200;
 //How fast we should zoom. Lower numbers zoom faster.
@@ -72,6 +73,7 @@ var svg = d3.select("body").append("svg")
 .call(zoom) // attach zoom listener
 .on("dblclick.zoom", null); // disable double-click zoom
 
+// contains all map graphics
 var map = svg.append("g")
 	.attr("id","map_area")
 	.attr("transform", "translate(0,0)scale(1)");
@@ -237,7 +239,7 @@ function updateScaleAndTrans(){
 }
 
 // A function to reset the map to the center, zoomed out.
-/*function reset(){
+function reset(){
 	x = width / 2;
 	y = height / 2;
 	k = 1;
@@ -247,10 +249,10 @@ function updateScaleAndTrans(){
 	.ease(EASE_FUNCTION)
 	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
 	.style("stroke-width", 1.5 / k + "px")
-	.tween("update-zoom", function(){
+	.each("end", function(){
 		return updateScaleAndTrans; // updates global scale and transition variables
 	});
-}*/
+}
 
 //causes a transition to the exploration's start event
 function goToFirstLocation(exploration){
@@ -271,6 +273,7 @@ function getCityIndex(name){
 	}
 }
 
+// when a city is clicked
 function cityClicked(d){
 	travelToCity(d);
 }
@@ -365,7 +368,7 @@ function getRealBounds(transform) {
 }
 
 
-//Convert
+// 
 function getAbsoluteBounds() {
 	var transforms = d3.transform(map.attr("transform"));
 

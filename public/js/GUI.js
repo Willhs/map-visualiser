@@ -90,6 +90,7 @@ function updateNotifications(){
 
 	// newCount == the number of nonplayed shared exploration in current user folder
 	var newCount = 0;
+
 	sharedExpl.forEach(function(expl){
 		if(expl.isNew)
 			newCount++;
@@ -185,7 +186,7 @@ function toggleLogon(loggedOn, cursorD, cursorP){
 // this function called once showPathButton clicked (event.js)
 function toggleVisablePath(){
 	if(!selectedExploration) return;
-	if(hasCityEvents(selectedExploration)){
+	if(selectedExploration.hasCityEvents()){
 		if(showPathButton.innerHTML=="Show Path"){
 			pathView.showPathElems();
 		}

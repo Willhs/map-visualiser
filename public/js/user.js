@@ -1,9 +1,12 @@
 var currentUser = null; // the user who is currently logged in
 
+// user object is created with their name and explorations
 function User(name, explorations){
 	this.name = name;
-	this.explorations = explorations; //all explorations
-	this.currentExpl = null; // a recording in progress (none at start)
+	// the user's explorations
+	this.explorations = explorations;
+	// a recording in progress (none at start)
+	this.currentExpl = null; 
 
 	// add an exploration
 	this.addExploration = function (expl){
@@ -82,7 +85,7 @@ function User(name, explorations){
 }
 
 //logs on a user
-function attemptLogon(name, pw){
+function attemptLogin(name, pw){
 
 	// returns whether logon is approved
 	$.ajax({
@@ -95,14 +98,14 @@ function attemptLogon(name, pw){
 
 	function gotApprovalResponse(approved){
 		if(JSON.parse(approved)){
-			logon(name);
+			login(name);
 		}
 		else{
 			alert("username/password are invalid");
 		}
 	}
 }
-function logon(name){
+function login(name){
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
 
@@ -186,17 +189,17 @@ function loadAllExplorations(userName, cb){
 	}
 }
 
-function saveFileToSharedUser(name){
+function shareFile(exploration, userName){
 	if(name==currentUser.name) return;
 	if(selectedExploration==null) return;
-	console.log("save file to "+name+"'s folder");
-	console.log("select time: "+selectedExploration.timeStamp);
-
 	$.ajax({
 		type: 'POST',
-		url: "/shareExploration",//url of receiver file on server
-		data: JSON.stringify({"exploration":selectedExploration,"to":name, "from":currentUser.name}),
-		//data: JSON.stringify(record),
+		url: "/shareExploration",
+		data: JSON.stringify({
+			exploration: exploration,
+			to: userName, 
+			from: currentUser.name
+		}),		
 		success: function(response){
 			if(!JSON.parse(response)){
 				document.getElementById("expl-sent-message").innerHTML = "user does not exist!";
