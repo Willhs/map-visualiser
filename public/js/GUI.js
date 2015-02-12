@@ -240,6 +240,7 @@ function removeRecordingGraphics(){
 }
 
 // function triggered when notification container clicked
+// show list of the notifications
 function showListNotifications(){
 	while(notificationSelector.firstChild){//remove old labels
 		notificationSelector.removeChild(notificationSelector.firstChild);
