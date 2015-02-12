@@ -39,6 +39,7 @@ app.use(express.static(__dirname + '/public'));
 var USER_PATH = "public/data/user/",
 	USER_INFO_FILE_NAME = "usersInfo.json"; // all user information is store in here
 
+// returns whether an account with the username and pw exist 
 app.post("/checkAuthentication", function(req, res){
 	console.log("checking authentication");
 	var fields = req.body;
@@ -53,7 +54,6 @@ app.post("/checkAuthentication", function(req, res){
 	var users = JSON.parse(fs.readFileSync(USER_PATH + USER_INFO_FILE_NAME));
 
 	// check if uname and pw match
-
 	var authenticated = false;
 
 	users.forEach(function(user){
@@ -67,15 +67,14 @@ app.post("/checkAuthentication", function(req, res){
 	res.send(JSON.stringify(authenticated));
 });
 
+// sends all explorations which belong to a user
 app.get("/getUserExplorations", function(req, res){
 	var userName = req._parsedUrl.query; // data is appended to the URL
 
-	console.log("get all explorations for " + userName);
+	console.log("retrieving all explorations for " + userName);
 
 	var userPath = USER_PATH + userName + "/",
 		explPath = userPath + "explorations/";
-
-	console.log("in " + explPath);
 
 	// ensure all dirs exist.
 	ensureDirExists(userPath);
@@ -144,7 +143,6 @@ app.post('/postExploration', function(req, res){
 	res.sendStatus(200);
 });
 
-
 app.post("/deleteExploration", function(req, res){
 	console.log("deleting exploration");
 
@@ -183,13 +181,6 @@ app.post("/deleteExploration", function(req, res){
 	res.sendStatus(200);
 });
 
-function saveAudio(audioString, path, timeStamp){
-	var filename = path + timeStamp + ".wav";
-	fs.writeFileSync(filename, new Buffer(audioString, "binary"));
-
-	console.log("wrote audio file "+filename);
-}
-
 //post file to shared user folder
 app.post('/shareExploration', function(req, res){
 	var body = req.body;
@@ -219,6 +210,7 @@ app.post('/shareExploration', function(req, res){
 	console.log("shared exploration to: "+ to + " from: "+ from);
 });
 
+// set the "isOld" property of an exploration to true
 app.post("/setExplorationIsOld", function(req, res){
 	console.log("setting exploration isNew");
 	var update = req.body;
@@ -290,8 +282,8 @@ app.post("/createAccount", function(req, res){
 	fs.writeFileSync(USER_PATH + USER_INFO_FILE_NAME, JSON.stringify(info, null, 4)+"\n");
 });
 
+// saves a new annotation to file
 app.post('/postAnnotation', function(req, res){
-
 	var annotation = req.body;
 	var timeStamp = new Date(annotation.timeStamp);
 	var location = annotation.location;
@@ -314,6 +306,7 @@ app.post('/postAnnotation', function(req, res){
 	res.sendStatus(200); // success code
 });
 
+// retrieves and sends all annotations for a specified location
 app.get("/getAnnotations", function(req, res){
 	var locationName = req._parsedUrl.query; // data is appended to the URL
 	console.log("retrieving annotations for: " + locationName);
@@ -364,6 +357,7 @@ app.post("/deleteAnnotation", function(req, res){
 	}
 });
 
+// *** BUG ***
 app.get("/null", function(req, res){
 	console.log("caught null request (bug)");
 	res.sendStatus(200);

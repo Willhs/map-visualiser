@@ -22,13 +22,15 @@ function saveAudio() {
     }
 }
 
+// start recording
 function startAudioRecording() {
-    // start recording
     audioRecorder.clear();
     audioRecorder.record();
     displayAudioGraphic();
 }
 
+// stops record and prepares wav data blob
+// cb is executed after encoding is complete
 function stopAudioRecording(cb){
     audioRecorder.stop();
     audioRecorder.getBuffers( function (buffers){        
@@ -52,6 +54,7 @@ function stopAudioRecording(cb){
     }
 }
 
+// removes the mic graphic shown while recording
 function removeAudioGraphic(){
     svg.select("#microphone-graphic")
         .remove();    

@@ -84,7 +84,7 @@ function User(name, explorations){
 	}
 }
 
-//logs on a user
+// asks server if login details are acceptable
 function attemptLogin(name, pw){
 
 	// returns whether logon is approved
@@ -105,6 +105,8 @@ function attemptLogin(name, pw){
 		}
 	}
 }
+
+// logs the user in, makes all of the user's file accessible
 function login(name){
 	currentUser = new User(name);
 	loadAllExplorations(name, gotExplorations);
@@ -115,14 +117,15 @@ function login(name){
 	}
 }
 
+// logs the current user out, removes access to the user's files
 function logout(){
 	currentUser = null;
 	resetExplorations();
 	updateSideBar();
 }
 
+// attempts to create an account. Alerts user if name and pw are unacceptable
 function attemptCreateAccount(name, pw){
-
 	$.ajax({
 		type: 'POST',
 		url: "/checkUsersFile",
@@ -130,7 +133,7 @@ function attemptCreateAccount(name, pw){
 		success: gotApproval,
 		contentType: "application/json"
 	});
-	//
+	// got approval that the name and pw are acceptable
 	function gotApproval(approved){
 		if(!JSON.parse(approved)){
 			createAccount(name, pw);
@@ -141,6 +144,7 @@ function attemptCreateAccount(name, pw){
 	}
 }
 
+// downloads all of the user's (specified by userName) explorations
 function loadAllExplorations(userName, cb){
 	$.ajax({
 		type: 'GET',
@@ -150,6 +154,7 @@ function loadAllExplorations(userName, cb){
 		contentType: "application/json",
 	});
 
+	// makes available all explorations receieved
 	function dealWithExplorations(explorations, cb){
 		// input arrays contain objects with exploration data, but no methods.
 		var allExplorationsData = JSON.parse(explorations);
@@ -189,6 +194,7 @@ function loadAllExplorations(userName, cb){
 	}
 }
 
+// shares the exploration with the user
 function shareFile(exploration, userName){
 	if(userName==currentUser.name) return;
 	if(selectedExploration==null) return;
@@ -214,6 +220,7 @@ function shareFile(exploration, userName){
 	});
 }
 
+// creates an account with this name and pw
 function createAccount(name, pw){
 	console.log("add new user's name and pw to logonInfo file");
 
@@ -228,6 +235,7 @@ function createAccount(name, pw){
 	window.close();
 }
 
+// returns true if there is a user currently logged on
 function userLoggedOn(){
 	return currentUser;
 }

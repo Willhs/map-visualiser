@@ -99,16 +99,17 @@ function updateNotifications(){
 	// show notification message
 	if(newCount>0){
 		resetVisibility(notificationContainer,"visible");
-		$("#notification-container").html(" have "+ newCount + " new explorations.");
+		$("#notification-container").html(newCount + " new explorations.");
 		notificationContainer.style.cursor = "pointer";
 	}
 	else{
 		resetVisibility(notificationContainer,"visible");
-		$("#notification-container").html(" have no new explorations.");
+		$("#notification-container").html(" No new explorations.");
 		notificationContainer.style.cursor = "not-allowed";
 	}
 }
 
+// updates the state of the buttons (record, play, pause, stop, save, delete, reset)
 function updateExplorationControls(specialCase){
 	if (!selectedExploration){
 		disableAction(["save","play","stop","pause","reset","delete"]);
@@ -184,7 +185,7 @@ function toggleLogon(loggedOn, cursorD, cursorP){
 }
 
 // this function called once showPathButton clicked (event.js)
-function toggleVisablePath(){
+function toggleVisiblePath(){
 	if(!selectedExploration) return;
 	if(selectedExploration.hasCityEvents()){
 		if(showPathButton.innerHTML=="Show Path"){
@@ -240,25 +241,27 @@ function removeRecordingGraphics(){
 }
 
 // function triggered when notification container clicked
-// show list of the notifications
+// return true - when has new shared exploration
 function showListNotifications(){
-	while(notificationSelector.firstChild){//remove old labels
+
+	while(notificationSelector.firstChild)//remove old labels
 		notificationSelector.removeChild(notificationSelector.firstChild);
-	}
+
 	var newSharedExpls = currentUser.getSharedExploration();
 	var hasNewExpl = false;
+	// if has new shared exploration append to notificationSelector
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
 			if(expl.isNew){
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
-				explorationName = expl.name
+				explorationName = expl.name;
 				newOption.innerHTML = explorationName;
 				newOption.onclick  = function(){
 					stopRecording();
 					selectExploration(expl);
-				}
+				};
 				notificationSelector.appendChild(newOption);
 				hasNewExpl = true;
 			}

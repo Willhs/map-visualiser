@@ -54,7 +54,7 @@ resetExplButton.click(resetExplorations);
 
 explChooser.onclick = updateSelectedExploration;
 
-showPathButton.onclick = toggleVisablePath;
+showPathButton.onclick = toggleVisiblePath;
 
 //submit button
 logonButton.onclick = function(){
@@ -118,7 +118,6 @@ removeNotification.addEventListener("click", function(){
 	updateNotifications();
 	deselectExploration();
 });
-
 // play notification - and set isNew back to true
 // quick play is not remove from notification selector
 quickplayNotification.addEventListener("click", function(){

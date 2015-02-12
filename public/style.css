@@ -171,7 +171,7 @@ input,label {
 	cursor: pointer;
 }
 
-.notification-selectors {
+#notification-selector {
 	position: fixed;
 	left: 67.7%;
 	top: 84%;
