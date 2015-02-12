@@ -54,7 +54,7 @@ resetExplButton.click(resetExplorations);
 
 explChooser.onclick = updateSelectedExploration;
 
-showPathButton.onclick = toggleVisablePath;
+showPathButton.onclick = toggleVisiblePath;
 
 //submit button
 logonButton.onclick = function(){
@@ -72,7 +72,6 @@ logonButton.onclick = function(){
 // ############# share button #############
 
 document.getElementById("submit-shared-file").addEventListener('click',function(){
-
 	var userLabelValue = document.getElementById("shared-with").value;
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
 		saveFileToSharedUser(userLabelValue);
