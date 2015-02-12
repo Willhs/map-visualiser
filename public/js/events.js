@@ -75,7 +75,7 @@ document.getElementById("submit-shared-file").addEventListener('click',function(
 
 	var userLabelValue = document.getElementById("shared-with").value;
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
-		saveFileToSharedUser(userLabelValue);
+		shareFile(selectedExploration, userLabelValue);
 	}
 });
 
