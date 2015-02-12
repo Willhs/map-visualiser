@@ -574,6 +574,7 @@ function PathView(){
 		this.init();
 		$(".path-move").remove();
 		this.resetText();
+		showPathButton.style.visibility = "hidden";
 	};
 
 	// reset all value to initial value
