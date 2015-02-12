@@ -6,7 +6,7 @@ function User(name, explorations){
 	// the user's explorations
 	this.explorations = explorations;
 	// a recording in progress (none at start)
-	this.currentExpl = null; 
+	this.currentExpl = null;
 
 	// add an exploration
 	this.addExploration = function (expl){
@@ -196,22 +196,22 @@ function loadAllExplorations(userName, cb){
 
 // shares the exploration with the user
 function shareFile(exploration, userName){
-	if(name==currentUser.name) return;
+	if(userName==currentUser.name) return;
 	if(selectedExploration==null) return;
 	$.ajax({
 		type: 'POST',
 		url: "/shareExploration",
 		data: JSON.stringify({
 			exploration: exploration,
-			to: userName, 
+			to: userName,
 			from: currentUser.name
-		}),		
+		}),
 		success: function(response){
 			if(!JSON.parse(response)){
 				document.getElementById("expl-sent-message").innerHTML = "user does not exist!";
 			}
 			else {
-				var userLabelValue = document.getElementById("user-input").value;
+				var userLabelValue = document.getElementById("shared-with").value;
 				document.getElementById("expl-sent-message").innerHTML = "Sent to: "+userLabelValue+ "     ExplName:"+ selectedExploration.name;
 			}
 

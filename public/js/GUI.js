@@ -241,24 +241,27 @@ function removeRecordingGraphics(){
 }
 
 // function triggered when notification container clicked
+// return true - when has new shared exploration
 function showListNotifications(){
-	while(notificationSelector.firstChild){//remove old labels
+
+	while(notificationSelector.firstChild)//remove old labels
 		notificationSelector.removeChild(notificationSelector.firstChild);
-	}
+
 	var newSharedExpls = currentUser.getSharedExploration();
 	var hasNewExpl = false;
+	// if has new shared exploration append to notificationSelector
 	if(newSharedExpls.length>0){
 		newSharedExpls.forEach(function(expl, index){
 			if(expl.isNew){
 				var newOption = document.createElement('option');
 				newOption.setAttribute("id", currentUser.name+index);
 				newOption.value = index;
-				explorationName = expl.name
+				explorationName = expl.name;
 				newOption.innerHTML = explorationName;
 				newOption.onclick  = function(){
 					stopRecording();
 					selectExploration(expl);
-				}
+				};
 				notificationSelector.appendChild(newOption);
 				hasNewExpl = true;
 			}

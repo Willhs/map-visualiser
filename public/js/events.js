@@ -1,6 +1,6 @@
 //-------------- event handling for DOM elements ----------------
 
-
+// #################################################
 // ######### guest users #############################
 
 var guestUsers = ["obama", "john", "lorde", "will"];
@@ -12,7 +12,7 @@ guestUsers.forEach(function(userName){
 	};
 });
 // #################################################
-// ######### exploration controls #################
+// ######### exploration controls ##################
 
 recordExplButton.addEventListener("click", function(){
 	if (recording){
@@ -50,7 +50,7 @@ deleteExplButton.click(function(){
 resetExplButton.click(resetExplorations);
 
 // ##########################################
-// ######## exploration chooser and login
+// ######## exploration chooser and login####
 
 explChooser.onclick = updateSelectedExploration;
 
@@ -69,17 +69,17 @@ logonButton.onclick = function(){
 };
 
 // #########################################
-// ############# share button #############
+// ############# share button ##############
 
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 	var userLabelValue = document.getElementById("shared-with").value;
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
-		saveFileToSharedUser(userLabelValue);
+		shareFile(selectedExploration, userLabelValue);
 	}
 });
 
 // ##########################################
-// ############## create new account #######
+// ############## create new account ########
 var myWindow;
 var newAccount = document.getElementById("create-new-account");
 newAccount.onclick = function(){
@@ -87,18 +87,18 @@ newAccount.onclick = function(){
 };
 
 // ##########################################
-// ############### notifications ###########
+// ############### notifications ############
 
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
 	if(showListNotifications()){
-		divHideShow(notificationSelector);
-		divHideShow(removeNotification);
-		divHideShow(quickplayNotification);
+		if($(".notification-elements").hide())
+			$(".notification-elements").show();
+		else $(".notification-elements").hide();
 
 	}
 	else{
-		hideNotificationButtons();
+		$(".notification-elements").hide();
 	}
 });
 
@@ -120,7 +120,7 @@ quickplayNotification.addEventListener("click", function(){
 });
 
 // ##########################################
-// ########### inserting ##################
+// ########### inserting ####################
 
 insertButton.click(function(){
 	inserting = true;
