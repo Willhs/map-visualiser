@@ -1,3 +1,28 @@
+<!--
+=========================================================================================
+Author:Will Hardwick-Smith and Jacky Chang
+
+Input area:
+	. user name: no condition check user may able to use all symbols and letters
+	. password: only the condition is both password and confirm password values are match
+
+Button:
+	. save button
+		check userName if username already create by other user show error message
+		check both passwords if not equal user need to reenter
+
+	. close
+		Close html page
+
+Area need improve:
+	userName format
+	password format (length and value)
+	forgot password button to reset password
+	need store more info (user personal info)
+
+===========================================================================================
+-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,18 +54,18 @@
 
 
 <script type="text/javascript">
-
+	// send button: send values to attemptCreatAccount
+	// access: user created
+	// reject: user need reenter password or user name
 	var sendButton = document.getElementById("submit-newUserandPassword");
 	sendButton.onclick = function(){
 		var regUserName = document.getElementById("newUserName");
 		var regPassword = document.getElementById("newPassword");
 		var regConfPassword = document.getElementById("confirmPassword");
 		if(regPassword.value.localeCompare(regConfPassword.value)==0){
-			console.log("match");
 			attemptCreateAccount(regUserName.value, regPassword.value);
 		}
 		else{
-			console.log("not match");
 			regPassword.value ="";
 			regConfPassword.value = "";
 			document.getElementById("error-message").innerHTML = "password not matched!";

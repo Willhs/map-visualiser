@@ -212,10 +212,11 @@ input,label {
 
 #newAccount {
 	position: fixed;
+	scroll: no;
 	left: 0px;
 	top: 0px;
-	width: 255px;
-	height: 130px;
+	width: 70%;
+	height: 35%;
 	background-color: #03719c;
 	cursor: pointer;
 }
