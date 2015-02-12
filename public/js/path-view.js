@@ -1,6 +1,26 @@
-//Init when load the map
-//Loaded when the exploration has city events
-
+//==================================================================================================
+//  Author:Will Hardwick-Smith and Jacky Chang
+//
+//  Loaded path view:
+//		. select an exploration from selector and the selected exploration has city events
+//		. user log into the system and first exploration in the selector has city events
+//
+//  Unload path view:
+//		. Remove all path and circles
+//		. City names font change back to original size, color and position
+//
+//  Path view elements:
+//  	. Dash line - all city events in selected exploration connect by dash line
+//  	. Filled circle (gray and blue): all city event coordinates
+//  	. City event names: names will highlighted when selected exploration has city events
+//
+//  Path view actions:
+//		. Progress bar clicked - update both progress bar and path view (append path from frist city
+//		  evnets to paused position
+//		. Path view lines clicked - update path view line draw from last postion to clicked position
+//		  then calculate the time progress bar to update the progres bar position.
+//
+//==================================================================================================
 function PathView(){
 
 	this.expl = null; // value signed when load pathView
@@ -594,7 +614,7 @@ function PathView(){
 		this.pausedTime = null;
 		this.setProgressBarClicked(false,false);
 
-	}
+	};
 
 	// return a array of coordinate
 	function getTranslate(data){
