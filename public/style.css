@@ -134,7 +134,7 @@ input,label {
 	height: 30px;
 	font-size: 150%;
 	cursor: pointer;
-	visibility: visible;
+	visibility: hidden;
 }
 /* Mini-map */
 #minimap {

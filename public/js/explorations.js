@@ -16,11 +16,11 @@
 // if the user is currently recording, playing ...
 var recording = false,
 	playing = false,
-	paused = false
+	paused = false,
 	inserting = false;
 
 // id for timer which triggers next event in playback. Is used to stop playback.
-var	playTimerID = -1; 
+var	playTimerID = -1;
 
 // HTML5 audio element for any audio .
 var audioElem = document.getElementById("exploration-audio");
@@ -30,7 +30,7 @@ var progressBar = new ProgressBar;
 // the high-level representation of the exploration, shown as a path
 var pathView = new PathView;
 // currently selected exploration
-var selectedExploration = null; 
+var selectedExploration = null;
 
 // an exploration event.
 // can be of type: start, end, travel, movement
@@ -70,19 +70,19 @@ function Exploration() {
 
 	this.getEvents = function(){
 		return this.events;
-	}
+	};
 
 	this.getAudio = function(){
 		return this.audio;
-	}
+	};
 
 	this.hasAudio = function(){
 		return this.audio ? true : false;
-	}
+	};
 
 	this.setAudio = function(audio){
 		this.audio = audio;
-	}
+	};
 
 	this.nextEvent = function (event){
 		if (!isNextEvent(event)){
@@ -110,20 +110,20 @@ function Exploration() {
 		Object.getOwnPropertyNames(exploration).forEach(function(property){
 			that[property] = exploration[property];
 		});
-	}
+	};
 
 	// to establish exploration equality
 	this.equals = function(exploration){
 		if (exploration == null) return false;
 		return this.userName === exploration.userName
 			&& this.timeStamp === exploration.timeStamp;
-	}
+	};
 	this.getDuration = function(){
 		if(this.events.length == 0)
 			return 0;
 		return  this.events[this.events.length-1].time;//return millisecond
 
-	}
+	};
 
 	// gets the most recent event before this time
 	// PRE: time must be > 0
@@ -179,7 +179,7 @@ function Exploration() {
 				return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][monthIndex];
 			}
 		}
-	}
+	};
 
 	// check the exploration is has city events return true
 	this.hasCityEvents = function(){
@@ -189,7 +189,7 @@ function Exploration() {
 				return true;
 		}
 		return false;
-	}
+	};
 }
 
 
@@ -303,7 +303,7 @@ function launchEvents(exploration, i, elapsedTime){
 	currentEventIndex = i;
 	var currentEvent = exploration.getEvent(i);
 
-	// execute the event depending on the type 
+	// execute the event depending on the type
 	switch (currentEvent.type){
 	case ("travel"):
 		var location = currentEvent.body;
@@ -458,8 +458,7 @@ function insertIntoSelectedExploration(insertee){
 			return null;
 
 		// find the byte position of the current time
-		var currentTimeAudio = audioElem.currentTime,
-			sampleRate = 44100,
+		var	sampleRate = 44100,
 			bytesPerFrame = 4,
 			headerSize = 44;
 
@@ -543,9 +542,12 @@ function selectExploration(exploration){
 	if(exploration.hasCityEvents()){
 		pathView.load(exploration);
 		showPathButton.innerHTML="Hide Path";
+		showPathButton.style.visibility = "visible";
 		var classes = $(".path-move");
 		pathView.setText();
 		classes.show();
+	}else{
+		showPathButton.style.visibility = "hidden";
 	}
 
 	updateExplorationControls();
@@ -654,7 +656,7 @@ function enableAction(names){
 function recordTravel(cityIndex){
 	return function (){
 		currentUser.getCurrentExploration().addEvent("travel", cityIndex);
-	}
+	};
 }
 
 //records a user pan or zoom

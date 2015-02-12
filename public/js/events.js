@@ -78,6 +78,9 @@ logonButton.onclick = function(){
 // =========================================
 // ============= share button ==============
 
+// exploration file sent when button clicked
+// userLabelValue: receiver
+// if userLabelValue not on the userList on the server will not able to send.
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 	var userLabelValue = document.getElementById("shared-with").value;
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
@@ -96,6 +99,7 @@ newAccount.onclick = function(){
 // ==========================================
 // =============== notifications ============
 
+// notification container clicked - show or hide the selector box
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
 	if(showListNotifications()){
@@ -109,6 +113,7 @@ notificationContainer.addEventListener('click',function(){
 	}
 });
 
+// remove exploration from selector box, not delete from user's folder
 removeNotification.addEventListener("click", function(){
 	var selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
 	selected.isNew = false;
