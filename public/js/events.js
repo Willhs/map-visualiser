@@ -1,7 +1,14 @@
-//-------------- event handling for DOM elements ----------------
+// =================================================================================
+// Author: Will Hardwick-Smith & Jacky Chang
+// Contains: Event handlers for most GUI elements, including:
+// - log in elements
+// - exploration control buttons
+// - exploration chooser
+// - notifications
+// - inserting
+// =================================================================================
 
-// #################################################
-// ######### guest users #############################
+// ========= guest users =============================
 
 var guestUsers = ["obama", "john", "lorde", "will"];
 
@@ -11,8 +18,8 @@ guestUsers.forEach(function(userName){
 		passwordInput.value = "password";
 	};
 });
-// #################################################
-// ######### exploration controls ##################
+// =================================================
+// ========= exploration controls ==================
 
 recordExplButton.addEventListener("click", function(){
 	if (recording){
@@ -49,8 +56,8 @@ deleteExplButton.click(function(){
 
 resetExplButton.click(resetExplorations);
 
-// ##########################################
-// ######## exploration chooser and login####
+// ==========================================
+// ======== exploration chooser and login====
 
 explChooser.onclick = updateSelectedExploration;
 
@@ -68,8 +75,8 @@ logonButton.onclick = function(){
 	}
 };
 
-// #########################################
-// ############# share button ##############
+// =========================================
+// ============= share button ==============
 
 document.getElementById("submit-shared-file").addEventListener('click',function(){
 	var userLabelValue = document.getElementById("shared-with").value;
@@ -78,16 +85,16 @@ document.getElementById("submit-shared-file").addEventListener('click',function(
 	}
 });
 
-// ##########################################
-// ############## create new account ########
+// ==========================================
+// ============== create new account ========
 var myWindow;
 var newAccount = document.getElementById("create-new-account");
 newAccount.onclick = function(){
 	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
 
-// ##########################################
-// ############### notifications ############
+// ==========================================
+// =============== notifications ============
 
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
@@ -119,8 +126,8 @@ quickplayNotification.addEventListener("click", function(){
 	updateNotifications();
 });
 
-// ##########################################
-// ########### inserting ####################
+// ==========================================
+// =========== inserting ====================
 
 insertButton.click(function(){
 	inserting = true;

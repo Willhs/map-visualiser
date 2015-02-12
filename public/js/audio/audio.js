@@ -1,5 +1,10 @@
-// code from https://github.com/samdutton/simpl/blob/master/getusermedia/sources/js/main.js
-// and       ~/projects/web/audio-recorder/public/js/main.
+// =================================================================================
+// Author: github.com/samdutton, modified by Will Hardwick-Smith
+// original code from https://github.com/samdutton/simpl/blob/master/getusermedia/sources/js/main.js
+// Contains: request access to user microphone, 
+// requests to recorder.js to record audio and export as a wav blob,
+// 
+// =================================================================================
 
 // select elem for audio devices
 var audioSelect = document.querySelector("#audio-source");
@@ -54,11 +59,7 @@ function stopAudioRecording(cb){
     }
 }
 
-// removes the mic graphic shown while recording
-function removeAudioGraphic(){
-    svg.select("#microphone-graphic")
-        .remove();    
-}
+
 // called when sources are confirmed 
 function gotSources(sourceInfos) {
     for (var i = 0; i != sourceInfos.length; ++i) {
