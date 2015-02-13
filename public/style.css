@@ -92,6 +92,10 @@ input,label {
 	height: 10px;
 }
 
+#exploration-selector{
+	width: 200px;
+	display: none;
+}
 .annotation-row {
 	/*display: table-row;*/
 	padding: 5px;
