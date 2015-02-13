@@ -1,3 +1,12 @@
+// =================================================================================
+// Author: Will Hardwick-Smith & Jacky Chang
+// Contains: Only GUI/view related methods, such as:
+// - graphical representations
+// - animations
+// - disabling/enabling buttons
+// - showing/hiding elements
+// - reloading data for GUI elements 
+// =================================================================================
 
 //------ Dom elements --------
 var recordExplButton = document.getElementById("record-exploration-button"),
@@ -408,4 +417,10 @@ function displayAudioGraphic(){
 		"xlink:href": "data/image/microphone-128.png",
 		id: "microphone-graphic"
 	});
+}
+
+// removes the mic graphic shown while recording
+function removeAudioGraphic(){
+    svg.select("#microphone-graphic")
+        .remove();    
 }

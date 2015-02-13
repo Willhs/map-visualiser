@@ -1,7 +1,14 @@
-//-------------- event handling for DOM elements ----------------
+// =================================================================================
+// Author: Will Hardwick-Smith & Jacky Chang
+// Contains: Event handlers for most GUI elements, including:
+// - log in elements
+// - exploration control buttons
+// - exploration chooser
+// - notifications
+// - inserting
+// =================================================================================
 
-
-// ######### guest users #############################
+// ========= guest users =============================
 
 var guestUsers = ["obama", "john", "lorde", "will"];
 
@@ -11,8 +18,8 @@ guestUsers.forEach(function(userName){
 		passwordInput.value = "password";
 	};
 });
-// #################################################
-// ######### exploration controls #################
+// =================================================
+// ========= exploration controls ==================
 
 recordExplButton.addEventListener("click", function(){
 	if (recording){
@@ -49,8 +56,8 @@ deleteExplButton.click(function(){
 
 resetExplButton.click(resetExplorations);
 
-// ##########################################
-// ######## exploration chooser and login
+// ==========================================
+// ======== exploration chooser and login====
 
 explChooser.onclick = updateSelectedExploration;
 
@@ -68,44 +75,41 @@ logonButton.onclick = function(){
 	}
 };
 
-// #########################################
-// ############# share button #############
+// =========================================
+// ============= share button ==============
 
 // exploration file sent when button clicked
 // userLabelValue: receiver
 // if userLabelValue not on the userList on the server will not able to send.
 document.getElementById("submit-shared-file").addEventListener('click',function(){
-
 	var userLabelValue = document.getElementById("shared-with").value;
 	if(userLabelValue!=null && userLabelValue!=currentUser.name && selectedExploration!=null){
 		shareFile(selectedExploration, userLabelValue);
 	}
 });
 
-// ##########################################
-// ############## create new account #######
-
-// new window open when clicked
+// ==========================================
+// ============== create new account ========
 var myWindow;
 var newAccount = document.getElementById("create-new-account");
 newAccount.onclick = function(){
-	myWindow = window.open("new-account.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
+	myWindow = window.open("newAccountPopupWindow.html", "_blank", "toolbar=yes, scrollbars=no, resizable=no, top=500, left=800, width=270, height=180");
 };
 
-// ##########################################
-// ############### notifications ###########
+// ==========================================
+// =============== notifications ============
 
 // notification container clicked - show or hide the selector box
 notificationContainer.addEventListener('click',function(){
 	stopRecording();
 	if(showListNotifications()){
-		divHideShow(notificationSelector);
-		divHideShow(removeNotification);
-		divHideShow(quickplayNotification);
+		if($(".notification-elements").hide())
+			$(".notification-elements").show();
+		else $(".notification-elements").hide();
 
 	}
 	else{
-		hideNotificationButtons();
+		$(".notification-elements").hide();
 	}
 });
 
@@ -114,12 +118,12 @@ removeNotification.addEventListener("click", function(){
 	var selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
 	selected.isNew = false;
 	setExplorationIsOld(selected);
+
 	hideNotificationButtons();
 	updateNotifications();
 	deselectExploration();
 });
-// play notification - and set isNew back to true
-// quick play is not remove from notification selector
+
 quickplayNotification.addEventListener("click", function(){
 	selected = currentUser.getSharedExploration()[notificationSelector.options[notificationSelector.selectedIndex].value];
 	startPlayback(selected);
@@ -127,8 +131,8 @@ quickplayNotification.addEventListener("click", function(){
 	updateNotifications();
 });
 
-// ##########################################
-// ########### inserting ##################
+// ==========================================
+// =========== inserting ====================
 
 insertButton.click(function(){
 	inserting = true;
