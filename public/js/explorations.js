@@ -1,6 +1,6 @@
 // =================================================================================
 // Authors: Will Hardwick-Smith & Jacky Chang
-// Contains: Event and Exploration contructors. 
+// Contains: Event and Exploration contructors.
 // Contains functions which relate to explorations such as:
 // - starting/stopping recording
 // - playing/stopping/pausing/resuming playback
@@ -8,7 +8,7 @@
 // - saving explorations
 // - selecting explorations.
 
-// Also contains references to the GUI elements: pathView and progressBar. 
+// Also contains references to the GUI elements: pathView and progressBar.
 // And the currently selected exploration (selectedExploration).
 // =================================================================================
 
