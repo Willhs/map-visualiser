@@ -12,19 +12,19 @@ body {
 	/* The default font size will be 10 pixels with the default web browser font size setting*/
 	font: 0.625em/1em Verdana, Geneva, Arial, Helvetica, sans-serif;
 	background-color: #03719c;
-
 }
 
-.map {
-	position: absolute;
-	width: 80%;
-	height: 95%;
-
+.svg_map {
+    top: 0%;
+	width: 100%;
+	height: 100%;
 	cursor:pointer;
+
 }
 
 #side-bar {
 	position: fixed;
+	top: 0%;
 	left: 81%;
 	width: 20%;
 	height: 100%;
@@ -92,6 +92,10 @@ input,label {
 	height: 10px;
 }
 
+#exploration-selector{
+	width: 200px;
+	display: none;
+}
 .annotation-row {
 	/*display: table-row;*/
 	padding: 5px;
@@ -218,10 +222,11 @@ input,label {
 
 #newAccount {
 	position: fixed;
+	scroll: no;
 	left: 0px;
 	top: 0px;
-	width: 255px;
-	height: 130px;
+	width: 70%;
+	height: 35%;
 	background-color: #03719c;
 	cursor: pointer;
 }

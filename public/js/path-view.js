@@ -153,13 +153,14 @@ function PathView(){
 	this.showPathElems = function(){
 		this.setText();
 		showPathButton.innerHTML="Hide Path";
-		var classes = $(".path-move");
+		showPathButton.style.visibility = "visible";
+		var elems = $(".path-move");
 		pathView.setText();
-		classes.show();
+		elems.show();
 	};
 
 	// hide path elems on the map: line, circles
-	this.hidePahtElems = function(){
+	this.hidePathElems = function(){
 		showPathButton.innerHTML="Show Path";
 		var classes = $(".path-move");
 		pathView.resetText();
@@ -319,7 +320,6 @@ function PathView(){
 		.attr("id", "circle-move")
 		.attr("cx", this.translates()[ 0 ][ 0 ] )
 		.attr("cy", this.translates()[ 0 ][ 1 ] );
-
 		this.showPathElems(); // show path elems when load the exploration
 	};
 

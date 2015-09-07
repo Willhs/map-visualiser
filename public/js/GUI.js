@@ -5,7 +5,7 @@
 // - animations
 // - disabling/enabling buttons
 // - showing/hiding elements
-// - reloading data for GUI elements 
+// - reloading data for GUI elements
 // =================================================================================
 
 //------ Dom elements --------
@@ -48,7 +48,6 @@ function updateSideBar(){
 
 //updates the exploration chooser (drop down box)
 function updateExplorationChooser(){
-
 	// clear all explorations
 	while(explChooser.firstChild){
 		explChooser.removeChild(explChooser.firstChild);
@@ -57,8 +56,10 @@ function updateExplorationChooser(){
 	var explorations = userLoggedOn() ? currentUser.getExplorations() : [];
 	if(explorations.length===0){
 		$("#noOfFilesLoaded").html("no explorations loaded");
+		$("#exploration-selector").hide();
 		return;
-	}
+	}else $("#exploration-selector").show();
+
 	explorations.forEach(function(exploration, index){
 		var explOption = document.createElement('option');
 		explOption.setAttribute("id", exploration.timeStamp);
@@ -201,7 +202,7 @@ function toggleVisiblePath(){
 			pathView.showPathElems();
 		}
 		else if(showPathButton.innerHTML=="Hide Path"){
-			pathView.hidePahtElems();
+			pathView.hidePathElems();
 		}
 	}
 }
@@ -422,5 +423,5 @@ function displayAudioGraphic(){
 // removes the mic graphic shown while recording
 function removeAudioGraphic(){
     svg.select("#microphone-graphic")
-        .remove();    
+        .remove();
 }

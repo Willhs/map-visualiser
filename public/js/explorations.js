@@ -541,15 +541,12 @@ function selectExploration(exploration){
 	progressBar.load(exploration);
 	if(exploration.hasCityEvents()){
 		pathView.load(exploration);
-		showPathButton.innerHTML="Hide Path";
-		showPathButton.style.visibility = "visible";
-		var classes = $(".path-move");
-		pathView.setText();
-		classes.show();
+
+
 	}else{
 		showPathButton.style.visibility = "hidden";
 	}
-
+	$("#share-file").show();
 	updateExplorationControls();
 
 	// transitions to the first location in the exploration
@@ -570,6 +567,9 @@ function deselectExploration(){
 	progressBar.unload();
 	if (!currentUser || !currentUser.hasExplorations())
 		disableAction(["delete"]);
+	$("#share-file").hide();
+
+
 }
 
 // resets to original state (no explorations selected, no recordings or playbacks in progress)
